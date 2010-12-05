@@ -32,6 +32,16 @@ var ufShiv = {
             microformatNodes = ufShiv.getElementsByAttribute(rootElement, ufShiv[name].attributeName, ufShiv[name].attributeValues);
         }
 
+        // Remove embeded hCards from top line parse
+        if (name == 'hCard') {
+            var items = [];
+            for (var i = 0; i < microformatNodes.length; i++) {
+                if (ufShiv.findParentByClass(microformatNodes[i], 'vcard') == null)
+                    items.push(microformatNodes[i]);
+            }
+            microformatNodes = items;
+        }
+
         for (var i = 0; i < microformatNodes.length; i++) {
             targetArray.push(ufShiv.parser.getMicroformat(microformatNodes[i], name));
         }
@@ -80,19 +90,14 @@ var ufShiv = {
         getMicroformatProperty: function getMicroformatProperty(in_mfnode, mfname, propname) {
             var mfnode = in_mfnode;
 
-
-
             /* If the node has not been preprocessed, the requested microformat */
             /* is a class based microformat and the passed in node is not the */
             /* entire document, preprocess it. Preprocessing the node involves */
             /* creating a duplicate of the node and taking care of things like */
             /* the include and header design patterns */
-
             if (!in_mfnode.origNode && ufShiv[mfname].className && in_mfnode.ownerDocument) {
                 mfnode = ufShiv.parser.preProcessMicroformat(in_mfnode);
             }
-
-
 
             /* propobj is the corresponding property object in the microformat */
             var propobj;
@@ -105,7 +110,6 @@ var ufShiv = {
                 return undefined;
             }
 
-
             /* Query the correct set of nodes (rel or class) based on the setting */
             /* in the property */
             var propnodes;
@@ -116,43 +120,20 @@ var ufShiv = {
             }
 
 
-            for (var i = propnodes.length - 1; i >= 0; i--) {
-
-                /* The reason getParent is not used here is because this code does */
-                /* not apply to attribute based microformats, plus adr and geo */
-                /* when contained in hCard are a special case */
-                var parentnode;
-                var node = propnodes[i];
-                for (var j = 0; j < ufShiv.list.length; j++) {
-                    /* Don't treat adr or geo in an hCard as a microformat in this case */
-                    if ((mfname == "hCard") && ((ufShiv.list[j] == "adr") || (ufShiv.list[j] == "geo"))) {
-                        continue;
-                    }
-                    if (ufShiv[ufShiv.list[j]].className) {
-                        /* Removed xPath replaced with DOM tree walker ie .findParentByClass Glenn Jones */
-                        var found = ufShiv.findParentByClass(node, ufShiv[ufShiv.list[j]].className);
-                        if (found != null) {
-                            parentnode = found;
-                        }
+            // Remove embeded agent hCards that should not be a child of this object
+            if (mfname == 'hCard') {
+                var items = [];
+                for (var i = 0; i < propnodes.length; i++) {
+                    var found = ufShiv.findParentByClass(propnodes[i], 'vcard');
+                    // Found == null means it was added through an include process
+                    if (mfnode == found) {
+                        items.push(propnodes[i]);
                     }
                 }
-
-                /* If the propnode is not a child of the microformat, and */
-                /* the property belongs to the parent microformat as well, */
-                /* remove it. */
-                if (parentnode != mfnode) {
-                    var mfNameString = ufShiv.getNamesFromNode(parentnode);
-                    var mfNames = mfNameString.split(" ");
-                    var j;
-                    for (j = 0; j < mfNames.length; j++) {
-                        /* If this property is in the parent microformat, remove the node  */
-                        if (ufShiv[mfNames[j]].properties[propname]) {
-                            propnodes.splice(i, 1); ;
-                            break;
-                        }
-                    }
-                }
+                propnodes = items;
             }
+
+
             if (propnodes.length > 0) {
                 var resultArray = [];
                 for (var i = 0; i < propnodes.length; i++) {
@@ -315,6 +296,8 @@ var ufShiv = {
 
             if ((propnode.nodeName.toLowerCase() == "abbr") && (propnode.getAttribute("title"))) {
                 return propnode.getAttribute("title");
+            } else if ((propnode.nodeName.toLowerCase() == "time") && (propnode.getAttribute("datetime"))) {
+                return propnode.getAttribute("datetime");
             } else if ((propnode.nodeName.toLowerCase() == "img") && (propnode.getAttribute("alt"))) {
                 return propnode.getAttribute("alt");
             } else if ((propnode.nodeName.toLowerCase() == "area") && (propnode.getAttribute("alt"))) {
@@ -736,7 +719,7 @@ var ufShiv = {
                             break;
                         }
                     }
-                    if (result != undefined) {
+                    if (result != undefined && ufShiv.hasProperties(result)) {
                         if (prop.microformat_property) {
                             result = result[prop.microformat_property];
                         }
@@ -784,20 +767,18 @@ var ufShiv = {
             for (var i = 0; i < col.length; i++) {
                 returnElements[i] = col[i];
             }
-        } else if (rootNode.evaluate) {
+        } else if (document.evaluate) {
             /* XPath */
             var xpathExpression;
             xpathExpression = ".//*[contains(concat(' ', @class, ' '), ' " + className + " ')]";
-            document.write(xpathExpression + '<br />');
-            var xpathResult = rootNode.evaluate(xpathExpression, rootNode, null, 0, null);
+            var xpathResult = document.evaluate(xpathExpression, rootNode, null, 0, null);
 
             var node;
             while ((node = xpathResult.iterateNext())) {
                 returnElements.push(node);
             }
         } else {
-            /* Slower fallback */
-
+            /* Slower DOM fallback */
             className = className.replace(/\-/g, "\\-");
             var elements = rootNode.getElementsByTagName("*");
             for (var i = 0; i < elements.length; i++) {
@@ -815,7 +796,7 @@ var ufShiv = {
         var attributeList = attributeValues.split(" ");
         var returnElements = [];
 
-        if (rootNode.evaluate) {
+        if (document.evaluate) {
             /* XPath */
             var xpathExpression = ".//*[";
             for (var i = 0; i < attributeList.length; i++) {
@@ -825,8 +806,7 @@ var ufShiv = {
                 xpathExpression += "contains(concat(' ', @" + attributeName + ", ' '), ' " + attributeList[i] + " ')";
             }
             xpathExpression += "]";
-            document.write('getElementsByAttribute: ' + xpathExpression + '<br />');
-            var xpathResult = rootNode.evaluate(xpathExpression, rootNode, null, 0, null);
+            var xpathResult = document.evaluate(xpathExpression, rootNode, null, 0, null);
 
             var node;
             while ((node = xpathResult.iterateNext())) {
@@ -845,7 +825,7 @@ var ufShiv = {
                             found = true;
                         }
                     }
-                    if(found)
+                    if (found)
                         returnElements.push(elements[i]);
                 }
             }
@@ -895,17 +875,40 @@ var ufShiv = {
     * Returns first ancestor of required class or a null
     */
     findParentByClass: function findParentByClass(node, className) {
-        if (node != null && node != undefined) {
-            if (ufShiv.matchClass(node, className)) {
-                return node;
-            } else {
+
+        if (document.evaluate) {
+            /* XPath */
+            var xpathExpression;
+            var xpathResult;
+            xpathExpression = "ancestor::*[contains(concat(' ', @class, ' '), ' " + className + " ')][1]";
+            xpathResult = (node.ownerDocument || node).evaluate(xpathExpression, node, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null);
+            if (xpathResult.singleNodeValue)
+                return xpathResult.singleNodeValue;
+
+            return null;
+
+        } else {
+            /* Slower fallback */
+            // First time - move to parent node
+            if (arguments.length == 2) {
                 if (node.parentNode && node.nodeName != "BODY")
-                    return ufShiv.findParentByClass(node.parentNode, className);
+                    return ufShiv.findParentByClass(node.parentNode, className, 1);
                 else
                     return null;
             }
-        } else {
-            return null;
+            // Recursive calls
+            if (node != null && node != undefined) {
+                if (ufShiv.matchClass(node, className)) {
+                    return node;
+                } else {
+                    if (node.parentNode && node.nodeName != "BODY")
+                        return ufShiv.findParentByClass(node.parentNode, className, 1);
+                    else
+                        return null;
+                }
+            } else {
+                return null;
+            }
         }
     },
 
@@ -941,6 +944,17 @@ var ufShiv = {
         if (node.getAttribute("className"))
             classValue = node.getAttribute("className");
         return (classValue && classValue.match("(^|\\s)" + className + "(\\s|$)"));
+    },
+
+
+    /**
+    * Simple function to find out if a object has properties
+    */
+    hasProperties: function hasProperties(obj) {
+        for (var i in obj) {
+            return true;
+        }
+        return false;
     },
 
 

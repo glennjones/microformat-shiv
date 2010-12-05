@@ -8,7 +8,7 @@ License: http://microformatshiv.com/license/
 
 function ufhResume(node) {
   if (node) {
-      ufShiv.parser.newMicroformat(this, node, "hResume", validate);
+      ufShiv.parser.newMicroformat(this, node, "hResume");
   }
 }
 

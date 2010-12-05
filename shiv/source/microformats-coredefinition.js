@@ -6,7 +6,7 @@ Copyright (C) 2010 Glenn Jones. All Rights Reserved.
 License: http://microformatshiv.com/license/
 */
 
-function ufadr(node, validate) {
+function ufadr(node) {
     if (node) {
         ufShiv.parser.newMicroformat(this, node, "adr", validate);
     }
@@ -41,7 +41,7 @@ var ufadr_definition = {
 ufShiv.add("adr", ufadr_definition);
 
 
-function ufhCard(node, validate) {
+function ufhCard(node) {
     if (node) {
         ufShiv.parser.newMicroformat(this, node, "hCard", validate);
     }
@@ -97,14 +97,15 @@ var ufhCard_definition = {
             var familyName = ufShiv.getElementsByClassName(mfnode, "family-name");
             var fn = '';
 
-            if (ufShiv.getTextContent(givenName) != '')
+            if (ufShiv.getTextContent(givenName) != undefined)
                 fn += givenName + ' ';
 
-            if (ufShiv.getTextContent(additionalName) != '')
+            if (ufShiv.getTextContent(additionalName) != undefined)
                 fn += additionalName + ' ';
 
-            if (ufShiv.getTextContent(familyName) != '')
+            if (ufShiv.getTextContent(familyName) != undefined)
                 fn += familyName + ' ';
+
 
             if (fn != '')
                 return fn.substring(0, fn.length - 1);
@@ -259,7 +260,7 @@ var ufhCard_definition = {
 
 ufShiv.add("hCard", ufhCard_definition);
 
-function ufhCalendar(node, validate) {
+function ufhCalendar(node) {
     if (node) {
         ufShiv.parser.newMicroformat(this, node, "hCalendar", validate);
     }
@@ -444,7 +445,7 @@ ufShiv.add("hCalendar", ufhCalendar_definition);
 
 
 
-function ufgeo(node, validate) {
+function ufgeo(node) {
     if (node) {
         ufShiv.parser.newMicroformat(this, node, "geo", validate);
     }
@@ -497,7 +498,7 @@ var ufgeo_definition = {
 
 ufShiv.add("geo", ufgeo_definition);
 
-function uftag(node, validate) {
+function uftag(node) {
     if (node) {
         ufShiv.parser.newMicroformat(this, node, "tag", validate);
     }
