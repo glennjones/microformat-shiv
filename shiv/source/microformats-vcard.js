@@ -1,7 +1,4 @@
 ﻿/*! 
-A compact JavaScript cross browser microformats parser by Glenn Jones. Based 
-on the Mozilla Labs Operator microformats parser created by Michael Kaply 
-
 Copyright (C) 2010 Glenn Jones. All Rights Reserved.
 License: http://microformatshiv.com/license/
 */
