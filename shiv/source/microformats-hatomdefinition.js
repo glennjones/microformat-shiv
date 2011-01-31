@@ -49,8 +49,8 @@ if (ufShiv) {
             "updated" : {
               virtual: true,
               datatype: "dateTime",
-              virtualGetter: function(mfnode) {
-                return ufShiv.internal.getMicroformatProperty(mfnode, "hEntry", "published");
+              virtualGetter: function(context, mfnode) {
+                  return context.getMicroformatProperty(mfnode, "hEntry", "published");
               }
             },
             "tag": {

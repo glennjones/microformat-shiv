@@ -26,33 +26,32 @@ if (ufShiv) {
             },
             "item": {
                 datatype: "custom",
-                customGetter: function (propnode) {
+                customGetter: function (context, propnode) {
                     var item;
-                    var s = ufShiv.internal;
                     if (propnode.className.match("(^|\\s)" + "vcard" + "(\\s|$)")) {
-                        item = s.getMicroformat(propnode, 'hCard');
+                        item = context.getMicroformat(propnode, 'hCard');
                     } else if (propnode.className.match("(^|\\s)" + "vevent" + "(\\s|$)")) {
-                        item = s.getMicroformat(propnode, 'hCalendar');
+                        item = context.getMicroformat(propnode, 'hCalendar');
                     } else {
                         item = {};
-                        var fns = s.getElementsByClassName(propnode, "fn");
+                        var fns = context.getElementsByClassName(propnode, "fn");
                         if (fns.length > 0) {
-                            item.fn = s.defaultGetter(fns[0]);
+                            item.fn = context.defaultGetter(fns[0]);
                         }
-                        var urls = s.getElementsByClassName(propnode, "url");
+                        var urls = context.getElementsByClassName(propnode, "url");
                         if (urls.length > 0) {
-                            item.url = s.uriGetter(urls[0]);
+                            item.url = context.uriGetter(urls[0]);
                         }
-                        var photos = s.getElementsByClassName(propnode, "photo");
+                        var photos = context.getElementsByClassName(propnode, "photo");
                         if (photos.length > 0) {
-                            item.photo = s.uriGetter(photos[0]);
+                            item.photo = context.uriGetter(photos[0]);
                         }
                     }
                     /* Only return item if it has stuff in it */
                     for (var i in item) {
                         return item;
                     }
-                    return;
+                    return item;
                 }
             },
             "rating": {

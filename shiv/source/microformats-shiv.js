@@ -11,7 +11,6 @@ var ufShiv = {
 
     version: 0.2,
 
-
     // Returns parsed microformats
     // name: A string of the microformat to look for
     // element: A HTML DOM element which contains the microformat
@@ -27,7 +26,7 @@ var ufShiv = {
 
         if (uf.className) {
             nodes = this.internal.getElementsByClassName(element, uf.className);
-            if ((nodes.length == 0) && uf.alternateClassName) {
+            if ((nodes.length === 0) && uf.alternateClassName) {
                 var altClass = this.internal.getElementsByClassName(element, uf.alternateClassName);
                 if (altClass.length > 0) {
                     nodes.push(element);
@@ -41,29 +40,31 @@ var ufShiv = {
         if (name == 'hCard') {
             var items = [];
             for (var i = 0; i < nodes.length; i++) {
-                if (this.internal.findParentByClass(nodes[i], 'vcard') == null)
+                if (this.internal.findParentByClass(nodes[i], 'vcard') === null) {
                     items.push(nodes[i]);
+                }
             }
             nodes = items;
         }
 
-        for (var i = 0; i < nodes.length; i++) {
-            date.push(this.internal.getMicroformat(nodes[i], name));
+        for (var x = 0; x < nodes.length; x++) {
+            date.push(this.internal.getMicroformat(nodes[x], name));
         }
 
         if (name == 'XFN')
             date = this.internal.compressXFN(date);
 
 
-        var obj = {}
+        var obj = {};
         // UfJSON - Use the microformats root class name as its name
-        if(uf.className)
+        if (uf.className) {
             obj[uf.className] = date;
-        else
+        } else {
             obj[uf.altName] = date;
+        }
 
-        return this.internal.pack(obj,'', this.version);
-        
+        return this.internal.pack(obj, '', this.version);
+
     },
 
 
@@ -80,20 +81,20 @@ var ufShiv = {
     internal: {
 
 
-        pack: function(data, error, version){
+        pack: function (data, error, version) {
             // UfJSON - Add reporting 
-            var pack = { 'microformats': data }
+            var pack = { 'microformats': data };
             pack['parser-information'] = {};
             pack['parser-information'].name = 'Microformat Shiv';
             pack['parser-information'].version = version;
-            if(!error && error != ''){
-                pack.errors = [ error ]
+            if (!error && error !== '') {
+                pack.errors = [error];
             }
             return pack;
         },
 
 
-        getMicroformat: function(node, microformat) {
+        getMicroformat: function (node, microformat) {
             var data = {};
             for (var i in this[microformat].properties) {
                 var item = this.getMicroformatProperty(node, microformat, i);
@@ -107,7 +108,7 @@ var ufShiv = {
         // in_mfnode: The node containing the microformat
         // mfname: The name a microformat definition
         // propname: The names of the current property definition
-        getMicroformatProperty: function(in_mfnode, mfname, propname) {
+        getMicroformatProperty: function (in_mfnode, mfname, propname) {
 
             var mfnode = in_mfnode;
 
@@ -134,7 +135,7 @@ var ufShiv = {
             // Query the correct set of nodes (rel or class) based on the setting 
             // in the property 
             var propnodes;
-            if (propobj.rel == true) {
+            if (propobj.rel === true) {
                 propnodes = this.getElementsByAttribute(mfnode, "rel", propname);
             } else {
                 propnodes = this.getElementsByClassName(mfnode, propname);
@@ -157,12 +158,8 @@ var ufShiv = {
 
             if (propnodes.length > 0) {
                 var resultArray = [];
-                for (var i = 0; i < propnodes.length; i++) {
-                    var subresult = this.getPropertyInternal(propnodes[i],
-                                                                  mfnode,
-                                                                  propobj,
-                                                                  propname,
-																  mfnode);
+                for (var y = 0; y < propnodes.length; y++) {
+                    var subresult = this.getPropertyInternal(propnodes[y], mfnode, propobj, propname, mfnode);
                     if (subresult != undefined) {
                         resultArray.push(subresult);
                         // If we're not a plural property, don't bother getting more 
@@ -186,13 +183,13 @@ var ufShiv = {
         },
 
 
-        getPropertyInternal: function(propnode, parentnode, propobj, propname, mfnode) {
+        getPropertyInternal: function (propnode, parentnode, propobj, propname, mfnode) {
             var result;
             if (propobj.subproperties) {
                 for (var subpropname in propobj.subproperties) {
                     var subpropnodes;
                     var subpropobj = propobj.subproperties[subpropname];
-                    if (subpropobj.rel == true) {
+                    if (subpropobj.rel === true) {
                         subpropnodes = this.getElementsByAttribute(propnode, "rel", subpropname);
                     } else {
                         subpropnodes = this.getElementsByClassName(propnode, subpropname);
@@ -211,10 +208,8 @@ var ufShiv = {
                             }
                         }
                     }
-                    if (resultArray.length == 0) {
-                        subresult = this.getPropertyInternal(propnode, null,
-                                                                subpropobj,
-                                                                subpropname, mfnode);
+                    if (resultArray.length === 0) {
+                        subresult = this.getPropertyInternal(propnode, null, subpropobj, subpropname, mfnode);
                         if (subresult != undefined) {
                             resultArray.push(subresult);
                         }
@@ -232,7 +227,8 @@ var ufShiv = {
             if (!parentnode || ((result == undefined) && propobj.subproperties)) {
                 if (propobj.virtual) {
                     if (propobj.virtualGetter) {
-                        result = propobj.virtualGetter(mfnode || propnode);
+                        // Passes this context because Firefox issue
+                        result = propobj.virtualGetter(this, mfnode || propnode);
                     } else {
                         result = this.datatypeHelper(propobj, propnode);
                     }
@@ -250,17 +246,17 @@ var ufShiv = {
 
 
         /**
-         Internal parser API used to resolve includes and headers. Includes are
-         resolved by simply cloning the node and replacing it in a clone of the
-         original DOM node. Headers are resolved by creating a span and then copying
-         the innerHTML and the class name.
+        Internal parser API used to resolve includes and headers. Includes are
+        resolved by simply cloning the node and replacing it in a clone of the
+        original DOM node. Headers are resolved by creating a span and then copying
+        the innerHTML and the class name.
         
-         @param  in_mfnode The node to preProcess.
-         @return If the node had includes or headers, a cloned node otherwise
-                 the original node. You can check to see if the node was cloned
-                 by looking for .origNode in the new node.
+        @param  in_mfnode The node to preProcess.
+        @return If the node had includes or headers, a cloned node otherwise
+        the original node. You can check to see if the node was cloned
+        by looking for .origNode in the new node.
         */
-        preProcessMicroformat: function(in_mfnode) {
+        preProcessMicroformat: function (in_mfnode) {
             var mfnode;
             if ((in_mfnode.nodeName.toLowerCase() == "td") && (in_mfnode.getAttribute("headers"))) {
                 mfnode = in_mfnode.cloneNode(true);
@@ -288,15 +284,15 @@ var ufShiv = {
                 includes = this.getElementsByClassName(mfnode, "include");
                 var includeId;
                 var include_length = includes.length;
-                for (var i = include_length - 1; i >= 0; i--) {
-                    if (includes[i].nodeName.toLowerCase() == "a") {
-                        includeId = includes[i].getAttribute("href").substr(1);
+                for (var y = include_length - 1; y >= 0; y--) {
+                    if (includes[y].nodeName.toLowerCase() == "a") {
+                        includeId = includes[y].getAttribute("href").substr(1);
                     }
-                    if (includes[i].nodeName.toLowerCase() == "object") {
-                        includeId = includes[i].getAttribute("data").substr(1);
+                    if (includes[y].nodeName.toLowerCase() == "object") {
+                        includeId = includes[y].getAttribute("data").substr(1);
                     }
                     if (in_mfnode.ownerDocument.getElementById(includeId)) {
-                        includes[i].parentNode.replaceChild(in_mfnode.ownerDocument.getElementById(includeId).cloneNode(true), includes[i]);
+                        includes[y].parentNode.replaceChild(in_mfnode.ownerDocument.getElementById(includeId).cloneNode(true), includes[y]);
                     }
                 }
             }
@@ -342,15 +338,15 @@ var ufShiv = {
                 }
                 var values = this.getElementsByClassName(propnode, "value");
                 // Verify that values are children of the propnode 
-                for (var i = values.length - 1; i >= 0; i--) {
-                    if (values[i].parentNode != propnode) {
-                        values.splice(i, 1);
+                for (var x = values.length - 1; x >= 0; x--) {
+                    if (values[x].parentNode != propnode) {
+                        values.splice(x, 1);
                     }
                 }
                 if (values.length > 0) {
                     var value = "";
-                    for (var j = 0; j < values.length; j++) {
-                        value += this.defaultGetter(values[j], propnode, datatype);
+                    for (var z = 0; z < values.length; z++) {
+                        value += this.defaultGetter(values[z], propnode, datatype);
                     }
                     return collapseWhitespace(value);
                 }
@@ -401,9 +397,9 @@ var ufShiv = {
                 if (time.match("pm") || time.match("p.m.")) {
                     time = time.replace("pm", "");
                     time = time.replace("p.m.", "");
-                    var times = time.split(":");
+                    times = time.split(":");
                     if (times[0] < 12) {
-                        times[0] = parseInt(times[0]) + 12;
+                        times[0] = parseInt(times[0], 10) + 12;
                     }
                     if (times[0].length == 1) {
                         times[0] = "0" + times[0];
@@ -419,6 +415,8 @@ var ufShiv = {
                 }
                 return time;
             }
+
+
             var valueTitles = this.getElementsByClassName(propnode, "value-title");
             if (valueTitles.length > 0) {
                 var time = "";
@@ -429,7 +427,6 @@ var ufShiv = {
                     value = valueTitles[i].getAttribute("title");
                     if (value.match("T")) {
                         return this.normalizeISO8601(value);
-                        break;
                     }
                     if (value.charAt(4) == "-") {
                         date = value;
@@ -452,12 +449,14 @@ var ufShiv = {
                     return undefined;
                 }
             }
+
+
             var values = this.getElementsByClassName(propnode, "value");
             // Verify that values are children of the propnode 
             // Remove any that aren't 
-            for (var i = values.length - 1; i >= 0; i--) {
-                if (values[i].parentNode != propnode) {
-                    values.splice(i, 1);
+            for (var z = values.length - 1; z >= 0; z--) {
+                if (values[z].parentNode != propnode) {
+                    values.splice(z, 1);
                 }
             }
             if (values.length > 0) {
@@ -465,11 +464,10 @@ var ufShiv = {
                 var date = "";
                 var value = "";
                 var offset = "";
-                for (var i = 0; i < values.length; i++) {
-                    value = this.defaultGetter(values[i], propnode);
+                for (var y = 0; y < values.length; y++) {
+                    value = this.defaultGetter(values[y], propnode);
                     if (value.match("T")) {
                         return this.normalizeISO8601(value);
-                        break;
                     }
                     if (value.charAt(4) == "-") {
                         date = value;
@@ -529,13 +527,13 @@ var ufShiv = {
             var name = propnode.nodeName.toLowerCase();
             if (pairs.hasOwnProperty(name)) {
                 var protocol;
-                if (propnode[pairs[name]].indexOf("tel:") == 0) {
+                if (propnode[pairs[name]].indexOf("tel:") === 0) {
                     protocol = "tel:";
                 }
-                if (propnode[pairs[name]].indexOf("fax:") == 0) {
+                if (propnode[pairs[name]].indexOf("fax:") === 0) {
                     protocol = "fax:";
                 }
-                if (propnode[pairs[name]].indexOf("modem:") == 0) {
+                if (propnode[pairs[name]].indexOf("modem:") === 0) {
                     protocol = "modem:";
                 }
                 if (protocol) {
@@ -600,7 +598,7 @@ var ufShiv = {
 
 
         htmlGetter: function (propnode, parentnode) {
-            return this.defaultGetter(propnode, parentnode, "HTML")
+            return this.defaultGetter(propnode, parentnode, "HTML");
         },
 
 
@@ -696,19 +694,19 @@ var ufShiv = {
                     }
                     break;
                 case "custom":
-                    result = prop.customGetter(node, parentnode);
+                    result = prop.customGetter(this, node, parentnode);
                     break;
                 case "microformat":
                     try {
                         result = this.getMicroformat(node, prop.microformat);
                     } catch (ex) {
                         /* There are two reasons we get here, one because the node is not
-                         a microformat and two because the node is a microformat and 
-                         creation failed. If the node is not a microformat, we just fall 
-                         through and use the default getter since there are some cases 
-                         (location in hCalendar) where a property can be either a microformat 
-                         or a string. If creation failed, we break and simply don't add the 
-                         microformat property to the parent microformat */
+                        a microformat and two because the node is a microformat and 
+                        creation failed. If the node is not a microformat, we just fall 
+                        through and use the default getter since there are some cases 
+                        (location in hCalendar) where a property can be either a microformat 
+                        or a string. If creation failed, we break and simply don't add the 
+                        microformat property to the parent microformat */
                         if (ex != "Node is not a microformat (" + prop.microformat + ")") {
                             break;
                         }
@@ -742,7 +740,7 @@ var ufShiv = {
         },
 
 
-        getElementsByClassName: function(rootNode, className) {
+        getElementsByClassName: function (rootNode, className) {
             var returnElements = [];
 
             if (rootNode.getElementsByClassName) {
@@ -765,9 +763,9 @@ var ufShiv = {
                 // Slower DOM fallback 
                 className = className.replace(/\-/g, "\\-");
                 var elements = rootNode.getElementsByTagName("*");
-                for (var i = 0; i < elements.length; i++) {
-                    if (elements[i].className.match("(^|\\s)" + className + "(\\s|$)")) {
-                        returnElements.push(elements[i]);
+                for (var x = 0; x < elements.length; x++) {
+                    if (elements[x].className.match("(^|\\s)" + className + "(\\s|$)")) {
+                        returnElements.push(elements[x]);
                     }
                 }
             }
@@ -775,7 +773,7 @@ var ufShiv = {
         },
 
 
-        getElementsByAttribute: function(rootNode, attributeName, attributeValues) {
+        getElementsByAttribute: function (rootNode, attributeName, attributeValues) {
 
             var attributeList = attributeValues.split(" ");
             var returnElements = [];
@@ -784,7 +782,7 @@ var ufShiv = {
                 // XPath 
                 var xpathExpression = ".//*[";
                 for (var i = 0; i < attributeList.length; i++) {
-                    if (i != 0) {
+                    if (i !== 0) {
                         xpathExpression += " or ";
                     }
                     xpathExpression += "contains(concat(' ', @" + attributeName + ", ' '), ' " + attributeList[i] + " ')";
@@ -800,16 +798,16 @@ var ufShiv = {
                 // Slower fallback 
                 attributeName = attributeName.replace(/\-/g, "\\-");
                 var elements = rootNode.getElementsByTagName("*");
-                for (var i = 0; i < elements.length; i++) {
-                    if (elements[i][attributeName]) {
+                for (var x = 0; x < elements.length; x++) {
+                    if (elements[x][attributeName]) {
                         var found = false;
                         for (var y = 0; y < attributeList.length; y++) {
-                            if (elements[i][attributeName].match("(^|\\s)" + attributeList[y] + "(\\s|$)")) {
+                            if (elements[x][attributeName].match("(^|\\s)" + attributeList[y] + "(\\s|$)")) {
                                 found = true;
                             }
                         }
                         if (found)
-                            returnElements.push(elements[i]);
+                            returnElements.push(elements[x]);
                     }
                 }
             }
@@ -819,7 +817,7 @@ var ufShiv = {
 
 
         //Returns first ancestor of required class or a null
-        findParentByClass: function(node, className) {
+        findParentByClass: function (node, className) {
 
             if (document.evaluate) {
                 /* XPath */
@@ -842,7 +840,7 @@ var ufShiv = {
                         return null;
                 }
                 // Recursive calls
-                if (node != null && node != undefined) {
+                if (node !== null && node !== undefined) {
                     if (this.matchClass(node, className)) {
                         return node;
                     } else {
@@ -859,7 +857,7 @@ var ufShiv = {
 
 
         // Returns the descendant count by class name
-        childernCountByClass: function(node, className) {
+        childernCountByClass: function (node, className) {
             var nodes = this.getElementsByClassName(node, className);
             if (nodes.length)
                 return nodes.length;
@@ -869,7 +867,7 @@ var ufShiv = {
 
 
         // Get text contents of a node by textContent or innerHtml
-        getTextContent: function(element) {
+        getTextContent: function (element) {
             if (typeof element.textContent != "undefined") {
                 return element.textContent;
             }
@@ -878,7 +876,7 @@ var ufShiv = {
 
 
         // Is a given class name assigned in the node class property
-        matchClass: function(node, className) {
+        matchClass: function (node, className) {
             if (node.nodeType != 11) {
                 var classValue = node.getAttribute("class");
                 if (node.getAttribute("className"))
@@ -891,7 +889,7 @@ var ufShiv = {
 
 
         // Simple function to find out if a object has properties
-        hasProperties: function(obj) {
+        hasProperties: function (obj) {
             for (var i in obj) {
                 return true;
             }
@@ -900,7 +898,7 @@ var ufShiv = {
 
 
         // Compress object structure down to ufJSON standard
-        compressXFN: function(returnArray) {
+        compressXFN: function (returnArray) {
             var newArray = [];
             for (var j = 0; j < returnArray.length; j++) {
                 var obj = returnArray[j];
@@ -916,7 +914,7 @@ var ufShiv = {
                         }
                     }
                 }
-                if (newObj.rel != '')
+                if (newObj.rel !== '')
                     newObj.rel = newObj.rel.substring(0, newObj.rel.length - 1);
 
                 newArray.push(newObj);
@@ -924,9 +922,10 @@ var ufShiv = {
             return newArray;
         }
 
-    // End of internal object 
+        // End of internal object 
     }
-}
 
-if(!navigator.microformats)
-    navigator.microformats = ufShiv;
+};
+
+// Firefox needs this to load without test
+navigator.microformats = ufShiv;

@@ -72,24 +72,23 @@ if (ufShiv) {
                 },
                 "fn": {
                     virtual: true,
-                    virtualGetter: function (mfnode) {
+                    virtualGetter: function (context, mfnode) {
                         /* Changed to DOM based query - Glenn Jones */
-                        var s = ufShiv.internal;
-                        var givenName = s.getElementsByClassName(mfnode, "given-name");
-                        var additionalName = s.getElementsByClassName(mfnode, "additional-name");
-                        var familyName = s.getElementsByClassName(mfnode, "family-name");
+                        var givenName = context.getElementsByClassName(mfnode, "given-name");
+                        var additionalName = context.getElementsByClassName(mfnode, "additional-name");
+                        var familyName = context.getElementsByClassName(mfnode, "family-name");
                         var fn = '';
 
-                        if (s.getTextContent(givenName) != undefined)
+                        if (context.getTextContent(givenName) != undefined)
                             fn += givenName + ' ';
 
-                        if (s.getTextContent(additionalName) != undefined)
+                        if (context.getTextContent(additionalName) != undefined)
                             fn += additionalName + ' ';
 
-                        if (s.getTextContent(familyName) != undefined)
+                        if (context.getTextContent(familyName) != undefined)
                             fn += familyName + ' ';
 
-                        if (fn != '')
+                        if (fn !== '')
                             return fn.substring(0, fn.length - 1);
                         else
                             return undefined;
@@ -134,10 +133,9 @@ if (ufShiv) {
                     virtual: true,
                     /*  Implied "n" Optimization */
                     /* http://microformats.org/wiki/hcard#Implied_.22n.22_Optimization */
-                    virtualGetter: function (mfnode) {
-                        var s = ufShiv.internal;
-                        var fn = s.getMicroformatProperty(mfnode, "hCard", "fn");
-                        var orgs = s.getMicroformatProperty(mfnode, "hCard", "org");
+                    virtualGetter: function (context, mfnode) {
+                        var fn = context.getMicroformatProperty(mfnode, "hCard", "fn");
+                        var orgs = context.getMicroformatProperty(mfnode, "hCard", "org");
                         var given_name = [];
                         var family_name = [];
                         if (fn && (!orgs || (orgs.length > 1) || (fn != orgs[0]["organization-name"]))) {
@@ -167,10 +165,9 @@ if (ufShiv) {
                     virtual: true,
                     /* Implied "nickname" Optimization */
                     /* http://microformats.org/wiki/hcard#Implied_.22nickname.22_Optimization */
-                    virtualGetter: function (mfnode) {
-                        var s = ufShiv.internal;
-                        var fn = s.getMicroformatProperty(mfnode, "hCard", "fn");
-                        var orgs = s.getMicroformatProperty(mfnode, "hCard", "org");
+                    virtualGetter: function (context, mfnode) {
+                        var fn = context.getMicroformatProperty(mfnode, "hCard", "fn");
+                        var orgs = context.getMicroformatProperty(mfnode, "hCard", "org");
                         var given_name;
                         var family_name;
                         if (fn && (!orgs || (orgs.length) > 1 || (fn != orgs[0]["organization-name"]))) {
@@ -266,18 +263,17 @@ if (ufShiv) {
                     virtual: true,
                     /* This will only be called in the virtual case */
                     /* If we got here, we have a dtend time without date */
-                    virtualGetter: function (mfnode) {
-                        var s = ufShiv.internal;
-                        var dtends = s.getElementsByClassName(mfnode, "dtend");
-                        if (dtends.length == 0) {
+                    virtualGetter: function (context, mfnode) {
+                        var dtends = context.getElementsByClassName(mfnode, "dtend");
+                        if (dtends.length === 0) {
                             return undefined;
                         }
-                        var dtend = s.dateTimeGetter(dtends[0], mfnode, true);
-                        var dtstarts = s.getElementsByClassName(mfnode, "dtstart");
+                        var dtend = context.dateTimeGetter(dtends[0], mfnode, true);
+                        var dtstarts = context.getElementsByClassName(mfnode, "dtstart");
                         if (dtstarts.length > 0) {
-                            var dtstart = s.dateTimeGetter(dtstarts[0], mfnode);
+                            var dtstart = context.dateTimeGetter(dtstarts[0], mfnode);
                             if (dtstart.match("T")) {
-                                return s.normalizeISO8601(dtstart.split("T")[0] + "T" + dtend);
+                                return context.normalizeISO8601(dtstart.split("T")[0] + "T" + dtend);
                             }
                         }
                         return undefined;
@@ -317,85 +313,85 @@ if (ufShiv) {
                     "interval": {
                         virtual: true,
                         /* This will only be called in the virtual case */
-                        virtualGetter: function (mfnode) {
-                            return ufShiv.internal.hCalendar.properties.rrule.retrieve(mfnode, "interval");
+                        virtualGetter: function (context, mfnode) {
+                            return context.hCalendar.properties.rrule.retrieve(mfnode, "interval");
                         }
                     },
                     "freq": {
                         virtual: true,
                         /* This will only be called in the virtual case */
-                        virtualGetter: function (mfnode) {
-                            return ufShiv.internal.hCalendar.properties.rrule.retrieve(mfnode, "freq");
+                        virtualGetter: function (context, mfnode) {
+                            return context.hCalendar.properties.rrule.retrieve(mfnode, "freq");
                         }
                     },
                     "bysecond": {
                         virtual: true,
                         /* This will only be called in the virtual case */
-                        virtualGetter: function (mfnode) {
-                            return ufShiv.internal.hCalendar.properties.rrule.retrieve(mfnode, "bysecond");
+                        virtualGetter: function (context, mfnode) {
+                            return context.hCalendar.properties.rrule.retrieve(mfnode, "bysecond");
                         }
                     },
                     "byminute": {
                         virtual: true,
                         /* This will only be called in the virtual case */
-                        virtualGetter: function (mfnode) {
-                            return ufShiv.internal.hCalendar.properties.rrule.retrieve(mfnode, "byminute");
+                        virtualGetter: function (context, mfnode) {
+                            return context.hCalendar.properties.rrule.retrieve(mfnode, "byminute");
                         }
                     },
                     "byhour": {
                         virtual: true,
                         /* This will only be called in the virtual case */
-                        virtualGetter: function (mfnode) {
-                            return ufShiv.internal.hCalendar.properties.rrule.retrieve(mfnode, "byhour");
+                        virtualGetter: function (context, mfnode) {
+                            return context.hCalendar.properties.rrule.retrieve(mfnode, "byhour");
                         }
                     },
                     "bymonthday": {
                         virtual: true,
                         /* This will only be called in the virtual case */
-                        virtualGetter: function (mfnode) {
-                            return ufShiv.internal.hCalendar.properties.rrule.retrieve(mfnode, "bymonthday");
+                        virtualGetter: function (context, mfnode) {
+                            return context.hCalendar.properties.rrule.retrieve(mfnode, "bymonthday");
                         }
                     },
                     "byyearday": {
                         virtual: true,
                         /* This will only be called in the virtual case */
-                        virtualGetter: function (mfnode) {
-                            return ufShiv.internal.hCalendar.properties.rrule.retrieve(mfnode, "byyearday");
+                        virtualGetter: function (context, mfnode) {
+                            return context.hCalendar.properties.rrule.retrieve(mfnode, "byyearday");
                         }
                     },
                     "byweekno": {
                         virtual: true,
                         /* This will only be called in the virtual case */
-                        virtualGetter: function (mfnode) {
-                            return ufShiv.internal.hCalendar.properties.rrule.retrieve(mfnode, "byweekno");
+                        virtualGetter: function (context, mfnode) {
+                            return context.hCalendar.properties.rrule.retrieve(mfnode, "byweekno");
                         }
                     },
                     "bymonth": {
                         virtual: true,
                         /* This will only be called in the virtual case */
-                        virtualGetter: function (mfnode) {
-                            return ufShiv.internal.hCalendar.properties.rrule.retrieve(mfnode, "bymonth");
+                        virtualGetter: function (context, mfnode) {
+                            return context.hCalendar.properties.rrule.retrieve(mfnode, "bymonth");
                         }
                     },
                     "byday": {
                         virtual: true,
                         /* This will only be called in the virtual case */
-                        virtualGetter: function (mfnode) {
-                            return ufShiv.internal.hCalendar.properties.rrule.retrieve(mfnode, "byday");
+                        virtualGetter: function (context, mfnode) {
+                            return context.hCalendar.properties.rrule.retrieve(mfnode, "byday");
                         }
                     },
                     "until": {
                         virtual: true,
                         /* This will only be called in the virtual case */
-                        virtualGetter: function (mfnode) {
-                            return ufShiv.internal.hCalendar.properties.rrule.retrieve(mfnode, "until");
+                        virtualGetter: function (context, mfnode) {
+                            return context.hCalendar.properties.rrule.retrieve(mfnode, "until");
                         }
                     },
                     "count": {
                         virtual: true,
                         /* This will only be called in the virtual case */
-                        virtualGetter: function (mfnode) {
-                            return ufShiv.internal.hCalendar.properties.rrule.retrieve(mfnode, "count");
+                        virtualGetter: function (context, mfnode) {
+                            return context.hCalendar.properties.rrule.retrieve(mfnode, "count");
                         }
                     }
                 },
@@ -424,8 +420,8 @@ if (ufShiv) {
                 datatype: "float",
                 virtual: true,
                 /* This will only be called in the virtual case */
-                virtualGetter: function (mfnode) {
-                    var value = ufShiv.internal.textGetter(mfnode);
+                virtualGetter: function (context, mfnode) {
+                    var value = context.textGetter(mfnode);
                     var latlong;
                     if (value && value.match(';')) {
                         latlong = value.split(';');
@@ -442,8 +438,8 @@ if (ufShiv) {
                 datatype: "float",
                 virtual: true,
                 /* This will only be called in the virtual case */
-                virtualGetter: function (mfnode) {
-                    var value = ufShiv.internal.textGetter(mfnode);
+                virtualGetter: function (context, mfnode) {
+                    var value = context.textGetter(mfnode);
                     var latlong;
                     if (value && value.match(';')) {
                         latlong = value.split(';');
@@ -470,13 +466,13 @@ if (ufShiv) {
         properties: {
             "tag": {
                 virtual: true,
-                virtualGetter: function (mfnode) {
+                virtualGetter: function (context, mfnode) {
                     if (mfnode.href) {
                         var href = mfnode.href.split("?")[0].split("#")[0];
                         var url_array = href.split("/");
                         for (var i = url_array.length - 1; i > 0; i--) {
                             if (url_array[i] !== "") {
-                                var tag = ufShiv.internal.tag.validTagName(url_array[i].replace(/\+/g, ' '));
+                                var tag = context.tag.validTagName(url_array[i].replace(/\+/g, ' '));
                                 if (tag) {
                                     try {
                                         return decodeURIComponent(tag);
@@ -536,110 +532,110 @@ if (ufShiv) {
         properties: {
             "contact": {
                 virtual: true,
-                virtualGetter: function (propnode) {
-                    return ufShiv.internal.XFN.getXFN(propnode, "contact");
+                virtualGetter: function (context, propnode) {
+                    return context.XFN.getXFN(propnode, "contact");
                 }
             },
             "acquaintance": {
                 virtual: true,
-                virtualGetter: function (propnode) {
-                    return ufShiv.internal.XFN.getXFN(propnode, "acquaintance");
+                virtualGetter: function (context, propnode) {
+                    return context.XFN.getXFN(propnode, "acquaintance");
                 }
             },
             "friend": {
                 virtual: true,
-                virtualGetter: function (propnode) {
-                    return ufShiv.internal.XFN.getXFN(propnode, "friend");
+                virtualGetter: function (context, propnode) {
+                    return context.XFN.getXFN(propnode, "friend");
                 }
             },
             "met": {
                 virtual: true,
-                virtualGetter: function (propnode) {
-                    return ufShiv.internal.XFN.getXFN(propnode, "met");
+                virtualGetter: function (context, propnode) {
+                    return context.XFN.getXFN(propnode, "met");
                 }
             },
             "co-worker": {
                 virtual: true,
-                virtualGetter: function (propnode) {
-                    return ufShiv.internal.XFN.getXFN(propnode, "co-worker");
+                virtualGetter: function (context, propnode) {
+                    return context.XFN.getXFN(propnode, "co-worker");
                 }
             },
             "colleague": {
                 virtual: true,
-                virtualGetter: function (propnode) {
-                    return ufShiv.internal.XFN.getXFN(propnode, "colleague");
+                virtualGetter: function (context, propnode) {
+                    return context.XFN.getXFN(propnode, "colleague");
                 }
             },
             "co-resident": {
                 virtual: true,
-                virtualGetter: function (propnode) {
-                    return ufShiv.internal.XFN.getXFN(propnode, "co-resident");
+                virtualGetter: function (context, propnode) {
+                    return context.XFN.getXFN(propnode, "co-resident");
                 }
             },
             "neighbor": {
                 virtual: true,
-                virtualGetter: function (propnode) {
-                    return ufShiv.internal.XFN.getXFN(propnode, "neighbor");
+                virtualGetter: function (context, propnode) {
+                    return context.XFN.getXFN(propnode, "neighbor");
                 }
             },
             "child": {
                 virtual: true,
-                virtualGetter: function (propnode) {
-                    return ufShiv.internal.XFN.getXFN(propnode, "child");
+                virtualGetter: function (context, propnode) {
+                    return context.XFN.getXFN(propnode, "child");
                 }
             },
             "parent": {
                 virtual: true,
-                virtualGetter: function (propnode) {
-                    return ufShiv.internal.XFN.getXFN(propnode, "parent");
+                virtualGetter: function (context, propnode) {
+                    return context.XFN.getXFN(propnode, "parent");
                 }
             },
             "sibling": {
                 virtual: true,
-                virtualGetter: function (propnode) {
-                    return ufShiv.internal.XFN.getXFN(propnode, "sibling");
+                virtualGetter: function (context, propnode) {
+                    return context.XFN.getXFN(propnode, "sibling");
                 }
             },
             "spouse": {
                 virtual: true,
-                virtualGetter: function (propnode) {
-                    return ufShiv.internal.XFN.getXFN(propnode, "spouse");
+                virtualGetter: function (context, propnode) {
+                    return context.XFN.getXFN(propnode, "spouse");
                 }
             },
             "kin": {
                 virtual: true,
-                virtualGetter: function (propnode) {
-                    return ufShiv.internal.XFN.getXFN(propnode, "kin");
+                virtualGetter: function (context, propnode) {
+                    return context.XFN.getXFN(propnode, "kin");
                 }
             },
             "muse": {
                 virtual: true,
-                virtualGetter: function (propnode) {
-                    return ufShiv.internal.XFN.getXFN(propnode, "muse");
+                virtualGetter: function (context, propnode) {
+                    return context.XFN.getXFN(propnode, "muse");
                 }
             },
             "crush": {
                 virtual: true,
-                virtualGetter: function (propnode) {
-                    return ufShiv.internal.XFN.getXFN(propnode, "crush");
+                virtualGetter: function (context, propnode) {
+                    return context.XFN.getXFN(propnode, "crush");
                 }
             },
             "date": {
                 virtual: true,
-                virtualGetter: function (propnode) {
-                    return ufShiv.internal.XFN.getXFN(propnode, "date");
+                virtualGetter: function (context, propnode) {
+                    return context.XFN.getXFN(propnode, "date");
                 }
             },
             "sweetheart": {
                 virtual: true,
-                virtualGetter: function (propnode) {
-                    return ufShiv.internal.XFN.getXFN(propnode, "sweetheart");
+                virtualGetter: function (context, propnode) {
+                    return context.XFN.getXFN(propnode, "sweetheart");
                 }
             },
             "me": {
                 virtual: true,
-                virtualGetter: function (propnode) {
-                    return ufShiv.internal.XFN.getXFN(propnode, "me");
+                virtualGetter: function (context, propnode) {
+                    return context.XFN.getXFN(propnode, "me");
                 }
             },
             "link": {
