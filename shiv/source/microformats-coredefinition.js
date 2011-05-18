@@ -74,25 +74,24 @@ if (ufShiv) {
                     virtual: true,
                     virtualGetter: function (context, mfnode) {
                         /* Changed to DOM based query - Glenn Jones */
-                        var givenName = context.getElementsByClassName(mfnode, "given-name");
-                        var additionalName = context.getElementsByClassName(mfnode, "additional-name");
-                        var familyName = context.getElementsByClassName(mfnode, "family-name");
-                        var fn = '';
+                        if (context) {
+                            if (context.getTextContent) {
+                                var givenName = context.getElementsByClassName(mfnode, "given-name");
+                                var additionalName = context.getElementsByClassName(mfnode, "additional-name");
+                                var familyName = context.getElementsByClassName(mfnode, "family-name");
+                                var fn = '';
 
-                        if (context.getTextContent(givenName) != undefined)
-                            fn += givenName + ' ';
+                                if (context.getTextContent(givenName) != undefined)
+                                    fn += givenName + ' ';
 
-                        if (context.getTextContent(additionalName) != undefined)
-                            fn += additionalName + ' ';
+                                if (context.getTextContent(additionalName) != undefined)
+                                    fn += additionalName + ' ';
 
-                        if (context.getTextContent(familyName) != undefined)
-                            fn += familyName + ' ';
+                                if (context.getTextContent(familyName) != undefined)
+                                    fn += familyName + ' ';
 
-                        if (fn !== '')
-                            return fn.substring(0, fn.length - 1);
-                        else
-                            return undefined;
-
+                            }
+                        }
                     }
                 },
                 "geo": {

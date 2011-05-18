@@ -2,21 +2,21 @@
     microformats-shiv.js
     A compact JavaScript cross browser microformats parser by Glenn Jones. Based 
     on the Mozilla Labs Operator microformats parser created by Michael Kaply 
-    Copyright (C) 2010 Glenn Jones. All Rights Reserved.
+    Copyright (C) 2010 - 2011 Glenn Jones. All Rights Reserved.
     License: http://microformatshiv.com/license/
 */
 
 
 var ufShiv = {
 
-    version: 0.2,
+    version: '0.2.1',
 
     // Returns parsed microformats
     // name: A string of the microformat to look for
     // element: A HTML DOM element which contains the microformat
     get: function (name, element) {
 
-        var date = [];
+        var data = [];
         var nodes = [];
         var uf = this.internal[name];
 
@@ -48,19 +48,21 @@ var ufShiv = {
         }
 
         for (var x = 0; x < nodes.length; x++) {
-            date.push(this.internal.getMicroformat(nodes[x], name));
+            data.push(this.internal.getMicroformat(nodes[x], name));
         }
 
         if (name == 'XFN')
-            date = this.internal.compressXFN(date);
+            data = this.internal.compressXFN(data);
 
 
         var obj = {};
         // UfJSON - Use the microformats root class name as its name
-        if (uf.className) {
-            obj[uf.className] = date;
-        } else {
-            obj[uf.altName] = date;
+        if (data.length > 0) {
+            if (uf.className) {
+                obj[uf.className] = data;
+            } else {
+                obj[uf.altName] = data;
+            }
         }
 
         return this.internal.pack(obj, '', this.version);
@@ -745,10 +747,7 @@ var ufShiv = {
 
             if (rootNode.getElementsByClassName) {
                 // Native getElementsByClassName 
-                var col = rootNode.getElementsByClassName(className);
-                for (var i = 0; i < col.length; i++) {
-                    returnElements[i] = col[i];
-                }
+                returnElements = rootNode.getElementsByClassName(className);
             } else if (document.evaluate) {
                 // XPath 
                 var xpathExpression;
@@ -927,5 +926,6 @@ var ufShiv = {
 
 };
 
-// Firefox needs this to load without test
+
 navigator.microformats = ufShiv;
+
