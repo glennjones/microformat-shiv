@@ -9,7 +9,7 @@
 
 var ufShiv = {
 
-    version: '0.2.1',
+    version: '0.2.2',
 
     // Returns parsed microformats
     // name: A string of the microformat to look for
@@ -777,7 +777,15 @@ var ufShiv = {
             var attributeList = attributeValues.split(" ");
             var returnElements = [];
 
-            if (document.evaluate) {
+            if (rootNode.querySelectorAll) {
+                var selector = '';
+                for (var i = 0; i < attributeList.length; i++) {
+                    selector += '[' + attributeName + '*= "' + attributeList[i] + '"], ';
+                }
+                console.log(selector);
+                returnElements = rootNode.querySelectorAll(selector.substring(0, selector.length - 2));
+
+            } else if (document.evaluate) {
                 // XPath 
                 var xpathExpression = ".//*[";
                 for (var i = 0; i < attributeList.length; i++) {
