@@ -478,6 +478,7 @@ if (ufShiv) {
                                     } catch (ex) {
                                         return unescape(tag);
                                     }
+                                    //return { 'text': mfnode.innerHTML, 'link': mfnode.href, 'tag': tag }
                                 }
                             }
                         }

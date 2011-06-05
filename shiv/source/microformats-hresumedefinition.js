@@ -2,12 +2,14 @@
 hResume
 Copyright (C) 2010 Glenn Jones. All Rights Reserved.
 License: http://microformatshiv.com/license/
-Version 0.2
+Version 0.2.3
 */
 
 if (ufShiv) {
 
     // Keep out of global scope
+    // Has draft competency as used in Linkedin
+
     (function () {
 
         var hresume = {
@@ -39,7 +41,19 @@ if (ufShiv) {
                 datatype: "microformat",
                 microformat: "tag",
                 microformat_property: "tag"
-            }
+            },
+            "competency": {
+                 subproperties: {
+                    "skill": {
+                        plural: true,
+                        datatype: "microformat",
+                        microformat: "tag",
+                        microformat_property: "tag"
+                    },
+                    "proficiency": {}
+                },
+                plural: true
+            },
           }
         };
 

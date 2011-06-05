@@ -9,7 +9,7 @@
 
 var ufShiv = {
 
-    version: '0.2.2',
+    version: '0.2.3',
 
     // Returns parsed microformats
     // name: A string of the microformat to look for
@@ -714,9 +714,7 @@ var ufShiv = {
                         }
                     }
                     if (result != undefined && this.hasProperties(result)) {
-                        if (prop.microformat_property) {
-                            result = result[prop.microformat_property];
-                        }
+                        // If we have a result break
                         break;
                     }
                 default:
