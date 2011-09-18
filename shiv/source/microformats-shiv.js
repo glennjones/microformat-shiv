@@ -1,7 +1,7 @@
-﻿/*! 
+﻿/*!
     microformats-shiv.js
-    A compact JavaScript cross browser microformats parser by Glenn Jones. Based 
-    on the Mozilla Labs Operator microformats parser created by Michael Kaply 
+    A compact JavaScript cross browser microformats parser by Glenn Jones. Based
+    on the Mozilla Labs Operator microformats parser created by Michael Kaply
     Copyright (C) 2010 - 2011 Glenn Jones. All Rights Reserved.
     License: http://microformatshiv.com/license/
 */
@@ -9,7 +9,7 @@
 
 var ufShiv = {
 
-    version: '0.2.3',
+    version: '0.2.4',
 
     // Returns parsed microformats
     // name: A string of the microformat to look for
@@ -25,7 +25,12 @@ var ufShiv = {
         }
 
         if (uf.className) {
-            nodes = this.internal.getElementsByClassName(element, uf.className);
+            var re = new RegExp(uf.className, "gi");
+            if (re.test(element.className)) {
+                nodes = new Array(element);
+            } else {
+                nodes = this.internal.getElementsByClassName(element, uf.className);
+            }
             if ((nodes.length === 0) && uf.alternateClassName) {
                 var altClass = this.internal.getElementsByClassName(element, uf.alternateClassName);
                 if (altClass.length > 0) {
@@ -84,7 +89,7 @@ var ufShiv = {
 
 
         pack: function (data, error, version) {
-            // UfJSON - Add reporting 
+            // UfJSON - Add reporting
             var pack = { 'microformats': data };
             pack['parser-information'] = {};
             pack['parser-information'].name = 'Microformat Shiv';
@@ -116,7 +121,7 @@ var ufShiv = {
 
             // If the node has not been preprocessed, the requested microformat
             // is a class based microformat and the passed in node is not the
-            // entire document, preprocess it. Preprocessing the node involves 
+            // entire document, preprocess it. Preprocessing the node involves
             // creating a duplicate of the node and taking care of things like
             // the include and header design patterns
             if (!in_mfnode.origNode && this[mfname].className && in_mfnode.ownerDocument) {
@@ -126,16 +131,16 @@ var ufShiv = {
             // propobj is the corresponding property object in the microformat
             var propobj;
 
-            // If there is a corresponding property in the microformat, use it 
+            // If there is a corresponding property in the microformat, use it
             if (this[mfname].properties[propname]) {
                 propobj = this[mfname].properties[propname];
             } else {
-                // If we didn't get a property, bail 
+                // If we didn't get a property, bail
                 return undefined;
             }
 
-            // Query the correct set of nodes (rel or class) based on the setting 
-            // in the property 
+            // Query the correct set of nodes (rel or class) based on the setting
+            // in the property
             var propnodes;
             if (propobj.rel === true) {
                 propnodes = this.getElementsByAttribute(mfnode, "rel", propname);
@@ -164,7 +169,7 @@ var ufShiv = {
                     var subresult = this.getPropertyInternal(propnodes[y], mfnode, propobj, propname, mfnode);
                     if (subresult != undefined) {
                         resultArray.push(subresult);
-                        // If we're not a plural property, don't bother getting more 
+                        // If we're not a plural property, don't bother getting more
                         if (!propobj.plural) {
                             return resultArray[0];
                         }
@@ -174,8 +179,8 @@ var ufShiv = {
                     return resultArray;
                 }
             } else {
-                // If we didn't find any class nodes, check to see if this property 
-                // is virtual and if so, call getPropertyInternal again 
+                // If we didn't find any class nodes, check to see if this property
+                // is virtual and if so, call getPropertyInternal again
                 if (propobj.virtual) {
                     return this.getPropertyInternal(mfnode, null,
                                                          propobj, propname, mfnode);
@@ -204,7 +209,7 @@ var ufShiv = {
                                                                 subpropname, mfnode);
                         if (subresult != undefined) {
                             resultArray.push(subresult);
-                            // If we're not a plural property, don't bother getting more 
+                            // If we're not a plural property, don't bother getting more
                             if (!subpropobj.plural) {
                                 break;
                             }
@@ -252,7 +257,7 @@ var ufShiv = {
         resolved by simply cloning the node and replacing it in a clone of the
         original DOM node. Headers are resolved by creating a span and then copying
         the innerHTML and the class name.
-        
+
         @param  in_mfnode The node to preProcess.
         @return If the node had includes or headers, a cloned node otherwise
         the original node. You can check to see if the node was cloned
@@ -278,7 +283,7 @@ var ufShiv = {
             }
             var includes = this.getElementsByClassName(mfnode, "include");
             if (includes.length > 0) {
-                // If we didn't clone, clone now 
+                // If we didn't clone, clone now
                 if (!mfnode.origNode) {
                     mfnode = in_mfnode.cloneNode(true);
                     mfnode.origNode = in_mfnode;
@@ -339,7 +344,7 @@ var ufShiv = {
                     return collapseWhitespace(valueTitle);
                 }
                 var values = this.getElementsByClassName(propnode, "value");
-                // Verify that values are children of the propnode 
+                // Verify that values are children of the propnode
                 for (var x = values.length - 1; x >= 0; x--) {
                     if (values[x].parentNode != propnode) {
                         values.splice(x, 1);
@@ -363,7 +368,7 @@ var ufShiv = {
                     }
                 }
                 // If we are processing a value node, don't remove whitespace now
-                // (we'll do it later) 
+                // (we'll do it later)
                 if (!this.matchClass(propnode, "value")) {
                     s = collapseWhitespace(s);
                 }
@@ -454,8 +459,8 @@ var ufShiv = {
 
 
             var values = this.getElementsByClassName(propnode, "value");
-            // Verify that values are children of the propnode 
-            // Remove any that aren't 
+            // Verify that values are children of the propnode
+            // Remove any that aren't
             for (var z = values.length - 1; z >= 0; z--) {
                 if (values[z].parentNode != propnode) {
                     values.splice(z, 1);
@@ -546,11 +551,11 @@ var ufShiv = {
                     }
                 }
             }
-            // Special case - if this node is a value, use the parent node to get all the values 
+            // Special case - if this node is a value, use the parent node to get all the values
             if (this.matchClass(propnode, "value")) {
                 return this.textGetter(parentnode, parentnode);
             } else {
-                // Virtual case 
+                // Virtual case
                 if (!parentnode && (this.getElementsByClassName(propnode, "type").length > 0)) {
                     var tempNode = propnode.cloneNode(true);
                     var typeNodes = this.getElementsByClassName(tempNode, "type");
@@ -573,13 +578,13 @@ var ufShiv = {
                     return unescape(mailto.substring("mailto:".length));
                 }
             } else {
-                // Special case - if this node is a value, use the parent node to get all the values 
-                // If this case gets executed, per the value design pattern, the result 
-                // will be the EXACT email address with no extra parsing required 
+                // Special case - if this node is a value, use the parent node to get all the values
+                // If this case gets executed, per the value design pattern, the result
+                // will be the EXACT email address with no extra parsing required
                 if (this.matchClass(propnode, "value")) {
                     return this.textGetter(parentnode, parentnode);
                 } else {
-                    // Virtual case 
+                    // Virtual case
                     if (!parentnode && (this.getElementsByClassName(propnode, "type").length > 0)) {
                         var tempNode = propnode.cloneNode(true);
                         var typeNodes = this.getElementsByClassName(tempNode, "type");
@@ -604,8 +609,8 @@ var ufShiv = {
         },
 
 
-        // This function normalizes an ISO8601 date by adding punctuation and 
-        // ensuring that hours and seconds have values 
+        // This function normalizes an ISO8601 date by adding punctuation and
+        // ensuring that hours and seconds have values
         normalizeISO8601: function normalizeISO8601(string) {
             var dateArray = string.match(/(\d\d\d\d)(?:-?(\d\d[\d]*)(?:-?([\d]*)(?:[T ](\d\d)(?::?(\d\d)(?::?(\d\d)(?:\.(\d+))?)?)?(?:Z|(?:([-+])(\d\d)(?::?(\d\d))?)?)?)?)?)?/);
 
@@ -703,11 +708,11 @@ var ufShiv = {
                         result = this.getMicroformat(node, prop.microformat);
                     } catch (ex) {
                         /* There are two reasons we get here, one because the node is not
-                        a microformat and two because the node is a microformat and 
-                        creation failed. If the node is not a microformat, we just fall 
-                        through and use the default getter since there are some cases 
-                        (location in hCalendar) where a property can be either a microformat 
-                        or a string. If creation failed, we break and simply don't add the 
+                        a microformat and two because the node is a microformat and
+                        creation failed. If the node is not a microformat, we just fall
+                        through and use the default getter since there are some cases
+                        (location in hCalendar) where a property can be either a microformat
+                        or a string. If creation failed, we break and simply don't add the
                         microformat property to the parent microformat */
                         if (ex != "Node is not a microformat (" + prop.microformat + ")") {
                             break;
@@ -721,8 +726,8 @@ var ufShiv = {
                     result = this.textGetter(node, parentnode);
                     break;
             }
-            // This handles the case where one property implies another property 
-            // For instance, org by itself is actually org.organization-name 
+            // This handles the case where one property implies another property
+            // For instance, org by itself is actually org.organization-name
             if (prop.values && (result != undefined)) {
                 var validType = false;
                 for (var value in prop.values) {
@@ -744,10 +749,10 @@ var ufShiv = {
             var returnElements = [];
 
             if (rootNode.getElementsByClassName) {
-                // Native getElementsByClassName 
+                // Native getElementsByClassName
                 returnElements = rootNode.getElementsByClassName(className);
             } else if (document.evaluate) {
-                // XPath 
+                // XPath
                 var xpathExpression;
                 xpathExpression = ".//*[contains(concat(' ', @class, ' '), ' " + className + " ')]";
                 var xpathResult = document.evaluate(xpathExpression, rootNode, null, 0, null);
@@ -757,7 +762,7 @@ var ufShiv = {
                     returnElements.push(node);
                 }
             } else {
-                // Slower DOM fallback 
+                // Slower DOM fallback
                 className = className.replace(/\-/g, "\\-");
                 var elements = rootNode.getElementsByTagName("*");
                 for (var x = 0; x < elements.length; x++) {
@@ -784,7 +789,7 @@ var ufShiv = {
                 returnElements = rootNode.querySelectorAll(selector.substring(0, selector.length - 2));
 
             } else if (document.evaluate) {
-                // XPath 
+                // XPath
                 var xpathExpression = ".//*[";
                 for (var i = 0; i < attributeList.length; i++) {
                     if (i !== 0) {
@@ -800,7 +805,7 @@ var ufShiv = {
                     returnElements.push(node);
                 }
             } else {
-                // Slower fallback 
+                // Slower fallback
                 attributeName = attributeName.replace(/\-/g, "\\-");
                 var elements = rootNode.getElementsByTagName("*");
                 for (var x = 0; x < elements.length; x++) {
@@ -927,11 +932,10 @@ var ufShiv = {
             return newArray;
         }
 
-        // End of internal object 
+        // End of internal object
     }
 
 };
 
 
 navigator.microformats = ufShiv;
-
