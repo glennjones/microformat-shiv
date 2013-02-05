@@ -1,0 +1,18 @@
+{
+  "author": "Glenn Jones",
+  "name": "microformat-shiv",
+  "description": "A light weight cross browser JavaScript Microformats parser",
+  "version": "0.2.0",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/glennjones/microformat-shiv.git"
+  },
+  "directories": {
+    "test": "test"
+  },
+  "main": "microformat-shiv.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  }
+}

@@ -1,0 +1,90 @@
+/* 1. RESET AND HTML5 SETTINGS 
+------------------------------*/ 
+
+body,
+ul,
+ol,
+p,
+h1,
+h2,
+h3,
+h4,
+h5,
+h6,
+fieldset,
+dd {
+  margin:  0;
+  padding: 0;
+}
+
+article,
+aside,
+dialog,
+figure,
+figcaption,
+footer,
+header,
+hgroup,
+nav,
+section,
+small {
+    display: block;
+}
+
+
+/* 2. BASE SETTINGS 
+--------------------------------------------*/
+
+html {
+  background-color: #FFF;
+  color: #444;
+}
+
+body {
+  font-size: 100%;
+  line-height: 1.4em;
+  font-family: calibri, arial, helvetica, 'lucida grande', 'lucida sans unicode', verdana, sans-serif;
+  border-top: 0.25em solid #444;
+  padding: 3em;
+}
+
+h1, h2{
+  margin: 1em 0 1em 0;
+  font-weight: normal;
+}
+
+input[type="text"]{
+  width: 30em;
+}
+
+input[type="submit"]{
+  margin-top: 1em;
+  margin-left: 9em;
+}
+
+label{
+  display: inline-block;
+  width: 6em;
+}
+
+.notes {
+  margin: 2em 0 1em 0;
+}
+
+form{
+  margin-bottom: 40px;
+}
+
+footer{
+  margin: 4em 0 4em 0;
+  color: #999;
+}
+
+a{
+  color: #999;
+}
+
+ul{
+  margin-left: 2em;
+  margin-bottom: 2em
+}
