@@ -17,6 +17,10 @@ chrome.extension.onMessage.addListener(
         break;
 
     }
-
   }
 );
+
+chrome.tabs.onRemoved.addListener(function(tabid) {
+  delete tabData[tabid];
+});
+
