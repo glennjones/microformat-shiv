@@ -10,7 +10,7 @@ chrome.extension.onMessage.addListener(
         sendResponse(data);
         break;
 
-      case "storeDate":
+      case "storeData":
         tabData[sender.tab.id] = {'data': message.data, 'url': message.url};
         chrome.pageAction.show(sender.tab.id);
         sendResponse({});

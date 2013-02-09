@@ -2524,15 +2524,12 @@ microformats.parser.rels = {
 };
 
 
-items = microformats.getItems();
-if(items && items.items.length > 0){
-	var pack = {'method':'storeData', 'data': items, 'url': document.location.href};
-	chrome.extension.sendMessage(pack, function(response) {});
-}
+var items = microformats.getItems();
+var data = {'data': items, 'url': document.location.href};
 
+self.port.emit("storeData",  data);
 
-
-
-
-
+self.port.on("getData",  function(){
+	self.port.emit("storeData",  data);
+});
 

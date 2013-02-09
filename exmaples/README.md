@@ -1,6 +1,6 @@
 # Browser Extension Examples
 
-This project contains 3 browser extension examples for Chrome, Firefox and Opera. These are provided as developer demonstration of the use of the library are not meant for wider distribution.  
+This project contains 3 browser extension examples for Chrome, Firefox and Opera. These are provided as developer demonstration of the use of the library are not meant for everyday use. As such they only display the raw JSON output of the parser. 
 
 
 ### Chrome
@@ -14,7 +14,31 @@ They’re only a few simple steps to installing the browser extension example fo
 
 
 ### Firefox
-Todo
+This directory contains both a binary .xpi file and the source files to create the addon. Either:
+
+* Drag the microformatshiv.xpi file from the binaries directory into Firefox
+
+or
+
+* Install the `cfx` application from [https://ftp.mozilla.org/pub/mozilla.org/labs/jetpack/jetpack-sdk-latest.zip](https://ftp.mozilla.org/pub/mozilla.org/labs/jetpack/jetpack-sdk-latest.zip)
+* Extract the file contents wherever you choose, and navigate to the root directory of the SDK with a shell/command prompt. For example:
+
+         tar -xf addon-sdk.tar.gz
+         cd addon-sdk
+
+* Then run:
+
+        source bin/activate
+
+* Your command prompt should now have a new prefix containing the name of the SDK's root directory:
+
+        (addon-sdk)~/mozilla/addon-sdk >
+
+* Finally navigate to the directory containing the example project and run
+
+        cfx run  
+
+
 
 ### Opera
 Todo
