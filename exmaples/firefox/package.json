@@ -5,7 +5,7 @@
     "version": "0.1.0", 
     "fullName": "microformat-shiv", 
     "id": "jid0-BOK1c7QC2C5jg1wsmUCplDlTZDU", 
-    "description": "BETA DEVELOPMENT VERSION - Display microformats in page.",
+    "description": "BETA DEVELOPMENT VERSION - Displays microformats from a page.",
     "contributors": ["Glenn Jones"],
     "lib": "lib",
     "main": "main",

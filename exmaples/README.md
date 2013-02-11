@@ -14,11 +14,7 @@ They’re only a few simple steps to installing the browser extension example fo
 
 
 ### Firefox
-This directory contains both a binary .xpi file and the source files to create the addon. Either:
-
-* Drag the microformatshiv.xpi file from the binaries directory into Firefox
-
-or
+There a few more steps to installing the Firefox addon:
 
 * Install the `cfx` application from [https://ftp.mozilla.org/pub/mozilla.org/labs/jetpack/jetpack-sdk-latest.zip](https://ftp.mozilla.org/pub/mozilla.org/labs/jetpack/jetpack-sdk-latest.zip)
 * Extract the file contents wherever you choose, and navigate to the root directory of the SDK with a shell/command prompt. For example:
@@ -34,6 +30,8 @@ or
 
         (addon-sdk)~/mozilla/addon-sdk >
 
+* First download this GitHub repo to your local hard drive
+
 * Finally navigate to the directory containing the example project and run
 
         cfx run  
@@ -41,7 +39,11 @@ or
 
 
 ### Opera
-Todo
+They’re only a couple of steps to installing the browser extension example for Opera:
+
+* First download this GitHub repo to your local hard drive
+
+* Finally navigate to the directory containing the example project and drag the `config.xml` into Opera.
 
 
 

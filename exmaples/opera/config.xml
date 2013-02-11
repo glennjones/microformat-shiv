@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<widget xmlns="http://www.w3.org/ns/widgets" id="http://microformatshiv.com/example">
+	<name>microformatshiv</name>
+	<description>BETA DEVELOPMENT VERSION - Displays microformats from a page.</description>
+  	<author href="http://glennjones.net" email="glennjonesnet@gmail.com">Glenn Jones</author>
+  	<icon src="images/icon-64.png"/>
+</widget>
