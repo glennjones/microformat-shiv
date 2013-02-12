@@ -2,28 +2,50 @@ module.exports = function( grunt ) {
 	grunt.initConfig({
 		pkg: '<json:package.json>',
 		meta: {
-	      banner: '/*! <%= pkg.title || pkg.name %> - v<%= pkg.version %> - ' +
-	        '<%= grunt.template.today("yyyy-mm-dd") %>\n' +
-	        '<%= pkg.homepage ? "* " + pkg.homepage + "\n" : "" %>' +
-	        '* Copyright (c) <%= grunt.template.today("yyyy") %> <%= pkg.author.name %>;' +
-	        ' Licensed <%= _.pluck(pkg.licenses, "type").join(", ") %> */'
-	    },
+			banner: '/*! <%= pkg.title || pkg.name %> - v<%= pkg.version %> - ' +
+			'<%= grunt.template.today("yyyy-mm-dd") %>\n' +
+			'<%= pkg.homepage ? "* " + pkg.homepage + "\n" : "" %>' +
+			'* Copyright (c) <%= grunt.template.today("yyyy") %> <%= pkg.author %>;' +
+			' Licensed <%= pkg.license %> */'
+		},
 		concat: {
-	      dist: {
-	        src: ['<banner:meta.banner>'].concat([
-		        	'lib/parser.js', 
-		        	'lib/utilities.js', 
-		        	'lib/domutils.js',
-		        	'lib/isodate.js',
-		        	'lib/dates.js',
-		        	'lib/text.js',
-		        	'lib/maps/*.js'
-	        	]),
-	        dest: 'dist/<%= pkg.name %>.js'
-	      }
+			dist: {
+				src: ['<banner:meta.banner>'].concat([
+						'lib/parser.js', 
+						'lib/utilities.js', 
+						'lib/domutils.js',
+						'lib/isodate.js',
+						'lib/dates.js',
+						'lib/text.js',
+						'lib/maps/*.js'
+					]),
+				dest: 'dist/<%= pkg.name %>.js'
+			}
+		},
+		copy: {
+	        dist: {
+	            files: [
+	            	{'examples/chrome/<%= pkg.name %>.js': 'dist/<%= pkg.name %>.js'},
+	            	{'examples/firefox/data/<%= pkg.name %>.js': 'dist/<%= pkg.name %>.js'},
+	            	{'examples/opera/includes/<%= pkg.name %>.js': 'dist/<%= pkg.name %>.js'}
+	            ]
+	        }
+	    },
+	    min: {
+		    dist: {
+		      src: ['dist/<%= pkg.name %>.js'],
+		      dest: 'dist/<%= pkg.name %>.min.js'
+		    }
+		},
+		'jsmin-sourcemap': {
+	    	all: {
+		        src: ['dist/<%= pkg.name %>.js'],
+		        dest: 'dist/<%= pkg.name %>.min.js',
+		        destMap: 'dist/<%= pkg.name %>.min.js.map'
+	      	}
 	    },
 		lint: {
-			files: ['grunt.js', 'lib/*.js', 'lib/maps/*.js']
+			files: ['grunt.js', 'examples/chrome/*.js']
 		},
 		jshint: {
 			options: {
@@ -49,9 +71,19 @@ module.exports = function( grunt ) {
 		},
 		watch: {
 			files: 'lib/*.js',
-			tasks: 'concat'
+			tasks: 'concat copy'
 		}
 	});
+
+ 	// These plugins provide necessary tasks.
+  	grunt.loadNpmTasks('grunt-contrib-jshint');
+  	grunt.loadNpmTasks('grunt-contrib-copy');
+  	grunt.loadNpmTasks('grunt-jsmin-sourcemap');
+
 	// Default task.
-	grunt.registerTask( 'default', 'concat');
+	grunt.registerTask( 'default', ['concat', 'copy', 'jsmin-sourcemap']);
+
+
+	// Test task.
+	grunt.registerTask( 'test', ['concat', 'copy', 'jsmin-sourcemap']);
 };

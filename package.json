@@ -2,8 +2,9 @@
   "author": "Glenn Jones",
   "name": "microformat-shiv",
   "description": "A cross browser JavaScript Microformats 2 parser",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "license": "MIT",
+  "homepage": "http://microformat-shiv.com",
   "repository": {
     "type": "git",
     "url": "git://github.com/glennjones/microformat-shiv.git"
@@ -14,5 +15,8 @@
   "main": "microformat-shiv.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "devDependencies": {
+    "grunt-contrib-copy": "~0.3.2"
   }
 }
