@@ -5,6 +5,8 @@ This GitHub project contains browser extension examples for Chrome, Firefox and 
 
 ### Chrome
 
+<img src="http://microformatshiv.com/images/chrome-ext.png" />
+
 They’re only a few simple steps to installing the browser extension example for Chrome:
 
 * First download this GitHub repo to your local hard drive
@@ -14,6 +16,8 @@ They’re only a few simple steps to installing the browser extension example fo
 
 
 ### Firefox
+<img src="http://microformatshiv.com/images/firefox-ext.png" />
+
 There are a few more steps to installing the Firefox addon:
 
 * Install the `cfx` application from [https://ftp.mozilla.org/pub/mozilla.org/labs/jetpack/jetpack-sdk-latest.zip](https://ftp.mozilla.org/pub/mozilla.org/labs/jetpack/jetpack-sdk-latest.zip)
@@ -39,6 +43,9 @@ There are a few more steps to installing the Firefox addon:
 
 
 ### Opera
+
+<img src="http://microformatshiv.com/images/opera-ext.png" />
+
 They’re only a couple of steps to installing the browser extension example for Opera:
 
 * First download this GitHub repo to your local hard drive

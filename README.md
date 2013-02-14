@@ -1,6 +1,11 @@
 # microformat-shiv
 
-microformat-shiv is a light weight cross browser javascript [microformats 2](http://microformats.org/wiki/microformats-2) parser. Browsers should come with APIs to parse semantic content such as microformats, unfortunately this has yet to happen. This library can be used directly in a web page or as part of a browser extension to provide a microformats parsing API.
+microformat-shiv is a light-weight cross browser javascript [microformats 2](http://microformats.org/wiki/microformats-2) parser. Browsers should come with APIs to parse semantic content such as microformats, unfortunately this has yet to happen.
+
+* A light-weight cross browser JavaScript 
+* [Example browser extensions](https://github.com/glennjones/microformat-shiv/tree/master/examples) for Chrome, Firefox and Opera
+* Well tested, passes all microformats 2 testsuite
+* Parses older microformats 1 formats
 
 
 ### Supported formats
@@ -39,14 +44,14 @@ h-adr, h-card, h-entry, h-event, h-geo, h-news, h-product, h-recipe, h-resume, h
     <script src="microformat-shiv.min.js" type="text/javascript"></script>
     <script type="text/javascript">
         var items,
-	        options;
-	    
-	    options = {
-	        'filters': ['h-card'],
-	        'node': document.getElementById('target')
-	    };
-	    var items = microformats.getItems( options )
-	    // do something with data `items`
+            options;
+        
+        options = {
+            'filters': ['h-card'],
+            'node': document.getElementById('target')
+        };
+        var items = microformats.getItems( options )
+        // do something with data `items`
     </script>    
 
 
