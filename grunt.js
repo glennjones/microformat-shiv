@@ -71,7 +71,7 @@ module.exports = function( grunt ) {
 		},
 		watch: {
 			files: 'lib/*.js',
-			tasks: 'concat copy'
+			tasks: ['concat', 'copy', 'jsmin-sourcemap']
 		}
 	});
 
@@ -84,6 +84,5 @@ module.exports = function( grunt ) {
 	grunt.registerTask( 'default', ['concat', 'copy', 'jsmin-sourcemap']);
 
 
-	// Test task.
-	grunt.registerTask( 'test', ['concat', 'copy', 'jsmin-sourcemap']);
+
 };

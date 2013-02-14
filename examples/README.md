@@ -1,6 +1,6 @@
 # Browser Extension Examples
 
-This project contains 3 browser extension examples for Chrome, Firefox and Opera. These are provided as developer demonstration of the use of the library are not meant for everyday use. As such they only display the raw JSON output of the parser. 
+This GitHub project contains browser extension examples for Chrome, Firefox and Opera. These are provided, as developer demonstrations on how to use the library, they are not meant for everyday use by end users. 
 
 
 ### Chrome
@@ -8,13 +8,13 @@ This project contains 3 browser extension examples for Chrome, Firefox and Opera
 They’re only a few simple steps to installing the browser extension example for Chrome:
 
 * First download this GitHub repo to your local hard drive
-* Open the Extensions management tool/page of Chrome this can be done through the menus or by typing `chrome://extensions/` into the address bar
+* Open the Extensions management tool/page of Chrome, this can be done through the menus or by typing `chrome://extensions/` into the address bar
 * Check the box in the top right called `Developer mode`
-* Click the button `Load unpacked extension` and navigate to the extension within this projects directory on your local hard drive
+* Click the button `Load unpacked extension` and navigate to the extension within this project directory on your local hard drive
 
 
 ### Firefox
-There a few more steps to installing the Firefox addon:
+There are a few more steps to installing the Firefox addon:
 
 * Install the `cfx` application from [https://ftp.mozilla.org/pub/mozilla.org/labs/jetpack/jetpack-sdk-latest.zip](https://ftp.mozilla.org/pub/mozilla.org/labs/jetpack/jetpack-sdk-latest.zip)
 * Extract the file contents wherever you choose, and navigate to the root directory of the SDK with a shell/command prompt. For example:
@@ -30,7 +30,7 @@ There a few more steps to installing the Firefox addon:
 
         (addon-sdk)~/mozilla/addon-sdk >
 
-* First download this GitHub repo to your local hard drive
+* Then download this GitHub repo to your local hard drive
 
 * Finally navigate to the directory containing the example project and run
 

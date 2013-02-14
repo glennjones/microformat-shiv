@@ -9,14 +9,9 @@
     "type": "git",
     "url": "git://github.com/glennjones/microformat-shiv.git"
   },
-  "directories": {
-    "test": "test"
-  },
   "main": "microformat-shiv.js",
-  "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
-  },
   "devDependencies": {
-    "grunt-contrib-copy": "~0.3.2"
+    "grunt-contrib-copy": "0.3.2",
+    "grunt-jsmin-sourcemap": "1.6.0"
   }
 }

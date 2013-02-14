@@ -1,6 +1,6 @@
 <html>
   <head>
-    <title>Local test</title>
+    <title>Temp file for random test of small code examples</title>
     
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
     
@@ -10,57 +10,43 @@
   
   </head>
   <body>
-    <h3>Microformats 2 test suite</h3>
+    <h1>Temp file for random test of small code examples</h1>
      
-<div id="test">
-<div class="h-card" itemref="mozilla-org mozilla-adr">
-    <span class="p-name">Brendan Eich</span>
-</div>
-<div class="h-card" itemref="mozilla-org mozilla-adr">
-    <span class="p-name">Mitchell Baker</span>
-</div>
+    
+    <div id="test">
+      <!-- Test html start -->  
 
-<p id="mozilla-org" class="p-org">Mozilla</p>
-<p id="mozilla-adr" class="p-adr h-adr">
-    <span class="p-street-address">665 3rd St.</span>  
-    <span class="p-extended-address">Suite 207</span>  
-    <span class="p-locality">San Francisco</span>,  
-    <span class="p-region">CA</span>  
-    <span class="p-postal-code">94107</span>  
-    <span class="p-country-name">U.S.A.</span>  
-</p>
-</div> 
+      <div class="h-card" itemref="mozilla-org mozilla-adr">
+          <span class="p-name">Brendan Eich</span>
+      </div>
+      <div class="h-card" itemref="mozilla-org mozilla-adr">
+          <span class="p-name">Mitchell Baker</span>
+      </div>
+
+      <p id="mozilla-org" class="p-org">Mozilla</p>
+      <p id="mozilla-adr" class="p-adr h-adr">
+          <span class="p-street-address">665 3rd St.</span>  
+          <span class="p-extended-address">Suite 207</span>  
+          <span class="p-locality">San Francisco</span>,  
+          <span class="p-region">CA</span>  
+          <span class="p-postal-code">94107</span>  
+          <span class="p-country-name">U.S.A.</span>  
+      </p>
+
+      <!-- Test html end --> 
+    </div> 
        
 
-      <input id="parsebutton" type="button" value="Display parsed hCard" onclick="displayUfJSON('hCard','test-block');">
+    <input id="parsebutton" type="button" value="Parse" onclick="displayUfJSON('hCard','test-block');">
           
-          <script>
-
-              function displayUfJSON(format, id) {
-
-           /*       // The html string method
-                  var doc = document.implementation.createHTMLDocument("New Document");
-                  test =  document.getElementById('test');
-                  node =  document.createElement('div')
-                  node.innerHTML = test.innerHTML;
-                  doc.body.appendChild(node);
-
-                  var options = {
-                    'document': doc,
-                    'node': node
-                  };
-                  items = microformats.getItems(options);*/
-
-                  // parse the current document
-                  items = microformats.getItems();
- 
-
-                  var jsonstring = JSON.stringify(items);
-                  jsonstring = js_beautify(jsonstring);
-                  alert(jsonstring);
-              }
-          
-          </script>  
+    <script>
+        function displayUfJSON(format, id) {
+            items = microformats.getItems();
+            var jsonstring = JSON.stringify(items);
+            jsonstring = js_beautify(jsonstring);
+            alert(jsonstring);
+        }
+    </script>  
 
   </body>
 </html>
