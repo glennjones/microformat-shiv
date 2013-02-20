@@ -1,6 +1,6 @@
 /*
 Mocha integration test from: h-review.html
-The test was built on Mon Feb 04 2013 19:49:36 GMT+0000 (GMT)
+The test was built on Wed Feb 20 2013 12:57:15 GMT+0000 (GMT)
 */
 
 var assert = chai.assert;
@@ -46,10 +46,10 @@ describe('Just a hyperlink (h-review parsing test)', function() {
 
 
 
-describe('Just a photo (hreview parsing test)', function() {
+describe('Just a photo (h-review parsing test)', function() {
    var htmlFragment = "\n<img class=\"h-review\" src=\"images/photo.gif\" alt=\"Crepes on Cole\">\n"
    var found = helper.parseHTML(htmlFragment,'http://example.com/')
-   var expected = {"items":[{"type":["h-review"],"properties":{"name":["Crepes on Cole"],"photo":["images/photo.gif"]}}]}
+   var expected = {"items":[{"type":["h-review"],"properties":{"name":["Crepes on Cole"],"photo":["http://example.com/images/photo.gif"]}}]}
 
    it("found.items[0].type[0]", function(){
       assert.equal(found.items[0].type[0].toString(), "h-review");
@@ -60,7 +60,7 @@ describe('Just a photo (hreview parsing test)', function() {
    })
 
    it("found.items[0].properties['photo'][0]", function(){
-      assert.equal(found.items[0].properties["photo"][0].toString(), "images/photo.gif");
+      assert.equal(found.items[0].properties["photo"][0].toString(), "http://example.com/images/photo.gif");
    })
 
 })
@@ -68,7 +68,7 @@ describe('Just a photo (hreview parsing test)', function() {
 
 
 
-describe('With implied item name and url (hreview parsing test)', function() {
+describe('With implied item name and url (h-review parsing test)', function() {
    var htmlFragment = "\n<div class=\"h-review\">\n    <a class=\"p-item h-item\" href=\"http://example.com/crepeoncole\">Crepes on Cole</a>\n    <p><span class=\"rating\">4.7</span> out of 5 stars</p>\n</div>\n"
    var found = helper.parseHTML(htmlFragment,'http://example.com/')
    var expected = {"items":[{"type":["h-review"],"properties":{"item":[{"value":"Crepes on Cole","type":["h-item"],"properties":{"name":["Crepes on Cole"],"url":["http://example.com/crepeoncole"]}}],"rating":["4.7"],"name":["Crepes on Cole 4.7 out of 5 stars"]}}]}
@@ -106,7 +106,7 @@ describe('With implied item name and url (hreview parsing test)', function() {
 
 
 
-describe('With item (hreview parsing test)', function() {
+describe('With item (h-review parsing test)', function() {
    var htmlFragment = "\n<div class=\"h-review\">\n    <p class=\"p-item h-item\">\n        <img class=\"u-photo\" src=\"images/photo.gif\">\n        <a class=\"p-name u-url\" href=\"http://example.com/crepeoncole\">Crepes on Cole</a>\n    </p>\n    <p><span class=\"p-rating\">5</span> out of 5 stars</p>\n</div>\n"
    var found = helper.parseHTML(htmlFragment,'http://example.com/')
    var expected = {"items":[{"type":["h-review"],"properties":{"item":[{"value":"Crepes on Cole","type":["h-item"],"properties":{"photo":["http://example.com/images/photo.gif"],"name":["Crepes on Cole"],"url":["http://example.com/crepeoncole"]}}],"rating":["5"]}}]}

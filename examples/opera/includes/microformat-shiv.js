@@ -1,4 +1,4 @@
-/*! microformat-shiv - v0.2.0 - 2013-02-12
+/*! microformat-shiv - v0.3.0 - 2013-02-20
 * http://microformat-shiv.com
 * Copyright (c) 2013 Glenn Jones; Licensed MIT */
 
@@ -295,13 +295,34 @@ microformats.Parser.prototype = {
 
 
 		if(uf && uf.properties) {
+			
 			// implied name rule
+			/*
+				img.h-x[alt]
+				abbr.h-x[title] 
+				.h-x>img:only-node[alt] 
+				.h-x>abbr:only-node[title] 
+				.h-x>:only-node>img:only-node[alt]
+				.h-x>:only-node>abbr:only-node[title] 
+			*/
+
 			if(!uf.properties.name) {
 				value = getNameAttr(dom, node);
 				if(!value) {
 					descendant = this.domUtils.isSingleDescendant(dom, node, ['img', 'abbr']);
 					if(descendant){
 						value = getNameAttr(dom, descendant);
+					}
+					if(node.children.length > 0){
+						child = this.domUtils.isSingleDescendant(dom, node);
+						if(child){
+							descendant = this.
+
+							domUtils.isSingleDescendant(dom, child, ['img', 'abbr']);
+							if(descendant){
+								value = getNameAttr(dom, descendant);
+							}
+						}
 					}
 				}
 				if(!value) {
@@ -311,16 +332,41 @@ microformats.Parser.prototype = {
 					uf.properties.name = [this.utils.trim(value).replace(/[\t\n\r ]+/g, ' ')];
 				}
 			}
+
+
 			// implied photo rule
+			/*
+				img.h-x[src] 
+				object.h-x[data] 
+				.h-x>img[src]:only-of-type
+				.h-x>object[data]:only-of-type 
+				.h-x>:only-child>img[src]:only-of-type 
+				.h-x>:only-child>object[data]:only-of-type 
+			*/
 			if(!uf.properties.photo) {
 				value = getPhotoAttr(dom, node);
 				if(!value) {
-					descendant = this.domUtils.isSingleDescendant(dom, node, ['img', 'object']);
+					descendant = this.domUtils.isOnlySingleDescendantOfType(dom, node, ['img', 'object']);
 					if(descendant){
 						value = getPhotoAttr(dom, descendant);
 					}
+
+					// single child that has a single descendant that is a img or object i.e. .h-x>:only-child>img[src]:only-of-type
+					if(node.children.length > 0){
+						child = this.domUtils.isSingleDescendant(dom, node);
+						if(child){
+							descendant = this.domUtils.isOnlySingleDescendantOfType(dom, child, ['img', 'object']);
+							if(descendant){
+								value = getPhotoAttr(dom, descendant);
+							}
+						}
+					}
 				}
 				if(value) {
+					// if we have no protocal separator, turn relative url to absolute ones
+					if(value && value !== '' && value.indexOf(':') === -1) {
+						value = this.domUtils.resolveUrl(dom, value, this.options.baseUrl);
+					}
 					uf.properties.photo = [this.utils.trim(value)];
 				}
 			}
@@ -1333,8 +1379,8 @@ microformats.parser.domUtils = {
 	},
 
 
-	// return a node if it is the only descendant and its is also in the tagNames list
-	isSingleDescendant: function(dom, rootNode, tagNames) {
+	// return a node if it is the only descendant AND of a type ie CSS :only-node
+	isSingleDescendant: function(dom, rootNode, tagNames){
 		var count = 0,
 			out = null,
 			child,
@@ -1347,13 +1393,15 @@ microformats.parser.domUtils = {
 		while(x < y) {
 			child = rootNode.children[x];
 			if(child.tagName) {
-				i = tagNames.length;
-				while(i--) {
-					if(child.tagName.toLowerCase() === tagNames[i]) {
-						out = child;
-					}
+				// can filter or not by tagNames array
+				if(tagNames && this.hasTagName(child, tagNames)){
+					out = child;
 				}
-				count++;
+				if(!tagNames){
+					out = child;
+				}
+				// count all tag/element nodes
+				count ++;
 			}
 			x++;
 		}
@@ -1362,6 +1410,42 @@ microformats.parser.domUtils = {
 		} else {
 			return null;
 		}
+	},
+
+
+
+	// return a node if it is the only descendant of a type ie CSS :only-of-type 
+	isOnlySingleDescendantOfType: function(dom, rootNode, tagNames) {
+		var i = rootNode.children.length,
+			count = 0,
+			child,
+			out = null;
+
+		while(i--) {
+			child = rootNode.children[i];
+			if(child.nodeType === 1) {
+				if(this.hasTagName(child, tagNames)){
+					out = child;
+					count++;
+				}
+			}
+		}
+		if(count === 1 && out){
+			return out;
+		}else{
+			return null;
+		}
+	},
+
+
+	hasTagName: function(node, tagNames){
+		var i = tagNames.length;
+		while(i--) {
+			if(node.tagName.toLowerCase() === tagNames[i]) {
+				return true;
+			}
+		}
+		return false;
 	},
 
 
