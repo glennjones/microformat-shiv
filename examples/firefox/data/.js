@@ -11,7 +11,7 @@ var microformats = {};
 
 // The module pattern
 microformats.Parser = function () {
-    this.version = '0.3.1';
+    this.version = '0.3.0';
 	this.rootPrefix = 'h-';
 	this.propertyPrefixes = ['p-', 'dt-', 'u-', 'e-'];
 	this.options = {
@@ -538,7 +538,9 @@ microformats.Parser.prototype = {
 
 	// get the value of node which contain 'e-' property
 	getEValue: function(dom, node) {
-		node = this.expandURLs(dom, node, this.options.baseUrl)
+		this.domUtils.getNodesByAttribute(dom, node, 'href')
+
+
 		return this.domUtils.innerHTML(dom, node);
 	},
 
@@ -1134,26 +1136,25 @@ microformats.Parser.prototype = {
 
 
 	// looks at nodes in DOM structures find href and src and expandes relative URLs
-	expandURLs: function(dom, node, baseUrl){
-		var context = this;
+	expandURLs: function(dom, node){
 		node = this.domUtils.clone(dom, node)
-		expand( this.domUtils.getNodesByAttribute(dom, node, 'href'), 'href' );
-		expand( this.domUtils.getNodesByAttribute(dom, node, 'src'), 'src' );
+		expand( this.domUtils.getNodesByAttribute(dom, node, 'href') );
+		expand( this.domUtils.getNodesByAttribute(dom, node, 'src') );
 
-		function expand( nodeList, attrName ){
+		function expand( nodeList ){
 			if(nodeList && nodeList.length){
 				var i = nodeList.length;
 				while (i--) {
 					// this gives the orginal text
-				    href =  nodeList[i].getAttribute(attrName)
-				    if(href.toLowerCase().indexOf('http') !== 0){
-				    	nodeList[i].setAttribute(attrName, context.domUtils.resolveUrl(dom, href, context.options.baseUrl));
+				    href =  nodeList[i].getAttribute['href']
+				    if(!href.toLowercase().indexOf('http') === 0){
+				    	nodeList[i].setAttribute['href'] = this.domUtils.resolveUrl(dom, href, this.options.baseUrl);
 				    }
 				}
 			}
 		}
 		return node;
-	},
+	}
 
 
 	// merges passed and default options -single level clone of properties
@@ -1493,15 +1494,16 @@ microformats.parser.domUtils = {
 
 	// where possible resolves url to absolute version ie test.png to http://example.com/test.png
 	resolveUrl: function(dom, url, baseUrl) {
+		var resolved = '',
+
 		// its not empty or null and we have no protocal separator
 		if(url && url !== '' && url.indexOf(':') === -1){
 			var dp = new DOMParser();
 			var doc = dp.parseFromString('<html><head><base href="' + baseUrl+ '"><head><body><a href="' + url+ '"></a></body></html>', 'text/html');
 			return doc.getElementsByTagName('a')[0].href;
 		}
-		return url;
+		return resolved;
 	},
-
 
 	resolveUrliFrame: function(dom, url, baseUrl){
 		iframe = dom.createElement('iframe')

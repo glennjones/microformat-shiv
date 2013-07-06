@@ -1,6 +1,6 @@
 module.exports = function( grunt ) {
 	grunt.initConfig({
-		pkg: '<json:package.json>',
+		pkg: grunt.file.readJSON('package.json'),
 		meta: {
 			banner: '/*! <%= pkg.title || pkg.name %> - v<%= pkg.version %> - ' +
 			'<%= grunt.template.today("yyyy-mm-dd") %>\n' +
@@ -45,7 +45,7 @@ module.exports = function( grunt ) {
 	      	}
 	    },
 		lint: {
-			files: ['grunt.js', 'examples/chrome/*.js']
+			files: ['gruntfile.js', 'examples/chrome/*.js']
 		},
 		jshint: {
 			options: {
@@ -78,6 +78,7 @@ module.exports = function( grunt ) {
  	// These plugins provide necessary tasks.
   	grunt.loadNpmTasks('grunt-contrib-jshint');
   	grunt.loadNpmTasks('grunt-contrib-copy');
+  	grunt.loadNpmTasks('grunt-contrib-concat');
   	grunt.loadNpmTasks('grunt-jsmin-sourcemap');
 
 	// Default task.

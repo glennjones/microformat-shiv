@@ -12,8 +12,8 @@ helper.parseHTML = function(htmlFragment,baseUrl){
 
 	var options = {
 		'baseUrl': baseUrl,
-	'document': doc,
-	'node': node
+		'document': doc,
+		'node': node
 	};
 
 	return microformats.getItems(options);

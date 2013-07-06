@@ -1,7 +1,3 @@
-/*! microformat-shiv - v0.3.0 - 2013-02-20
-* http://microformat-shiv.com
-* Copyright (c) 2013 Glenn Jones; Licensed MIT */
-
 /*!
 	Parser
 	Copyright (C) 2012 Glenn Jones. All Rights Reserved.
@@ -15,7 +11,7 @@ var microformats = {};
 
 // The module pattern
 microformats.Parser = function () {
-    this.version = '0.3.0';
+    this.version = '0.3.1';
 	this.rootPrefix = 'h-';
 	this.propertyPrefixes = ['p-', 'dt-', 'u-', 'e-'];
 	this.options = {
@@ -542,6 +538,7 @@ microformats.Parser.prototype = {
 
 	// get the value of node which contain 'e-' property
 	getEValue: function(dom, node) {
+		node = this.expandURLs(dom, node, this.options.baseUrl)
 		return this.domUtils.innerHTML(dom, node);
 	},
 
@@ -1136,6 +1133,29 @@ microformats.Parser.prototype = {
 	},
 
 
+	// looks at nodes in DOM structures find href and src and expandes relative URLs
+	expandURLs: function(dom, node, baseUrl){
+		var context = this;
+		node = this.domUtils.clone(dom, node)
+		expand( this.domUtils.getNodesByAttribute(dom, node, 'href'), 'href' );
+		expand( this.domUtils.getNodesByAttribute(dom, node, 'src'), 'src' );
+
+		function expand( nodeList, attrName ){
+			if(nodeList && nodeList.length){
+				var i = nodeList.length;
+				while (i--) {
+					// this gives the orginal text
+				    href =  nodeList[i].getAttribute(attrName)
+				    if(href.toLowerCase().indexOf('http') !== 0){
+				    	nodeList[i].setAttribute(attrName, context.domUtils.resolveUrl(dom, href, context.options.baseUrl));
+				    }
+				}
+			}
+		}
+		return node;
+	},
+
+
 	// merges passed and default options -single level clone of properties
 	mergeOptions: function(options) {
 		var key;
@@ -1473,43 +1493,119 @@ microformats.parser.domUtils = {
 
 	// where possible resolves url to absolute version ie test.png to http://example.com/test.png
 	resolveUrl: function(dom, url, baseUrl) {
-		var link,
-			head, 
-			base,
-			resolved = '',
-			myBase;
-
 		// its not empty or null and we have no protocal separator
-		if(url && url !== '' && url.indexOf(':')){
-
-			head = dom.getElementsByTagName('head')[0];
-			base = dom.getElementsByTagName('base')[0];	
-
-			// add head and base if needed
-			if(baseUrl && baseUrl !== '' && !base){
-				if(!head){
-					head = dom.appendChild(dom.createElement('head'));
-				}
-				if(!base){
-					base = myBase = dom.head.appendChild(dom.createElement('base'));
-				}
-				base.href = baseUrl;
-			}  
-
-			// use browser to resolve link 
-			link = dom.createElement('a');
-			link.href = url;
-			resolved = link.href;
-
-			// remove any base node we added
-			if(myBase){
-				head.removeChild(myBase);
-			}
+		if(url && url !== '' && url.indexOf(':') === -1){
+			var dp = new DOMParser();
+			var doc = dp.parseFromString('<html><head><base href="' + baseUrl+ '"><head><body><a href="' + url+ '"></a></body></html>', 'text/html');
+			return doc.getElementsByTagName('a')[0].href;
 		}
-		return resolved;
+		return url;
+	},
+
+
+	resolveUrliFrame: function(dom, url, baseUrl){
+		iframe = dom.createElement('iframe')
+		iframe.innerHTML('<html><head><base href="' + baseUrl+ '"><head><body><a href="' + baseUrl+ '"></a></body></html>');
+		return iframe.document.getElementsByTagName('a')[0].href;
 	}
 
+
 };   
+
+
+
+(function(DOMParser) {
+    "use strict";
+
+    var DOMParser_proto;
+    var real_parseFromString;
+    var textHTML;         // Flag for text/html support
+    var textXML;          // Flag for text/xml support
+    var htmlElInnerHTML;  // Flag for support for setting html element's innerHTML
+
+    // Stop here if DOMParser not defined
+    if (!DOMParser) return;
+
+    // Firefox, Opera and IE throw errors on unsupported types
+    try {
+        // WebKit returns null on unsupported types
+        textHTML = !!(new DOMParser).parseFromString('', 'text/html');
+
+    } catch (er) {
+      textHTML = false;
+    }
+
+    // If text/html supported, don't need to do anything.
+    if (textHTML) return;
+
+    // Next try setting innerHTML of a created document
+    // IE 9 and lower will throw an error (can't set innerHTML of its HTML element)
+    try {
+      var doc = document.implementation.createHTMLDocument('');
+      doc.documentElement.innerHTML = '<title></title><div></div>';
+      htmlElInnerHTML = true;
+
+    } catch (er) {
+      htmlElInnerHTML = false;
+    }
+
+    // If if that failed, try text/xml
+    if (!htmlElInnerHTML) {
+
+        try {
+            textXML = !!(new DOMParser).parseFromString('', 'text/xml');
+
+        } catch (er) {
+            textHTML = false;
+        }
+    }
+
+    // Mess with DOMParser.prototype (less than optimal...) if one of the above worked
+    // Assume can write to the prototype, if not, make this a stand alone function
+    if (DOMParser.prototype && (htmlElInnerHTML || textXML)) { 
+        DOMParser_proto = DOMParser.prototype;
+        real_parseFromString = DOMParser_proto.parseFromString;
+
+        DOMParser_proto.parseFromString = function (markup, type) {
+
+            // Only do this if type is text/html
+            if (/^\s*text\/html\s*(?:;|$)/i.test(type)) {
+                var doc, doc_el, first_el;
+
+                // Use innerHTML if supported
+                if (htmlElInnerHTML) {
+                    doc = document.implementation.createHTMLDocument("");
+                    doc_el = doc.documentElement;
+                    doc_el.innerHTML = markup;
+                    first_el = doc_el.firstElementChild;
+
+                // Otherwise use XML method
+                } else if (textXML) {
+
+                    // Make sure markup is wrapped in HTML tags
+                    // Should probably allow for a DOCTYPE
+                    if (!(/^<html.*html>$/i.test(markup))) {
+                        markup = '<html>' + markup + '<\/html>'; 
+                    }
+                    doc = (new DOMParser).parseFromString(markup, 'text/xml');
+                    doc_el = doc.documentElement;
+                    first_el = doc_el.firstElementChild;
+                }
+
+                // Is this an entire document or a fragment?
+                if (doc_el.childElementCount == 1 && first_el.localName.toLowerCase() == 'html') {
+                    doc.replaceChild(first_el, doc_el);
+                }
+
+                return doc;
+
+            // If not text/html, send as-is to host method
+            } else {
+                return real_parseFromString.apply(this, arguments);
+            }
+        };
+    }
+}(DOMParser));
 
 
 
