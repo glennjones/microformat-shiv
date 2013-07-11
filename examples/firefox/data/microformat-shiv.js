@@ -1205,6 +1205,18 @@ microformats.getItems = function(options){
 };
 
 
+// Simple support for CommonJS
+if (typeof exports !== 'undefined') {
+	exports.microformats = microformats;
+}
+	
+
+
+
+
+
+
+
 
 
 /*
@@ -2086,8 +2098,8 @@ Text.prototype = {
             out = this.walkTreeForText( node );
             if(out !== undefined){
                 out = out.replace( /&nbsp;/g, ' ') ;    // exchanges html entity for space into space char
-                out = this.removeWhiteSpace( out );    // removes linefeeds, tabs and addtional spaces
-                out = this.decodeEntities( out );        // decode HTML entities
+                out = this.removeWhiteSpace( out );     // removes linefeeds, tabs and addtional spaces
+                out = this.decodeEntities( dom, out );  // decode HTML entities
                 out = out.replace( '–', '-' );          // correct dash decoding
                 return this.trim( out );
             }else{
@@ -2153,8 +2165,8 @@ Text.prototype = {
         return str.replace(/[\t\n\r ]+/g, ' ');
     },
 
-    decodeEntities: function( str ){
-        return document.createTextNode( str ).nodeValue;
+    decodeEntities: function( dom, str ){
+        return dom.createTextNode( str ).nodeValue;
     }
 
 };
