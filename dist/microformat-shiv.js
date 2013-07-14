@@ -60,8 +60,8 @@ microformats.Parser.prototype = {
 			}
 			
 			// find base tag to set baseUrl
-			baseTag = dom.querySelector('base');
-			if(baseTag) {
+			baseTag = dom.querySelectorAll('base');
+			if(baseTag.length > 0) {
 				href = this.domUtils.getAttribute(dom, baseTag, 'href');
 				if(href){
 					this.options.baseUrl = href;
@@ -111,6 +111,45 @@ microformats.Parser.prototype = {
 		return {'items': data};
 	},
 
+
+	// get the count of items
+	count: function(dom, rootNode) {
+		var out = {},
+			keys = [],
+			count,
+			x,
+			i;
+
+		items = this.findRootNodes(dom, rootNode);	
+		i = items.length;
+		while(i--) {
+			classItems = this.domUtils.getAttributeList(dom, items[i], 'class');
+			x = classItems.length;
+			while(x--) {
+				// find v2 names
+				if(this.utils.startWith( classItems[x], 'h-' )){
+					append(classItems[x], 1);
+				}
+				// find v1 names
+				for(key in this.maps) {
+					// has v1 root but not also a v2 root so we dont double count
+					if(this.maps[key].root === classItems[x] && classItems.indexOf(key) === -1) {
+						append(key, 1);
+					}
+				}
+			}
+		}
+		
+		function append(name, count){
+			if(out[name]){
+				out[name] = out[name] + count;
+			}else{
+				out[name] = count;
+			}
+		}
+	
+		return out;
+	},
 
 
 	// is the uf type in the filter list
@@ -221,8 +260,8 @@ microformats.Parser.prototype = {
 				if(classList.indexOf(items[y]) > -1) {
 					out.push(arr[x]);
 					break;
-
 				}
+
 				// match v2 root name prefix
 				if(this.utils.startWith(items[y], 'h-')) {
 					out.push(arr[x]);
@@ -1203,6 +1242,17 @@ microformats.getItems = function(options){
 
 	return this.parser.get(dom, node, options);
 };
+
+microformats.getCounts = function(dom, rootNode, options) {
+	var dom,
+		node;
+
+	dom = (options && options.document)? options.document : document;
+	node = (options && options.node)? options.node : document;
+	options = (options)? options : {};
+
+	return this.parser.count(dom, node, options);
+}
 
 
 // Simple support for CommonJS
