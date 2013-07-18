@@ -60,8 +60,8 @@ microformats.Parser.prototype = {
 			}
 			
 			// find base tag to set baseUrl
-			baseTag = dom.querySelectorAll('base');
-			if(baseTag.length > 0) {
+ 			baseTag = dom.querySelector('base');
+			if(baseTag) {
 				href = this.domUtils.getAttribute(dom, baseTag, 'href');
 				if(href){
 					this.options.baseUrl = href;
