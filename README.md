@@ -95,6 +95,18 @@ Typical error structure.
     }
 
 
+
+### Counts
+There is a simple method called getCounts, which will return the number of each type of microformat found. It does not do a full parse so it is much quicker method that can be used to add notifications to the UI. It currently does not count rel=* microformats.
+
+    <script type="text/javascript">
+        var counts;
+        
+        var counts = microformats.getCounts()
+        // do something with data 
+    </script>    
+
+
 ### Mocha.js tests
 
 The library includes web pages which run the [microfomats 2 test suite](https://github.com/microformats/tests).The tests are built using Mocha.js and you can run them directly from the files in this repo.
