@@ -629,7 +629,9 @@ microformats.Parser.prototype = {
 
 	// get the value of node which contain 'dt-' property
 	getDTValue: function(dom, node, className, uf, valueParse) {
-		var out = '';
+		var out = '',
+			format = 'uf';
+
 		if(valueParse) {
 			out = this.getValueClass(dom, node, 'dt');
 		}
@@ -666,10 +668,14 @@ microformats.Parser.prototype = {
 				return this.dates.parseAmPmTime(out);
 			} else {
 				// returns a date - uf profile 
-				if(uf) {
-					uf.dates.push([className, new ISODate(out).toString()]);
+				if(out.indexOf(' ') > 0){
+					format = 'HTML5'
 				}
-				return new ISODate(out).toString();
+				if(uf) {
+					uf.dates.push([className, new ISODate(out).toString( format )]);
+				}
+
+				return new ISODate(out).toString( format );
 			}
 		} else {
 			return '';
@@ -1673,7 +1679,7 @@ microformats.parser.domUtils = {
 
 /*!
     ISO Date Parser
-    Parses and builds ISO dates to the uf, W3C or RFC3339 profiles
+    Parses and builds ISO dates to the uf, W3C , HTML5 or RFC3339 profiles
     Copyright (C) 2010 - 2013 Glenn Jones. All Rights Reserved.
     MIT License: https://raw.github.com/glennjones/microformat-shiv/master/license.txt
 
@@ -1692,7 +1698,7 @@ function ISODate() {
     this.tzM = -1;
     this.tzPN = '+';
     this.z = false;
-    this.format = 'uf'; // uf or W3C or RFC3339
+    this.format = 'uf'; // uf or W3C or RFC3339 or HTML5
     this.setFormatSep();
 
     // optional should be full iso date/time string 
@@ -1713,12 +1719,11 @@ ISODate.prototype = {
             timePart = '',
             timeZonePart = '';
 
-        dateString = dateString.toString().toUpperCase();
-
+        dateString = dateString.toString().toUpperCase().replace(' ','T');
 
         // break on 'T' divider or space
-        if(dateString.indexOf( 'T' ) > -1) {
-            parts = dateString.split( 'T' );
+        if(dateString.indexOf('T') > -1) {
+            parts = dateString.split('T');
             datePart = parts[0];
             timePart = parts[1];
 
@@ -1841,7 +1846,7 @@ ISODate.prototype = {
     },
 
 
-    // returns iso date/time string in in W3C Note, RFC 3339 or Microformat profile
+    // returns iso date/time string in in W3C Note, RFC 3339, HTML5 or Microformat profile
     toString: function( format ) {
         var output = '';
 
@@ -1857,7 +1862,7 @@ ISODate.prototype = {
                 if(this.dD > 0 && this.dD < 32) {
                     output += this.dsep + this.dD;
                     if(this.tH > -1 && this.tH < 25) {
-                        output += 'T' + this.toTimeString( this );
+                        output += this.sep + this.toTimeString( this );
                     }
                 }
             }
@@ -1903,17 +1908,26 @@ ISODate.prototype = {
     setFormatSep: function() {
         switch( this.format ) {
             case 'RFC3339':
+                this.sep = 'T';
                 this.dsep = '';
                 this.tsep = '';
                 this.tzsep = '';
                 break;
             case 'W3C':
+                this.sep = 'T';
+                this.dsep = '-';
+                this.tsep = ':';
+                this.tzsep = ':';
+                break;
+            case 'HTML5':
+                this.sep = ' ';
                 this.dsep = '-';
                 this.tsep = ':';
                 this.tzsep = ':';
                 break;
             default:
                 // uf
+                this.sep = 'T';
                 this.dsep = '-';
                 this.tsep = ':';
                 this.tzsep = '';
@@ -1976,7 +1990,8 @@ microformats.parser.dates = {
     isDuration: function(str) {
         if(this.utils.isString(str)){
             str = str.toLowerCase();
-            if(this.utils.startWith(str, 'p') && !str.match('t') && !str.match('-') && !str.match(':')) {
+            str = this.utils.trim( str );
+            if(this.utils.startWith(str, 'p') && !str.match(/t|\s/) && !str.match('-') && !str.match(':')) {
                 return true;
             }
         }
@@ -1985,11 +2000,25 @@ microformats.parser.dates = {
 
 
     // is str a time or timezone
-    // ie HH-MM-SS or z+-HH-MM-SS 08:43 | 15:23:00:0567 | 10:34pm | +01:00:00 | -02:00 | z15:00 
+    // ie HH-MM-SS or z+-HH-MM-SS 08:43 | 15:23:00:0567 | 10:34pm | 10:34 p.m. | +01:00:00 | -02:00 | z15:00 
     isTime: function(str) {
         if(this.utils.isString(str)){
             str = str.toLowerCase();
-            if((str.match(':') || this.utils.startWith(str, 'z') || this.utils.startWith(str, '-') || this.utils.startWith(str, '+') || this.hasAM(str) || this.hasPM(str)) && !str.match('t')) {
+            str = this.utils.trim( str );
+            // start with timezone char
+            if( str.match(':') 
+                && ( this.utils.startWith(str, 'z') 
+                    || this.utils.startWith(str, '-') 
+                    || this.utils.startWith(str, '+') )) {
+                return true;
+            }
+            // has ante meridiem or post meridiem
+            if( str.match(/^[0-9]/) && 
+                ( this.hasAM(str) || this.hasPM(str) )) {
+                return true;
+            }
+            // contains time delimiter but not datetime delimiter
+            if( str.match(':') && !str.match(/t|\s/) ) {
                 return true;
             }
         }

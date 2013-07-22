@@ -1,6 +1,6 @@
 /*
 Mocha integration test from: h-event.html
-The test was built on Wed Feb 20 2013 12:57:14 GMT+0000 (GMT)
+The test was built on Mon Jul 22 2013 14:08:50 GMT+0100 (BST)
 */
 
 var assert = chai.assert;
@@ -173,9 +173,9 @@ describe('Concatenate multiple datetime elements (h-event parsing test)', functi
 
 
 describe('Time formats (h-event parsing test)', function() {
-   var htmlFragment = "\n<span class=\"h-event\">\n    <span class=\"p-name\">The 4th Microformat party</span> will be on \n    <ul>\n        <li class=\"dt-start\">\n            <time class=\"value\" datetime=\"2009-06-26\">26 July</time>, from\n            <time class=\"value\">19:00:00-08:00</time> \n        </li>\n        <li class=\"dt-start\">\n            <time class=\"value\" datetime=\"2009-06-26\">26 July</time>, from\n            <time class=\"value\">19:00:00-0800</time> \n        </li>\n        <li class=\"dt-start\">\n            <time class=\"value\" datetime=\"2009-06-26\">26 July</time>, from\n            <time class=\"value\">19:00:00+0800</time> \n        </li> \n        <li class=\"dt-start\">\n            <time class=\"value\" datetime=\"2009-06-26\">26 July</time>, from\n            <time class=\"value\">19:00:00Z</time> \n        </li>\n        <li class=\"dt-start\">\n            <time class=\"value\" datetime=\"2009-06-26\">26 July</time>, from\n            <time class=\"value\">19:00:00</time> \n        </li>\n        <li class=\"dt-start\">\n            <time class=\"value\" datetime=\"2009-06-26\">26 July</time>, from\n            <time class=\"value\">19:00-08:00</time> \n        </li> \n        <li class=\"dt-start\">\n            <time class=\"value\" datetime=\"2009-06-26\">26 July</time>, from\n            <time class=\"value\">19:00+08:00</time> \n        </li>\n        <li class=\"dt-start\">\n            <time class=\"value\" datetime=\"2009-06-26\">26 July</time>, from\n            <time class=\"value\">19:00Z</time> \n        </li>\n        <li class=\"dt-start\">\n            <time class=\"value\" datetime=\"2009-06-26\">26 July</time>, from\n            <time class=\"value\">19:00</time> \n        </li>  \n        <li>\n            <time class=\"dt-end\" datetime=\"2013-034\">3 February 2013</time>\n        </li>              \n    </ul>\n</span>\n"
+   var htmlFragment = "\n<span class=\"h-event\">\n    <span class=\"p-name\">The 4th Microformat party</span> will be on \n    <ul>\n        <li class=\"dt-start\">\n            <time class=\"value\" datetime=\"2009-06-26\">26 July</time>, from\n            <time class=\"value\">19:00:00-08:00</time> \n        </li>\n        <li class=\"dt-start\">\n            <time class=\"value\" datetime=\"2009-06-26\">26 July</time>, from\n            <time class=\"value\">19:00:00-0800</time> \n        </li>\n        <li class=\"dt-start\">\n            <time class=\"value\" datetime=\"2009-06-26\">26 July</time>, from\n            <time class=\"value\">19:00:00+0800</time> \n        </li> \n        <li class=\"dt-start\">\n            <time class=\"value\" datetime=\"2009-06-26\">26 July</time>, from\n            <time class=\"value\">19:00:00Z</time> \n        </li>\n        <li class=\"dt-start\">\n            <time class=\"value\" datetime=\"2009-06-26\">26 July</time>, from\n            <time class=\"value\">19:00:00</time> \n        </li>\n        <li class=\"dt-start\">\n            <time class=\"value\" datetime=\"2009-06-26\">26 July</time>, from\n            <time class=\"value\">19:00-08:00</time> \n        </li> \n        <li class=\"dt-start\">\n            <time class=\"value\" datetime=\"2009-06-26\">26 July</time>, from\n            <time class=\"value\">19:00+08:00</time> \n        </li>\n        <li class=\"dt-start\">\n            <time class=\"value\" datetime=\"2009-06-26\">26 July</time>, from\n            <time class=\"value\">19:00Z</time> \n        </li>\n        <li class=\"dt-start\">\n            <time class=\"value\" datetime=\"2009-06-26\">26 July</time>, from\n            <time class=\"value\">19:00</time> \n        </li>  \n        <li>\n            <time class=\"dt-end\" datetime=\"2013-034\">3 February 2013</time>\n        </li>\n        <li>\n            <time class=\"dt-end\" datetime=\"2013-06-27 15:34\">26 July 2013</time>\n        </li>              \n    </ul>\n</span>\n"
    var found = helper.parseHTML(htmlFragment,'http://example.com/')
-   var expected = {"items":[{"type":["h-event"],"properties":{"name":["The 4th Microformat party"],"start":["2009-06-26T19:00:00-0800","2009-06-26T19:00:00-0800","2009-06-26T19:00:00+0800","2009-06-26T19:00:00Z","2009-06-26T19:00:00","2009-06-26T19:00:00-0800","2009-06-26T19:00:00+0800","2009-06-26T19:00:00Z","2009-06-26T19:00:00"],"end":["2013-034"]}}]}
+   var expected = {"items":[{"type":["h-event"],"properties":{"name":["The 4th Microformat party"],"start":["2009-06-26T19:00:00-0800","2009-06-26T19:00:00-0800","2009-06-26T19:00:00+0800","2009-06-26T19:00:00Z","2009-06-26T19:00:00","2009-06-26T19:00:00-0800","2009-06-26T19:00:00+0800","2009-06-26T19:00:00Z","2009-06-26T19:00:00"],"end":["2013-034","2013-06-27 15:34:00"]}}]}
 
    it("found.items[0].type[0]", function(){
       assert.equal(found.items[0].type[0].toString(), "h-event");
@@ -223,6 +223,10 @@ describe('Time formats (h-event parsing test)', function() {
 
    it("found.items[0].properties['end'][0]", function(){
       assert.equal(found.items[0].properties["end"][0].toString(), "2013-034");
+   })
+
+   it("found.items[0].properties['end'][1]", function(){
+      assert.equal(found.items[0].properties["end"][1].toString(), "2013-06-27 15:34:00");
    })
 
 })
