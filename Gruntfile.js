@@ -19,29 +19,29 @@ module.exports = function( grunt ) {
 						'lib/text.js',
 						'lib/maps/*.js'
 					]),
-				dest: 'dist/<%= pkg.name %>.js'
+				dest: '<%= pkg.name %>.js'
 			}
 		},
 		copy: {
 	        dist: {
 	            files: [
-	            	{'examples/chrome/<%= pkg.name %>.js': 'dist/<%= pkg.name %>.js'},
-	            	{'examples/firefox/data/<%= pkg.name %>.js': 'dist/<%= pkg.name %>.js'},
-	            	{'examples/opera/includes/<%= pkg.name %>.js': 'dist/<%= pkg.name %>.js'}
+	            	{'examples/chrome/<%= pkg.name %>.js': '<%= pkg.name %>.js'},
+	            	{'examples/firefox/data/<%= pkg.name %>.js': '<%= pkg.name %>.js'},
+	            	{'examples/opera/includes/<%= pkg.name %>.js': '<%= pkg.name %>.js'}
 	            ]
 	        }
 	    },
 	    min: {
 		    dist: {
-		      src: ['dist/<%= pkg.name %>.js'],
-		      dest: 'dist/<%= pkg.name %>.min.js'
+		      src: ['<%= pkg.name %>.js'],
+		      dest: '<%= pkg.name %>.min.js'
 		    }
 		},
 		'jsmin-sourcemap': {
 	    	all: {
-		        src: ['dist/<%= pkg.name %>.js'],
-		        dest: 'dist/<%= pkg.name %>.min.js',
-		        destMap: 'dist/<%= pkg.name %>.min.js.map'
+		        src: ['<%= pkg.name %>.js'],
+		        dest: '<%= pkg.name %>.min.js',
+		        destMap: '<%= pkg.name %>.min.js.map'
 	      	}
 	    },
 		lint: {
