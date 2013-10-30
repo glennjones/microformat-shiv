@@ -45,9 +45,10 @@ module.exports = function( grunt ) {
 	      	}
 	    },
 		lint: {
-			files: ['gruntfile.js', 'examples/chrome/*.js']
+			files: ['gruntfile.js', 'lib/*.js']
 		},
 		jshint: {
+			files: ['Gruntfile.js', 'lib/**/*.js', 'test/**/*.js'],
 			options: {
 				curly: true,
 				eqeqeq: true,

@@ -1,0 +1,17 @@
+{
+  "name": "microformat-shiv",
+  "version": "0.3.1",
+  "main": "dist/microformat-shiv.js",
+  "ignore": [
+    "**/.*",
+    "examples",
+    "lib",
+    "node_modules",
+    "test",
+    ".gitignore",
+    "Gruntfile.js",
+    "package.json",
+    "testlink.html",
+    "bower.json"
+  ]
+}
