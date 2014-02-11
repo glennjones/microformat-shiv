@@ -1239,11 +1239,11 @@ microformats.getItems = function(options){
 		node;
 
 	dom = (options && options.document)? options.document : document;
-	node = (options && options.node)? options.node : document;
+	node = (options && options.node)? options.node : dom;
 
 	options = (options)? options : {};
-	if(!options.baseUrl && document && document.location){
-		options.baseUrl = document.location.href;
+	if(!options.baseUrl && dom && dom.location){
+		options.baseUrl = dom.location.href;
 	}
 
 	return this.parser.get(dom, node, options);
@@ -1254,7 +1254,7 @@ microformats.getCounts = function(options) {
 		node;
 
 	dom = (options && options.document)? options.document : document;
-	node = (options && options.node)? options.node : document;
+	node = (options && options.node)? options.node : dom;
 	options = (options)? options : {};
 
 	return this.parser.count(dom, node, options);
