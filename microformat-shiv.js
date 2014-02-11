@@ -806,14 +806,14 @@ microformats.Parser.prototype = {
 				item = this.utils.trim(items[x]);
 
 				// test for root prefix - v2
-				if(this.utils.startWith(item, this.rootPrefix)) {
+				if(this.utils.startWith(item, this.rootPrefix) && out.root.indexOf(item) === -1) {
 					out.root.push(item);
 				}
 
 				// test for property prefix - v2
 				z = this.propertyPrefixes.length;
 				while(z--) {
-					if(this.utils.startWith(item, this.propertyPrefixes[z])) {
+					if(this.utils.startWith(item, this.propertyPrefixes[z]) && out.properties.indexOf(item) === -1) {
 						out.properties.push(item);
 					}
 				}
