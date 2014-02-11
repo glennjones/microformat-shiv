@@ -1,0 +1,51 @@
+
+
+<!doctype html>
+
+<html dir="ltr" lang="en-GB">
+
+	<head>
+	
+		<meta charset="UTF-8">
+		<title>Test HTML String</title>
+        <script src="../microformat-shiv.js"></script>
+
+	</head>
+	
+	<body>
+	
+        <h1>Test HTML String</h1>
+  
+        <p><textarea id="textarea"></textarea></p>
+        <button id="button">Submit</button>
+     
+
+        <script>
+            var button;
+            button = document.getElementById('button'); 
+
+            button.onclick = function(){
+                var dp,
+                    doc,
+                    text,
+                    options,
+                    items,
+                    jsonString;
+
+                text = document.getElementById('textarea'); 
+                dp = new DOMParser();
+                doc = dp.parseFromString(text.value, 'text/html');
+
+                options ={
+                    'node': doc
+                }
+                items = microformats.getItems( options );
+             
+                jsonString = JSON.stringify( items );
+                alert( jsonString );
+            }
+        </script>
+
+         
+	</body>
+</html>

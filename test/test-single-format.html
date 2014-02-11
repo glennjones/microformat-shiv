@@ -1,0 +1,32 @@
+<html>
+  <head>
+    <title>Test Single Format (h-entry)</title>
+    
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    
+    <link rel="stylesheet" href="css/mocha.css" />
+    <script src="../microformat-shiv.js"></script>
+    <script src="javascript/mocha.js"></script>
+    <script src="javascript/chai.js"></script>
+    <script src="javascript/helper.js"></script>
+
+    
+    
+    <script>mocha.setup('bdd')</script>
+   
+
+    <script src="javascript/h-entry-test.js"></script>
+
+    <base href="http://glennjones.net" />
+    <script>
+      onload = function(){
+        mocha.run();
+      };
+    </script>
+  
+  </head>
+  <body>
+    <h3>Test Single Format (h-entry)</h3>
+    <div id="mocha"></div>
+  </body>
+</html>

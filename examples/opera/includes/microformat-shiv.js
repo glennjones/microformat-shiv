@@ -806,14 +806,14 @@ microformats.Parser.prototype = {
 				item = this.utils.trim(items[x]);
 
 				// test for root prefix - v2
-				if(this.utils.startWith(item, this.rootPrefix)) {
+				if(this.utils.startWith(item, this.rootPrefix) && out.root.indexOf(item) === -1) {
 					out.root.push(item);
 				}
 
 				// test for property prefix - v2
 				z = this.propertyPrefixes.length;
 				while(z--) {
-					if(this.utils.startWith(item, this.propertyPrefixes[z])) {
+					if(this.utils.startWith(item, this.propertyPrefixes[z]) && out.properties.indexOf(item) === -1) {
 						out.properties.push(item);
 					}
 				}
@@ -1239,11 +1239,11 @@ microformats.getItems = function(options){
 		node;
 
 	dom = (options && options.document)? options.document : document;
-	node = (options && options.node)? options.node : document;
+	node = (options && options.node)? options.node : dom;
 
 	options = (options)? options : {};
-	if(!options.baseUrl && document && document.location){
-		options.baseUrl = document.location.href;
+	if(!options.baseUrl && dom && dom.location){
+		options.baseUrl = dom.location.href;
 	}
 
 	return this.parser.get(dom, node, options);
@@ -1254,7 +1254,7 @@ microformats.getCounts = function(options) {
 		node;
 
 	dom = (options && options.document)? options.document : document;
-	node = (options && options.node)? options.node : document;
+	node = (options && options.node)? options.node : dom;
 	options = (options)? options : {};
 
 	return this.parser.count(dom, node, options);
