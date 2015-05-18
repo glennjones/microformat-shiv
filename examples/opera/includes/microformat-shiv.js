@@ -11,7 +11,7 @@ var microformats = {};
 
 // The module pattern
 microformats.Parser = function () {
-    this.version = '0.3.1';
+    this.version = '0.3.4';
 	this.rootPrefix = 'h-';
 	this.propertyPrefixes = ['p-', 'dt-', 'u-', 'e-'];
 	this.options = {
