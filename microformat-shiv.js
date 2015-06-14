@@ -1,6 +1,6 @@
 /*!
 	Parser
-	Copyright (C) 2012 Glenn Jones. All Rights Reserved.
+	Copyright (C) 2012 - 2015 Glenn Jones. All Rights Reserved.
 	MIT License: https://raw.github.com/glennjones/microformat-shiv/master/license.txt
 
 	*/

@@ -24,11 +24,16 @@ module.exports = function( grunt ) {
 		},
 		copy: {
 	        dist: {
-	            files: [
-	            	{'examples/chrome/<%= pkg.name %>.js': '<%= pkg.name %>.js'},
-	            	{'examples/firefox/data/<%= pkg.name %>.js': '<%= pkg.name %>.js'},
-	            	{'examples/opera/includes/<%= pkg.name %>.js': '<%= pkg.name %>.js'}
-	            ]
+	            files: [{
+						src: '<%= pkg.name %>.js',
+						dest:'examples/chrome/<%= pkg.name %>.js'
+					}, {
+						src: '<%= pkg.name %>.js',
+						dest:'examples/firefox/data/<%= pkg.name %>.js'
+					}, {
+						src: '<%= pkg.name %>.js',
+						dest:'examples/opera/includes/<%= pkg.name %>.js'
+					}]
 	        }
 	    },
 	    min: {
