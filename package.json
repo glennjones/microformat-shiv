@@ -11,13 +11,17 @@
   },
   "main": "microformat-shiv.js",
   "devDependencies": {
+    "mocha": "2.2.x",
+    "chai": "3.0.x",
+    "download-github-repo": "0.1.x",
+    "fs-extra": "0.19.x",
     "grunt": "0.4.x",
-    "grunt-contrib-jshint": "0.11.x",
     "grunt-contrib-concat": "0.5.x",
     "grunt-contrib-copy": "0.8.x",
+    "grunt-contrib-jshint": "0.11.x",
     "grunt-jsmin-sourcemap": "1.9.x",
-    "download-github-repo": "0.1.x",
-    "fs-extra": "0.19.x"
+    "grunt-mocha-phantomjs": "0.6.x",
+    "mocha-unfunk-reporter": "0.4.x",
+    "grunt-mocha-test": "0.12.x"
   }
 }
-

@@ -141,16 +141,22 @@ function buildTest( testData, testStructure, version, repo ){
     out += '<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">\r\n';
     out += '<link rel="stylesheet" href="css/mocha.css" />\r\n';
     out += '<script src="../microformat-shiv.js"></script>\r\n';
-    out += '<script src="javascript/mocha.js"></script>\r\n';
-    out += '<script src="javascript/chai.js"></script>\r\n';
+   // out += '<script src="javascript/mocha.js"></script>\r\n';
+   // out += '<script src="javascript/chai.js"></script>\r\n';
+	
+	out += '<script src="../node_modules/chai/chai.js"></script>\r\n';
+    out += '<script src="../node_modules/mocha/mocha.js"></script>\r\n';
+	
     out += '<script src="javascript/helper.js"></script>\r\n';
     out += '<script>mocha.setup("bdd")</script>\r\n';
 	
 	relativeTestPaths.forEach(function(item){
 		out += '<script src="' + testDir + '/' + item + '"></script>\r\n';
 	});
-	
-    out += '<script>onload = function(){mocha.run();};</script>\r\n';
+
+    out += '<script>window.onload= function(){\r\n';
+	out += 'if (window.mochaPhantomJS) {\r\nmochaPhantomJS.run();\r\n}else{\r\n mocha.run();\r\n}\r\n';
+	out += '};</script>\r\n';
     out += '</head><body>\r\n';
     out += '<h3>Microformats test suite - v' + version + '</h3>\r\n';
 	out += '<p>Mocha tests built on ' + date + '. Downloaded from github repo: ' + repo + ' version v' + version + '</p>\r\n';

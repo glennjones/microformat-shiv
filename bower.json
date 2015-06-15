@@ -11,7 +11,7 @@
     ".gitignore",
     "Gruntfile.js",
     "package.json",
-    "testlink.html",
+    "update-tests.js",
     "bower.json"
   ]
 }

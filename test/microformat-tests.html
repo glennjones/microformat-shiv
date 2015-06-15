@@ -2,8 +2,8 @@
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 <link rel="stylesheet" href="css/mocha.css" />
 <script src="../microformat-shiv.js"></script>
-<script src="javascript/mocha.js"></script>
-<script src="javascript/chai.js"></script>
+<script src="../node_modules/chai/chai.js"></script>
+<script src="../node_modules/mocha/mocha.js"></script>
 <script src="javascript/helper.js"></script>
 <script>mocha.setup("bdd")</script>
 <script src="javascript/mf-mixed-h-card-mixedpropertries.js"></script>
@@ -132,9 +132,15 @@
 <script src="javascript/mf-v2-rel-xfn-all.js"></script>
 <script src="javascript/mf-v2-rel-xfn-elsewhere.js"></script>
 <script src="javascript/mf-v2-rel=alternate-alternate.js"></script>
-<script>onload = function(){mocha.run();};</script>
+<script>window.onload= function(){
+if (window.mochaPhantomJS) {
+mochaPhantomJS.run();
+}else{
+ mocha.run();
+}
+};</script>
 </head><body>
 <h3>Microformats test suite - v0.1.17</h3>
-<p>Mocha tests built on Sun Jun 14 2015 13:24:56 GMT+0100 (BST). Downloaded from github repo: glennjones/tests version v0.1.17</p>
+<p>Mocha tests built on Mon Jun 15 2015 12:42:51 GMT+0100 (BST). Downloaded from github repo: glennjones/tests version v0.1.17</p>
 <div id="mocha"></div>
 </body></html>

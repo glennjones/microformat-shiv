@@ -58,11 +58,6 @@ h-adr, h-card, h-entry, h-event, h-geo, h-news, h-product, h-recipe, h-resume, h
 #### Available options
 * document - (DOM element) a reference to a document - default is the current browser document.
 * node - (DOM element) a reference to an element to be used as the root to parse from - default is the current browser document
-* filters - (array) an array of formats to filter the output by i.e. ['h-card','h-geo'] - default is empty which displays all formats
-* version1 - (boolean) whether the output should contain version 1 microformats - default is true
-* rel - (boolean) whether the output should contain rel=* - default is true 
-* children - (boolean) whether the output should contain children - default is true
-* childrenRel - (boolean) whether the output should contain child rel=* microformats - default is false 
 * textFormat - (string) plain text output style 'normalised' or 'whitespace' default is 'normalised'
 
 
@@ -109,11 +104,9 @@ There is a simple method called getCounts, which will return the number of each 
 
 ### Mocha.js tests
 
-The library includes web pages which run the [microfomats 2 test suite](https://github.com/microformats/tests).The tests are built using Mocha.js and you can run them directly from the files in this repo.
+The library includes web pages which run the [microfomats test suite](https://github.com/microformats/tests).The tests are built using Mocha.js and you can run them directly from the files in this repo.
 
-    \\test\mocha-v1.html
-    \\test\mocha-v2.html
-
+    \\test\microfomats-tests.html
 
 
 ### Support or Contact

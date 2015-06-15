@@ -72,8 +72,11 @@ module.exports = function( grunt ) {
 			},
 			globals: {}
 		},
-		mochaTest: {
-			files: ['test/*-test.js']
+		mocha_phantomjs: {
+			options:{
+				'reporter': 'list'
+			},
+		    all: ['test/microformat-tests.html']
 		},
 		watch: {
 			files: 'lib/*.js',
@@ -86,9 +89,11 @@ module.exports = function( grunt ) {
   	grunt.loadNpmTasks('grunt-contrib-copy');
   	grunt.loadNpmTasks('grunt-contrib-concat');
   	grunt.loadNpmTasks('grunt-jsmin-sourcemap');
+	grunt.loadNpmTasks('grunt-mocha-phantomjs');
 
 	// Default task.
 	grunt.registerTask( 'default', ['concat', 'copy', 'jsmin-sourcemap']);
+	grunt.registerTask( 'test', ['mocha_phantomjs:all']);
 
 
 
