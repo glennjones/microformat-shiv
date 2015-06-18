@@ -1,7 +1,7 @@
 /*
 Microformats Test Suite - Downloaded from github repo: glennjones/tests version v0.1.17 
 Mocha integration test from: microformats-v2/h-entry/impliedvalue-nested
-The test was built on Mon Jun 15 2015 12:42:51 GMT+0100 (BST)
+The test was built on Mon Jun 15 2015 16:52:46 GMT+0100 (BST)
 */
 
 assert = chai.assert;

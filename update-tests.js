@@ -1,3 +1,15 @@
+/*!
+	unpdate-test.js
+	run  $node unpdate-test.js
+	Downloads github repo of microfomats tests then:
+	* updates mocha tests
+	* updates data.js file for testrunner
+	
+	Copyright (C) 2015 Glenn Jones. All Rights Reserved.
+	MIT License: https://raw.github.com/glennjones/microformat-shiv/master/license.txt
+	*/
+
+
 var path			= require('path'),
 	fs 				= require('fs-extra'),
 	download 		= require('download-github-repo');
@@ -7,7 +19,8 @@ var repo = 'glennjones/tests',
 	tempDir = path.resolve(__dirname,'temp-tests'),
 	testDir = 'javascript',
 	testDirResolve = path.resolve(__dirname,'test', testDir),
-	testPagePath = path.resolve(__dirname,'test/microformat-tests.html');
+	testPagePath = path.resolve(__dirname,'test/microformat-tests.html'),
+	testJSPath = path.resolve(__dirname,'test/data.js');
 
 
 download(repo, tempDir, function(err, data){
@@ -18,18 +31,26 @@ download(repo, tempDir, function(err, data){
 			var fileList = getFileList(path.resolve(tempDir,'tests')),
 				testStructure  = getGetTestStructure( fileList ),
 				version = getTestSuiteVersion(),
-				relativeTestPaths = [];
+				relativeTestPaths = [],
+				dataCollection = [];
 			
 			
 			testStructure.forEach(function(item){
 				getDataFromFiles( item, function(err, data){
 					if(data){
 						
+						// build mocha tests
 						var test = buildTest( data, item, version, repo ),
 							filePath = shortenFilePath( item[0] + '-' + item[1] + '-' + item[2].replace('.json','') + '.js' );
 							
 						relativeTestPaths.push( filePath );
 						writeFile(path.resolve(testDirResolve,filePath), test);
+						
+						// add to data collection
+						data.name = shortenFilePath( item[0] + '-' + item[1] + '-' + item[2].replace('.json',''));
+						dataCollection.push( data );
+						
+						
 						console.log(path.resolve(testDirResolve,filePath));
 						
 						
@@ -41,6 +62,12 @@ download(repo, tempDir, function(err, data){
 			
 			var html = buildTestPage( relativeTestPaths, version );
 			writeFile(testPagePath, html);
+			writeFile(testJSPath, 'var testData = ' + JSON.stringify({ 
+				date: new Date(), 
+				repo: repo, 
+				version: version, 
+				data: dataCollection
+			}));
 			
 			
 			fs.removeSync(tempDir);

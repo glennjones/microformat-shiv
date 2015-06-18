@@ -17,6 +17,7 @@ module.exports = function( grunt ) {
 						'lib/isodate.js',
 						'lib/dates.js',
 						'lib/text.js',
+						'lib/html.js',
 						'lib/maps/*.js'
 					]),
 				dest: '<%= pkg.name %>.js'
@@ -76,7 +77,7 @@ module.exports = function( grunt ) {
 			options:{
 				'reporter': 'list'
 			},
-		    all: ['test/microformat-tests.html']
+		    all: ['test/microformats-mocha-tests.html']
 		},
 		watch: {
 			files: 'lib/*.js',
@@ -88,6 +89,7 @@ module.exports = function( grunt ) {
   	grunt.loadNpmTasks('grunt-contrib-jshint');
   	grunt.loadNpmTasks('grunt-contrib-copy');
   	grunt.loadNpmTasks('grunt-contrib-concat');
+	grunt.loadNpmTasks('grunt-contrib-watch');
   	grunt.loadNpmTasks('grunt-jsmin-sourcemap');
 	grunt.loadNpmTasks('grunt-mocha-phantomjs');
 

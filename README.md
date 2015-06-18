@@ -106,8 +106,15 @@ There is a simple method called getCounts, which will return the number of each 
 
 The library includes web pages which run the [microfomats test suite](https://github.com/microformats/tests).The tests are built using Mocha.js and you can run them directly from the files in this repo.
 
-    \\test\microfomats-tests.html
-
+    \test\microfomats-mocha-tests.html
+    
+   
+ ### Other tests tools
+ There are also two other tests tools:
+ 
+    \test\testrunner.html (clients side version microfomats test suite testrunner)
+    \test\parse.html (clients side form to test parsing microfomats html)
+    
 
 ### Support or Contact
 

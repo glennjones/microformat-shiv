@@ -1,6 +1,6 @@
 /*!
 	Parser
-	Copyright (C) 2012 - 2015 Glenn Jones. All Rights Reserved.
+	Copyright (C) 2012 Glenn Jones. All Rights Reserved.
 	MIT License: https://raw.github.com/glennjones/microformat-shiv/master/license.txt
 
 	*/
@@ -22,7 +22,8 @@ microformats.Parser = function () {
 		'childrenRel': false,
 		'rel': true,
 		'includes': true,
-		'textFormat': 'normalised'
+		'textFormat': 'whitespacetrimmed',
+		'dateFormat': 'auto'
 	};
 	this.maps = {};
 	this.rels = {};
@@ -34,6 +35,7 @@ microformats.Parser.prototype = {
 	// internal parse function 
 	get: function(dom, rootNode, options) {
 		var errors = null,
+			out = {},
 			items, 
 			children, 
 			data = [],
@@ -60,56 +62,74 @@ microformats.Parser.prototype = {
 			}
 			
 			// find base tag to set baseUrl
- 			baseTag = dom.querySelector('base');
+ 			baseTag = rootNode.querySelector('base');
 			if(baseTag) {
 				href = this.domUtils.getAttribute(dom, baseTag, 'href');
 				if(href){
 					this.options.baseUrl = href;
 				}
 			}
-
-			// find starts points in the DOM
-			items = this.findRootNodes(dom, rootNode);
-			if(items && !errors) {
-				x = 0;
-				i = items.length;
-				while(x < i) {
-					if(!this.domUtils.hasAttribute(dom, items[x], 'data-include')) {
-						// find microformats - return as an array, there maybe more than one root on a element
-						ufs = this.walkTree(dom, items[x], true);
-						z = 0;
-						y = ufs.length;
-						while(z < y) {
-							// make sure its a valid structure and apply filter if its requested  
-							if(ufs[z] && this.utils.hasProperties(ufs[z].properties) && this.shouldInclude(ufs[z], this.options.filters)) {
-								// find any children in the microformats dom tree that are not attached toa property
-								if(this.options.children){
-									children = this.findChildItems(dom, items[x], ufs[z].type[0]);
-									if(children.length > 0) {
-										ufs[z].children = children;
-									}
-								}
-								data.push(ufs[z]);
-							}
-							z++;
-						}
-					}
-					x++;
-				}
+			
+			if(this.options.filters.length > 0){
+				// parse flat list of items
+				var struct = this.findFilterNodes(dom, rootNode, this.options.filters);
+				data = this.walkRoot(struct[0], struct[1]);
+			}else{
+				// parse whole document from root
+				data = this.walkRoot(dom, rootNode);
 			}
+			//out = {'errors': errors, 'data': {'items': data}};
 
+
+			out.items = data;
 			// find any rel
 			if(this.options.rel){
 				rels = this.findRels(dom, rootNode);
-				if(rels && this.shouldInclude(rels, this.options.filters)) {
-					data.push(rels);
+				out.rels = rels.rels;
+				out['rel-urls'] = rels['rel-urls'];
+				if(rels.alternate){
+					out.alternates = rels.alternate;
 				}
 			}
 
 		}
 		this.clearUpDom(dom);
-		return {'items': data};
+		return out;
 	},
+	
+	
+	// find uf's of a given type and return a dom and node structure of just that type of ufs
+	findFilterNodes: function(dom, rootNode, filters) {
+		/*
+		var newDom = cheerio.load('<div></div>', {xmlMode: true}),
+			newRootNode = dom.root(),
+			items = this.findRootNodes(dom, rootNode),
+			i = 0,
+			x = 0,
+			y = 0;
+
+		newRootNode.html('');
+
+		if(items){
+			i = items.length;		
+			while(x < i) {
+				var y = filters.length;
+				while (y--) {
+					if(domUtils.hasAttributeValue(dom, items[x], 'class', filters[y])){
+						var clone = domUtils.clone(dom, items[x]);
+						domUtils.appendChild(newDom, newRootNode, clone);
+					}
+				}
+				x++;
+			}
+		}	
+
+		return [newDom, newRootNode];
+		*/
+		return [null, null]
+	},
+
+
 
 
 	// get the count of items
@@ -204,14 +224,6 @@ microformats.Parser.prototype = {
 			}
 		}
 
-		// find any rel add them as child even if the node a property
-		if(this.options.rel && this.options.childrenRel){
-			rels = this.findRels(dom, rootNode);
-			if(rels) {
-				out.push(rels);
-			}
-		}
-
 		return out;
 	},
 
@@ -240,6 +252,13 @@ microformats.Parser.prototype = {
 		// get all elements that have a class attribute  
 		fromChildren = (fromChildren) ? fromChildren : false;
 		if(fromChildren) {
+			//var nodes;
+			//if(this.utils.isArray(rootNode.children)){
+			//	nodes = rootNode.children;
+			//}else{
+			//	nodes = rootNode.children();
+			//}
+			//arr = this.domUtils.getNodesByAttribute(dom, nodes, 'class');
 			arr = this.domUtils.getNodesByAttribute(dom, rootNode, 'class');
 		} else {
 			arr = this.domUtils.getNodesByAttribute(dom, rootNode, 'class');
@@ -273,6 +292,37 @@ microformats.Parser.prototype = {
 		}
 		return out;
 	},
+	
+	
+	// starts the tree walk to find microformats
+	walkRoot: function(dom, node){
+		var context = this,
+			classes,
+			items = [],
+			out = [];
+
+		classes = this.getUfClassNames(dom, node);
+		// if a root uf node
+		if(classes && classes.root.length > 0){
+			items = this.walkTree(dom, node)
+
+			if(items.length > 0){
+				out = out.concat(items);
+			}
+		}else{
+			// check if there are children and one of the children has a root uf
+			if(node && node.children && node.children.length > 0 && this.findRootNodes(dom, node, true).length > -1){
+				for (var i = 0; i < node.children.length; i++) {
+					var child = node.children[i];
+					items = context.walkRoot(dom, child);
+					if(items.length > 0){
+						out = out.concat(items);
+					}
+				}
+			}
+		}
+		return out;
+	},
 
 
 	// starts the tree walking for a single microformat
@@ -286,26 +336,24 @@ microformats.Parser.prototype = {
 
 		// loop roots found on one element
 		classes = this.getUfClassNames(dom, node);
-		if(classes){
-			x = 0;
-			i = classes.root.length;
-			while(x < i) {
-				this.rootID++;
-				itemRootID = this.rootID,
-				obj = this.createUfObject(classes.root[x]);
+		if(classes && classes.root.length && classes.root.length > 0){
 
-				this.walkChildren(dom, node, obj, classes.root[x], itemRootID);
-				this.impliedRules(dom, node, obj);
-				out.push(obj);
-				x++;
-			}
+			this.rootID++;
+			itemRootID = this.rootID;
+			obj = this.createUfObject(classes.root);
+
+			this.walkChildren(dom, node, obj, classes.root, itemRootID, classes);
+			this.impliedRules(dom, node, obj, classes);
+			out.push(obj);
+		
+			
 		}
 		return out;
 	},
 
 
 	// test for the need to apply the "implied rules" for name, photo and url
-	impliedRules: function(dom, node, uf) {
+	impliedRules: function(dom, node, uf, parentClasses) {
 		var context = this,
 			value,
 			descendant,
@@ -313,7 +361,7 @@ microformats.Parser.prototype = {
 
 
 		function getNameAttr(dom, node) {
-			var value = context.domUtils.getAttrValFromTagList(dom, node, ['img'], 'alt');
+			var value = context.domUtils.getAttrValFromTagList(dom, node, ['img','area'], 'alt');
 			if(!value) {
 				value = context.domUtils.getAttrValFromTagList(dom, node, ['abbr'], 'title');
 			}
@@ -327,6 +375,19 @@ microformats.Parser.prototype = {
 			}
 			return value;
 		}
+		
+		function getURLAttr(dom, node) {
+			var value = null;
+			if(context.domUtils.hasAttributeValue(dom, node, 'class', 'include') === false){
+				value = context.domUtils.getAttrValFromTagList(dom, node, ['a'], 'href');
+				if(!value) {
+					value = context.domUtils.getAttrValFromTagList(dom, node, ['area'], 'href');
+				}
+				
+			}
+			return value;
+		}
+
 
 
 		if(uf && uf.properties) {
@@ -342,10 +403,12 @@ microformats.Parser.prototype = {
 			*/
 
 			if(!uf.properties.name) {
+				// img.h-x[alt] or abbr.h-x[title]
 				value = getNameAttr(dom, node);
+				
 				if(!value) {
-					descendant = this.domUtils.isSingleDescendant(dom, node, ['img', 'abbr']);
-					if(descendant){
+					descendant = this.domUtils.isSingleDescendant(dom, node, ['img', 'area', 'abbr']);
+					if(descendant && this.hasHClass(dom, descendant) === false){
 						value = getNameAttr(dom, descendant);
 					}
 					if(node.children.length > 0){
@@ -353,18 +416,30 @@ microformats.Parser.prototype = {
 						if(child){
 							descendant = this.
 
-							domUtils.isSingleDescendant(dom, child, ['img', 'abbr']);
-							if(descendant){
+							domUtils.isSingleDescendant(dom, child, ['img', 'area', 'abbr']);
+							if(descendant && this.hasHClass(dom, descendant) === false){
 								value = getNameAttr(dom, descendant);
 							}
 						}
 					}
 				}
-				if(!value) {
-					value = this.text.parse(dom, node, this.options.textFormat);
+				var textFormat = this.options.textFormat;
+				if(this.options.textFormat === 'impliednametrimmed'){
+					textFormat = 'whitespacetrimmed';
 				}
-				if(value) {
-					uf.properties.name = [this.utils.trim(value).replace(/[\t\n\r ]+/g, ' ')];
+				if(!value) {
+					uf.properties.name = [this.text.parse(dom, node, textFormat)];
+				}else{
+					uf.properties.name = [this.text.textContent(dom, value, textFormat)];
+				}
+			}
+			
+			
+			// once implied name rule is applied
+			if(uf.properties.name) {	
+				// intersection of implied name and implied value rules
+				if(uf.value && parentClasses.root.length > 0 && parentClasses.properties.length === 1){
+					uf = context.impliedValueRule(uf, parentClasses.properties[0], 'p-name', uf.properties.name[0]);
 				}
 			}
 
@@ -382,7 +457,7 @@ microformats.Parser.prototype = {
 				value = getPhotoAttr(dom, node);
 				if(!value) {
 					descendant = this.domUtils.isOnlySingleDescendantOfType(dom, node, ['img', 'object']);
-					if(descendant){
+					if(descendant && this.hasHClass(dom, descendant) === false){
 						value = getPhotoAttr(dom, descendant);
 					}
 
@@ -391,44 +466,105 @@ microformats.Parser.prototype = {
 						child = this.domUtils.isSingleDescendant(dom, node);
 						if(child){
 							descendant = this.domUtils.isOnlySingleDescendantOfType(dom, child, ['img', 'object']);
-							if(descendant){
+							if(descendant && this.hasHClass(dom, descendant) === false){
 								value = getPhotoAttr(dom, descendant);
 							}
 						}
 					}
 				}
 				if(value) {
-					// if we have no protocal separator, turn relative url to absolute ones
-					if(value && value !== '' && value.indexOf(':') === -1) {
+					// relative to absolute URL
+					if(value && value !== '' && this.options.baseUrl !== '' && value.indexOf(':') === -1) {
 						value = this.domUtils.resolveUrl(dom, value, this.options.baseUrl);
 					}
 					uf.properties.photo = [this.utils.trim(value)];
 				}
 			}
+			
+			
 			// implied url rule
+			/*
+			a.h-x[href] 
+			area.h-x[href] 
+			.h-x>a[href]:only-of-type:not[.h-*] 
+			.h-x>area[href]:only-of-type:not[.h-*] 
+			*/
 			if(!uf.properties.url) {
-				value = this.domUtils.getAttrValFromTagList(dom, node, ['a'], 'href');
+				value = getURLAttr(dom, node);
+				if(!value) {
+					descendant = this.domUtils.isOnlySingleDescendantOfType(dom, node, ['a', 'area']);
+					if(descendant && this.hasHClass(dom, descendant) === false){
+						value = getURLAttr(dom, descendant);
+					}
+					if(node.children.length > 0){
+						child = this.domUtils.isSingleDescendant(dom, node);
+						if(child){
+							descendant = this.domUtils.isOnlySingleDescendantOfType(dom, child, ['a', 'area']);
+							if(descendant && this.hasHClass(dom, descendant) === false){
+								value = getURLAttr(dom, descendant);
+							}
+						}
+					}
+
+				}
 				if(value) {
+					// relative to absolute URL
+					if(value && value !== '' && this.options.baseUrl !== '' && value.indexOf(':') === -1) {
+						value = this.domUtils.resolveUrl(dom, value, this.options.baseUrl);
+					}
 					uf.properties.url = [this.utils.trim(value)];
 				}
 			}
-
+		
+			// once implied name rule is applied
+			if(uf.properties.url) {
+				// intersection of implied url and implied value rules
+				if(parentClasses && parentClasses.root.length === 1 && parentClasses.properties.length === 1){
+					uf = context.impliedValueRule(uf, parentClasses.properties[0], 'u-url', uf.properties.url[0]);
+				}
+			}
+		
 		}
 
 		// implied date rule - temp fix
 		// only apply to first date and time match
 		if(uf.times.length > 0 && uf.dates.length > 0) {
-			newDate = this.dates.dateTimeUnion(uf.dates[0][1], uf.times[0][1]);
-			uf.properties[this.removePropPrefix(uf.times[0][0])][0] = newDate.toString();
+			newDate = this.dates.dateTimeUnion(uf.dates[0][1], uf.times[0][1], this.options.dateFormat);
+			uf.properties[this.removePropPrefix(uf.times[0][0])][0] = newDate.toString(this.options.dateFormat);
 		}
 		delete uf.times;
 		delete uf.dates;
+		
+		if(uf.altValue !== null){
+			uf.value = uf.altValue.value;
+		}
+		delete uf.altValue;
 
 	},
+	
+	
+	// changes the value property based on rules about parent property prefix
+	impliedValueRule: function(uf, parentPropertyName, propertyName, value){
+		if(uf.value){
+			// first p-name of the h-* child
+			if(this.utils.startWith(parentPropertyName,'p-') && propertyName === 'p-name'){
+				uf.altValue = {name: propertyName, value: value};
+			}
+			// if it's an e-* property element
+			if(this.utils.startWith(parentPropertyName,'e-')){
+				uf.altValue = {name: propertyName, value: value};
+			}
+			//f it's a u-* property element
+			if(this.utils.startWith(parentPropertyName,'u-')){
+				uf.altValue = {name: propertyName, value: value};
+			}
+		}
+		return uf;
+	},
 
-
+	
 	// find child properties of microformat
-	walkChildren: function(dom, node, out, ufName, rootID) {
+	walkChildren: function(dom, node, out, ufName, rootID, parentClasses) {
 		var context = this,
 			childOut = {},
 			rootItem,
@@ -450,12 +586,17 @@ microformats.Parser.prototype = {
 			var classes = context.getUfClassNames(dom, child, ufName);
 
 			// a property which is a microformat
-			if(classes.root.length > 0 && classes.properties.length > 0) {
+			if(classes.root.length > 0 && classes.properties.length > 0 && !child.addedAsRoot) {
 				// create object with type, property and value
 				rootItem = context.createUfObject(
 					classes.root, 
-					this.text.parse(dom, child, this.options.textFormat)
+					this.text.parse(dom, child, context.options.textFormat)
 				);
+				
+				// modifies value with "implied value rule"
+				if(parentClasses && parentClasses.root.length === 1 && parentClasses.properties.length === 1){
+					out = context.impliedValueRule(out, parentClasses.properties[0], classes.properties[0], value);
+				}
 
 				// add the microformat as an array of properties
 				propertyName = context.removePropPrefix(classes.properties[0]);
@@ -465,15 +606,19 @@ microformats.Parser.prototype = {
 					out.properties[propertyName] = [rootItem];
 				}
 				context.rootID++;
+				// used to stop duplication in heavily nested structures
+				child.addedAsRoot = true;
+				
 
 				x = 0;
 				i = rootItem.type.length;
 				itemRootID = context.rootID;
 				while(x < i) {
-					context.walkChildren(dom, child, rootItem, rootItem.type[x], itemRootID);
+					context.walkChildren(dom, child, rootItem, rootItem.type, itemRootID, classes);
 					x++;
 				}
-				context.impliedRules(dom, child, rootItem);
+				context.impliedRules(dom, child, rootItem, classes);
+
 			}
 
 			// a property which is NOT a microformat and has not been use for a given root element
@@ -485,6 +630,11 @@ microformats.Parser.prototype = {
 
 					value = context.getValue(dom, child, classes.properties[x], out);
 					propertyName = context.removePropPrefix(classes.properties[x]);
+					
+					// modifies value with "implied value rule"
+					if(parentClasses && parentClasses.root.length === 1 && parentClasses.properties.length === 1){
+						out = context.impliedValueRule(out, parentClasses.properties[0], classes.properties[x], value);
+					}
 
 					// if the value is not empty 
 					// and we have not added this value into a property with the same name already
@@ -502,13 +652,47 @@ microformats.Parser.prototype = {
 					x++;
 				}
 
-				context.walkChildren(dom, child, out, ufName, rootID);
+				context.walkChildren(dom, child, out, ufName, rootID, classes);
 			}
 
 			// if the node has no uf classes, see if its children have
 			if(classes.root.length === 0 && classes.properties.length === 0) {
-				context.walkChildren(dom, child, out, ufName, rootID);
+				context.walkChildren(dom, child, out, ufName, rootID, classes);
 			}
+			
+			
+			// if the node is child root that should be add to children tree
+			if(context.options.children){
+				if(classes.root.length > 0 && classes.properties.length === 0) {
+		
+					// create object with type, property and value
+					rootItem = context.createUfObject(
+						classes.root, 
+						context.text.parse(dom, child, context.options.textFormat)
+					);
+
+					// add the microformat as an array of properties
+					if(!out.children){
+						out.children =  [];
+					}
+
+					if(!context.hasRootID(dom, child, rootID, 'child-root')) {
+						out.children.push(rootItem);
+						context.appendRootID(dom, child, rootID, 'child-root');
+						context.rootID++;
+					}
+
+					x = 0;
+					i = rootItem.type.length;
+					itemRootID = context.rootID;
+					while(x < i) {
+						context.walkChildren(dom, child, rootItem, rootItem.type, itemRootID, classes);
+						x++;
+					}
+					context.impliedRules(dom, child, rootItem, classes);
+				}
+			}
+
 
 			y++;
 		}
@@ -577,8 +761,44 @@ microformats.Parser.prototype = {
 
 	// get the value of node which contain 'e-' property
 	getEValue: function(dom, node) {
-		node = this.expandURLs(dom, node, this.options.baseUrl)
-		return this.domUtils.innerHTML(dom, node);
+				
+		var context = this,
+			out = {value: '', html: ''};
+
+		expandUrls(dom, node, 'src', this.options.baseUrl);
+		expandUrls(dom, node, 'href', this.options.baseUrl);
+
+		// replace all relative links with absolute ones where it can
+		function expandUrls(dom, node, attrName, baseUrl){
+			var i,
+				nodes,
+				attr;
+
+			nodes = context.domUtils.getNodesByAttribute(dom, node, attrName);
+			i = nodes.length;
+			while (i--) {
+				try{
+					// the url parser can blow up if the format is not right
+					attr = context.domUtils.getAttribute(dom, nodes[i], attrName);
+					if(attr && attr !== '' && context.options.baseUrl !== '' && attr.indexOf(':') === -1) {
+						//attr = urlParser.resolve(baseUrl, attr);
+						attr = context.domUtils.resolveUrl(dom, attr, context.options.baseUrl);
+						context.domUtils.setAttribute(dom, nodes[i], attrName, attr);
+					}	
+				}catch(err){
+					// do nothing convert only the urls we can leave the rest as they where
+				}
+			}
+		}
+
+		out.value = this.text.parse(dom, node, this.options.textFormat);
+		out.html = this.html.parse(dom, node);
+
+		return out;
+	
+		
+		//node = this.expandURLs(dom, node, this.options.baseUrl)
+		//return this.domUtils.innerHTML(dom, node);
 	},
 
 
@@ -663,19 +883,15 @@ microformats.Parser.prototype = {
 			} else if(this.dates.isTime(out)) {
 				// just time or time+timezone
 				if(uf) {
-					uf.times.push([className, this.dates.parseAmPmTime(out)]);
+					uf.times.push([className, this.dates.parseAmPmTime(out, this.options.dateFormat)]);
 				}
-				return this.dates.parseAmPmTime(out);
+				return this.dates.parseAmPmTime(out, this.options.dateFormat);
 			} else {
 				// returns a date - uf profile 
-				if(out.indexOf(' ') > 0){
-					format = 'HTML5'
-				}
 				if(uf) {
-					uf.dates.push([className, new ISODate(out).toString( format )]);
+					uf.dates.push([className, new ISODate(out).toString( this.options.dateFormat )]);
 				}
-
-				return new ISODate(out).toString( format );
+				return new ISODate(out).toString( this.options.dateFormat );
 			}
 		} else {
 			return '';
@@ -685,12 +901,14 @@ microformats.Parser.prototype = {
 
 	// appends a new rootid to a given node
 	appendRootID: function(dom, node, id, propertyName) {
-		var rootids = [];
-		if(this.domUtils.hasAttribute(dom, node,'rootids')){
-			rootids = this.domUtils.getAttributeList(dom, node,'rootids');
+		if(this.hasRootID(dom, node, id, propertyName) === false){
+			var rootids = [];
+			if(this.domUtils.hasAttribute(dom, node,'rootids')){
+				rootids = this.domUtils.getAttributeList(dom, node,'rootids');
+			}
+			rootids.push('id' + id + '-' + propertyName);
+			this.domUtils.setAttribute(dom, node, 'rootids', rootids.join(' '));
 		}
-		rootids.push('id' + id + '-' + propertyName);
-		this.domUtils.setAttribute(dom, node, 'rootids', rootids.join());
 	},
 
 
@@ -701,7 +919,7 @@ microformats.Parser.prototype = {
 			return false;
 		} else {
 			rootids = this.domUtils.getAttributeList(dom, node, 'rootids');
-			return(rootids.indexOf('id' + id + '-' + propertyName) > -1);
+			return (rootids.indexOf('id' + id + '-' + propertyName) > -1);
 		}
 	},
 
@@ -745,14 +963,14 @@ microformats.Parser.prototype = {
 				return out.join('');
 			}
 			if(propertyType === 'dt') {
-				return this.dates.concatFragments(out).toString();
+				return this.dates.concatFragments(out).toString(this.options.dateFormat);
 			}
 		} else {
 			return null;
 		}
 	},
-
-
+	
+	
 	// returns a single string of the 'title' attr from all 
 	// the child nodes with the class 'value-title' 
 	getValueTitle: function(dom, node) {
@@ -772,12 +990,23 @@ microformats.Parser.prototype = {
 		}
 		return out.join('');
 	},
+	
+	
+	// finds out weather a node has h-* class v1 and v2
+	hasHClass: function(dom, node){
+		var classes = this.getUfClassNames(dom, node);
+		if(classes.root && classes.root.length > 0){
+			return true;
+		}else{
+			return false;
+		}
+	},
 
 
 
-	// returns any uf root and property assigned to a single element
-	getUfClassNames: function(dom, node, ufName) {
-		var out = {
+	getUfClassNames: function(dom, node, ufNameArr) {
+		var context = this,
+			out = {
 				'root': [],
 				'properties': []
 			},
@@ -793,7 +1022,8 @@ microformats.Parser.prototype = {
 			prop,
 			propName,
 			v2Name,
-			impiedRel;
+			impiedRel,
+			ufName;
 
 
 		classNames = this.domUtils.getAttribute(dom, node, 'class');
@@ -803,73 +1033,76 @@ microformats.Parser.prototype = {
 			i = items.length;
 			while(x < i) {
 
-				item = this.utils.trim(items[x]);
+				item = context.utils.trim(items[x]);
 
 				// test for root prefix - v2
-				if(this.utils.startWith(item, this.rootPrefix) && out.root.indexOf(item) === -1) {
+				if(context.utils.startWith(item, context.rootPrefix)) {
 					out.root.push(item);
 				}
 
 				// test for property prefix - v2
-				z = this.propertyPrefixes.length;
+				z = context.propertyPrefixes.length;
 				while(z--) {
-					if(this.utils.startWith(item, this.propertyPrefixes[z]) && out.properties.indexOf(item) === -1) {
+					if(context.utils.startWith(item, context.propertyPrefixes[z])) {
 						out.properties.push(item);
 					}
 				}
 
-				if(this.options.version1){
+				if(context.options.version1){
 
 					// test for mapped root classnames v1
-					for(key in this.maps) {
-						if(this.maps.hasOwnProperty(key)) {
+					for(key in context.maps) {
+						if(context.maps.hasOwnProperty(key)) {
 							// only add a root once
-							if(this.maps[key].root === item && out.root.indexOf(key) === -1) {
+							if(context.maps[key].root === item && out.root.indexOf(key) === -1) {
 								// if root map has subTree set to true
 								// test to see if we should create a property or root
-								if(this.maps[key].subTree && this.isSubTreeRoot(dom, node, this.maps[key], items) === false) {
-									out.properties.push('p-' + this.maps[key].root);
+								if(context.maps[key].subTree && context.isSubTreeRoot(dom, node, context.maps[key], items) === false) {
+									out.properties.push('p-' + context.maps[key].root);
 								} else {
 									out.root.push(key);
 								}
-								break;
 							}
 						}
 					}
 
-					// test for mapped property classnames v1
-					map = this.getMapping(ufName);
-					if(map) {
-						for(key in map.properties) {
-							prop = map.properties[key];
-							propName = (prop.map) ? prop.map : 'p-' + key;
+					if(ufNameArr){
+						for (var a = 0; a < ufNameArr.length; a++) {
+							ufName = ufNameArr[a];
+							// test for mapped property classnames v1
+							map = context.getMapping(ufName);
+							if(map) {
+								for(key in map.properties) {
+									prop = map.properties[key];
+									propName = (prop.map) ? prop.map : 'p-' + key;
 
-							if(key === item) {
-								if(prop.uf) {
-									// loop all the classList make sure 
-									//   1. this property is a root
-									//   2. that there is not already a equivalent v2 property ie url and u-url on the same element
-									y = 0;
-									while(y < i) {
-										v2Name = this.getV2RootName(items[y]);
-										// add new root
-										if(prop.uf.indexOf(v2Name) > -1 && out.root.indexOf(v2Name) === -1) {
-											out.root.push(v2Name);
+									if(key === item) {
+										if(prop.uf) {
+											// loop all the classList make sure 
+											//   1. this property is a root
+											//   2. that there is not already a equivalent v2 property ie url and u-url on the same element
+											y = 0;
+											while(y < i) {
+												v2Name = context.getV2RootName(items[y]);
+												// add new root
+												if(prop.uf.indexOf(v2Name) > -1 && out.root.indexOf(v2Name) === -1) {
+													out.root.push(v2Name);
+												}
+												y++;
+											}
+											//only add property once
+											if(out.properties.indexOf(propName) === -1) {
+												out.properties.push(propName);
+											}
+										} else {
+											if(out.properties.indexOf(propName) === -1) {
+												out.properties.push(propName);
+											}
 										}
-										y++;
 									}
-									//only add property once
-									if(out.properties.indexOf(propName) === -1) {
-										out.properties.push(propName);
-									}
-								} else {
-									if(out.properties.indexOf(propName) === -1) {
-										out.properties.push(propName);
-									}
-								}
-								break;
-							}
 
+								}
+							}
 						}
 					}
 				}
@@ -878,14 +1111,18 @@ microformats.Parser.prototype = {
 			}
 		}
 
-		impiedRel = this.findRelImpied(dom, node, ufName);
-		if(impiedRel && out.properties.indexOf(impiedRel) === -1) {
-			out.properties.push(impiedRel);
+		if(ufNameArr){
+			for (var a = 0; a < ufNameArr.length; a++) {
+				ufName = ufNameArr[a];
+				impiedRel = this.findRelImpied(dom, node, ufName);
+				if(impiedRel && out.properties.indexOf(impiedRel) === -1) {
+					out.properties.push(impiedRel);
+				}
+			}
 		}
 
 		return out;
 	},
-
 
 
 	// given a V1 or V2 root name return mapping object
@@ -939,7 +1176,7 @@ microformats.Parser.prototype = {
 		}
 
 		// walk the sub tree for properties that match this subTree
-		this.walkChildren(dom, node, out, map.name, null);
+		this.walkChildren(dom, node, out, map.name, null, null);
 
 		if(this.utils.hasProperties(out.properties) && hasSecondRoot === false) {
 			return true;
@@ -984,9 +1221,11 @@ microformats.Parser.prototype = {
 	createUfObject: function(names, value) {
 		var out = {};
 
-		if(value) {
+		// is more than just whitespace
+		if(value && this.utils.isOnlyWhiteSpace(value) === false) {
 			out.value = value;
 		}
+		// add type ie ["h-card", "h-org"]
 		if(this.utils.isArray(names)) {
 			out.type = names;
 		} else {
@@ -995,6 +1234,7 @@ microformats.Parser.prototype = {
 		out.properties = {};
 		out.times = [];
 		out.dates = [];
+		out.altValue = null;
 		return out;
 	},
 
@@ -1017,7 +1257,7 @@ microformats.Parser.prototype = {
 
 
 
-
+	/*
 	findRels: function(dom, rootNode, fromChildren) {
 		var uf,
 			out = {},
@@ -1083,6 +1323,146 @@ microformats.Parser.prototype = {
 		}
 		return uf;
 	},
+	
+	*/
+	
+	findRels: function(dom, rootNode, fromChildren) {
+		var uf,
+			out = {
+				'items': [],
+				'rels': {},
+				'rel-urls': {}
+			},
+			x,
+			i,
+			y,
+			z,
+			relList,
+			items,
+			item,
+			key,
+			value,
+			arr;
+
+
+		// get all elements that have a rel attribute
+		fromChildren = (fromChildren) ? fromChildren : false; 
+		if(fromChildren) {
+			arr = this.domUtils.getNodesByAttribute(dom, rootNode.children, 'rel');
+		} else {
+			arr = this.domUtils.getNodesByAttribute(dom, rootNode, 'rel');
+		}
+
+		x = 0;
+		i = arr.length;
+		while(x < i) {
+			relList = this.domUtils.getAttribute(dom, arr[x], 'rel');
+
+			if(relList) {
+				items = relList.split(' ');
+				
+				
+				// add rels
+				z = 0;
+				y = items.length;
+				while(z < y) {
+					item = this.utils.trim(items[z]);
+
+					// get rel value
+					value = this.domUtils.getAttrValFromTagList(dom, arr[x], ['a', 'area'], 'href');
+					if(!value) {
+						value = this.domUtils.getAttrValFromTagList(dom, arr[x], ['link'], 'href');
+					}
+
+					// create the key
+					if(!out.rels[item]) {
+						out.rels[item] = [];
+					}
+
+					if(typeof this.options.baseUrl == 'string' && typeof value === 'string') {
+				
+						var resolved = this.domUtils.resolveUrl(dom, value, this.options.baseUrl);
+						// do not add duplicate rels - based on resolved URLs
+						if(out.rels[item].indexOf(resolved) === -1){
+							out.rels[item].push( resolved );
+						}
+					}
+					z++;
+				}
+				
+				
+				var url = null;
+				if(this.domUtils.hasAttribute(dom, arr[x], 'href')){
+					var url = this.domUtils.getAttribute(dom, arr[x], 'href');
+					if(url){
+						url = this.domUtils.resolveUrl(dom, url, this.options.baseUrl );
+					}
+				}
+
+				
+				// add to rel-urls
+				var relUrl = this.getRelProperties(dom, arr[x]);
+				relUrl.rels = items;
+				// // do not add duplicate rel-urls - based on resolved URLs
+				if(url && out['rel-urls'][url] === undefined){
+					out['rel-urls'][url] = relUrl;
+				}
+				
+				if(relList.toLowerCase().indexOf('alternate') > -1){	
+					// if its an alternate add 
+					var obj = this.getRelProperties(dom, arr[x]);
+					if(url){
+						obj.url = url;
+					}
+
+					if(items.length > 1){
+						if(this.domUtils.hasAttribute(dom, arr[x], 'rel')){
+							var clonedRelList = relList;
+							obj.rel = this.utils.trim( clonedRelList.toLowerCase().replace('alternate','') );
+						}
+					}
+					// create the key
+					if(!out['alternate']) {
+						out['alternate'] = [];
+					}
+					out['alternate'].push( obj );
+				}
+					
+
+				
+		
+			}
+			x++;
+		}
+		return out;
+	},
+	
+	
+	// get property values form a link
+	getRelProperties: function(dom, node){
+		var obj = {};
+		
+		if(this.domUtils.hasAttribute(dom, node, 'media')){
+			obj.media = this.domUtils.getAttribute(dom, node, 'media');
+		}
+		if(this.domUtils.hasAttribute(dom, node, 'type')){
+			obj.type = this.domUtils.getAttribute(dom, node, 'type');
+		}
+		if(this.domUtils.hasAttribute(dom, node, 'hreflang')){
+			obj.hreflang = this.domUtils.getAttribute(dom, node, 'hreflang');
+		}
+		if(this.domUtils.hasAttribute(dom, node, 'title')){
+			obj.title = this.domUtils.getAttribute(dom, node, 'title');
+		}
+		if(this.utils.trim(this.getPValue(dom, node, false)) !== ''){
+			obj.text = this.getPValue(dom, node, false);
+		}	
+		
+		return obj;
+	},
+	
+	
+	
 
 
 	// add all the includes ino the dom structure
@@ -1151,6 +1531,9 @@ microformats.Parser.prototype = {
 
 		id = this.utils.trim(id.replace('#', ''));
 		include = dom.getElementById(id);
+		if(include === null){
+			include = this.options.node.querySelector('#' + id);
+		}
 		if(include) {
 			clone = this.domUtils.clone(dom, include);
 			this.markIncludeChildren(dom, clone);
@@ -1287,6 +1670,11 @@ microformats.parser.utils = {
     // is the object a string
     isString: function( obj ) {
         return typeof( obj ) === 'string';
+    },
+    
+    // is the object a number
+    isNumber: function( obj ) {
+        return !isNaN(parseFloat( obj )) && isFinite( obj );
     },
 
 
@@ -1679,13 +2067,13 @@ microformats.parser.domUtils = {
 
 /*!
     ISO Date Parser
-    Parses and builds ISO dates to the uf, W3C , HTML5 or RFC3339 profiles
-    Copyright (C) 2010 - 2013 Glenn Jones. All Rights Reserved.
+    Parses and builds ISO dates to the  W3C, HTML5 or RFC3339 profiles
+    Copyright (C) 2010 - 2015 Glenn Jones. All Rights Reserved.
     MIT License: https://raw.github.com/glennjones/microformat-shiv/master/license.txt
 
     */
 
-function ISODate() {
+function ISODate( dateString, format ) {
     this.dY = -1;
     this.dM = -1;
     this.dD = -1;
@@ -1698,19 +2086,27 @@ function ISODate() {
     this.tzM = -1;
     this.tzPN = '+';
     this.z = false;
-    this.format = 'uf'; // uf or W3C or RFC3339 or HTML5
+
+    // auto defaults to W3C
+    this.autoProfile = {
+       sep: 'T',
+       dsep: '-',
+       tsep: ':',
+       tzsep: ':'
+    };
+    this.format = (format)? format : 'auto'; // auto or uf or W3C or RFC3339 or HTML5
     this.setFormatSep();
 
     // optional should be full iso date/time string 
     if(arguments[0]) {
-        this.parse(arguments[0]);
+        this.parse(dateString, format);
     }
 }
 
 ISODate.prototype = {
 
     // parses a full iso date/time string i.e. 2008-05-01T15:45:19Z
-    parse: function( dateString ) {
+    parse: function( dateString, format ) {
         var dateNormalised = '',
             parts = [],
             tzArray = [],
@@ -1718,6 +2114,15 @@ ISODate.prototype = {
             datePart = '',
             timePart = '',
             timeZonePart = '';
+        
+        // discover date time separtor for auto profile
+        if(dateString.toString().indexOf('t') > -1) {
+            this.autoProfile.sep = 't';
+        }
+        if(dateString.toString().toUpperCase().indexOf('T') === -1) {
+            this.autoProfile.sep = ' ';
+        }     
+
 
         dateString = dateString.toString().toUpperCase().replace(' ','T');
 
@@ -1774,6 +2179,11 @@ ISODate.prototype = {
     parseDate: function( dateString ) {
         var dateNormalised = '',
             parts = [];
+            
+        // discover timezone separtor for auto profile // default is ':'
+        if(dateString.indexOf('-') === -1) {
+            this.autoProfile.tsep = '';
+        }  
 
         // YYYY-DDD
         parts = dateString.match( /(\d\d\d\d)-(\d\d\d)/ );
@@ -1807,6 +2217,11 @@ ISODate.prototype = {
     parseTime: function( timeString ) {
         var timeNormalised = '',
             parts = [];
+            
+        // discover date separtor for auto profile // default is ':'
+        if(timeString.indexOf(':') === -1) {
+            this.autoProfile.tsep = '';
+        }      
 
         // finds timezone HH:MM:SS and HHMMSS  ie 13:30:45, 133045 and 13:30:45.0135
         parts = timeString.match( /(\d\d)?:?(\d\d)?:?(\d\d)?.?([0-9]+)?/ );
@@ -1830,7 +2245,12 @@ ISODate.prototype = {
     parseTimeZone: function( timeString ) {
         var timeNormalised = '',
             parts = [];
-
+            
+        // discover timezone separtor for auto profile // default is ':'
+        if(timeString.indexOf(':') === -1) {
+            this.autoProfile.tzsep = '';
+        }   
+       
         // finds timezone +HH:MM and +HHMM  ie +13:30 and +1330
         parts = timeString.match( /([\-\+]{1})?(\d\d)?:?(\d\d)?/ );
         if(parts[1]) {
@@ -1846,7 +2266,7 @@ ISODate.prototype = {
     },
 
 
-    // returns iso date/time string in in W3C Note, RFC 3339, HTML5 or Microformat profile
+    // returns iso date/time string in in W3C Note, RFC 3339, HTML5, Microformat profile or auto
     toString: function( format ) {
         var output = '';
 
@@ -1878,24 +2298,37 @@ ISODate.prototype = {
 
 
     // returns just the time string element of a iso date/time
-    toTimeString: function( iso ) {
+    toTimeString: function( iso, format ) {
         var out = '';
 
+        if(format){
+            this.format = format;
+        }
         this.setFormatSep();
+        
         // time and can only be created with a full date
         if(iso.tH) {
             if(iso.tH > -1 && iso.tH < 25) {
                 out += iso.tH;
-                out += (iso.tM > -1 && iso.tM < 61) ? this.tsep + iso.tM : this.tsep + '00';
-                out += (iso.tS > -1 && iso.tS < 61) ? this.tsep + iso.tS : this.tsep + '00';
-                out += (iso.tD > -1) ? '.' + iso.tD : '';
+                if(iso.tM > -1 && iso.tM < 61){
+                    out += this.tsep + iso.tM;
+                    if(iso.tS > -1 && iso.tS < 61){
+                        out += this.tsep + iso.tS;
+                        if(iso.tD > -1){
+                            out += '.' + iso.tD;
+                        }
+                    }
+                }
+                
                 // time zone offset 
                 if(iso.z) {
                     out += 'Z';
                 } else {
                     if(iso.tzH && iso.tzH > -1 && iso.tzH < 25) {
                         out += iso.tzPN + iso.tzH;
-                        out += (iso.tzM > -1 && iso.tzM < 61) ? this.tzsep + iso.tzM : this.tzsep + '00';
+                        if(iso.tzM > -1 && iso.tzM < 61){
+                            out += this.tzsep + iso.tzM;
+                        }
                     }
                 }
             }
@@ -1925,12 +2358,19 @@ ISODate.prototype = {
                 this.tsep = ':';
                 this.tzsep = ':';
                 break;
-            default:
-                // uf
-                this.sep = 'T';
+            case 'uf':
+                // old microformats profiles
+                this.sep = ' ';
                 this.dsep = '-';
                 this.tsep = ':';
-                this.tzsep = '';
+                this.tzsep = ':';
+                break;
+            default:
+                // auto - defined by format of input string
+                this.sep = this.autoProfile.sep;
+                this.dsep = this.autoProfile.dsep;
+                this.tsep = this.autoProfile.tsep;
+                this.tzsep = this.autoProfile.tzsep;
         }
     },
 
@@ -1954,6 +2394,7 @@ ISODate.prototype = {
     }
 
 };
+
 
 
 
@@ -1990,8 +2431,7 @@ microformats.parser.dates = {
     isDuration: function(str) {
         if(this.utils.isString(str)){
             str = str.toLowerCase();
-            str = this.utils.trim( str );
-            if(this.utils.startWith(str, 'p') && !str.match(/t|\s/) && !str.match('-') && !str.match(':')) {
+            if(this.utils.startWith(str, 'p') && !str.match('t') && !str.match('-') && !str.match(':')) {
                 return true;
             }
         }
@@ -2000,16 +2440,13 @@ microformats.parser.dates = {
 
 
     // is str a time or timezone
-    // ie HH-MM-SS or z+-HH-MM-SS 08:43 | 15:23:00:0567 | 10:34pm | 10:34 p.m. | +01:00:00 | -02:00 | z15:00 
+    // ie HH-MM-SS or z+-HH-MM-SS 08:43 | 15:23:00:0567 | 10:34pm | 10:34 p.m. | +01:00:00 | -02:00 | z15:00 | 0843 
     isTime: function(str) {
         if(this.utils.isString(str)){
             str = str.toLowerCase();
             str = this.utils.trim( str );
             // start with timezone char
-            if( str.match(':') 
-                && ( this.utils.startWith(str, 'z') 
-                    || this.utils.startWith(str, '-') 
-                    || this.utils.startWith(str, '+') )) {
+            if( str.match(':') && ( this.utils.startWith(str, 'z') || this.utils.startWith(str, '-')  || this.utils.startWith(str, '+') )) {
                 return true;
             }
             // has ante meridiem or post meridiem
@@ -2021,14 +2458,22 @@ microformats.parser.dates = {
             if( str.match(':') && !str.match(/t|\s/) ) {
                 return true;
             }
+            
+            // if its a number of 2, 4 or 6 chars
+            if(this.utils.isNumber(str)){
+                if(str.length === 2 || str.length === 4 || str.length === 6){
+                    return true;
+                }
+            }
         }
         return false;
     },
 
 
+
     // parses a time string and turns it into a 24hr time string
     // 5:34am = 05:34:00 and 1:52:04p.m. = 13:52:04
-    parseAmPmTime: function(time) {
+    parseAmPmTime: function(time, format) {
         var out = time,
             times = [];
 
@@ -2071,8 +2516,8 @@ microformats.parser.dates = {
 
 
     // overlays a different time on a given data to return the union of the two
-    dateTimeUnion: function(date, time) {
-        var isodate = new ISODate(date),
+    dateTimeUnion: function(date, time, format) {
+        var isodate = new ISODate(date, format),
             isotime = new ISODate();
 
         isotime.parseTime(this.parseAmPmTime(time));
@@ -2083,14 +2528,14 @@ microformats.parser.dates = {
             isodate.tD = isotime.tD;
             return isodate;
         } else {
-            new ISODate();
+            return new ISODate();
         }
     },
 
 
     // passed an array of date/time string fragments it creates an iso 
     // datetime string using microformat rules for value and value-title
-    concatFragments: function (arr) {
+    concatFragments: function (arr, format) {
         var out = null,
             i = 0,
             date = '',
@@ -2102,7 +2547,7 @@ microformats.parser.dates = {
             value = arr[i].toUpperCase();
             // if the fragment already contains a full date just return it once its converted W3C profile
             if(value.match('T')) {
-                return new ISODate(value);
+                return new ISODate(value, format);
             }
             // if it looks like a date
             if(value.charAt(4) === '-') {
@@ -2121,9 +2566,9 @@ microformats.parser.dates = {
         }
 
         if(date !== '') {
-            return new ISODate(date + (time ? 'T' : '') + time + offset);
+            return new ISODate(date + (time ? 'T' : '') + time + offset, format);
         } else {
-            out = new ISODate(value);
+            out = new ISODate(value, format);
             if(time !== '') {
                 out.parseTime(time);
             }
@@ -2135,6 +2580,7 @@ microformats.parser.dates = {
     }
 
 };
+
 
 
 /*
@@ -2155,7 +2601,7 @@ microformats.parser.dates = {
 
 
 function Text(){
-    this.textFormat = 'normalised'; // normalised or whitespace
+    this.textFormat = 'whitespacetrimmed'; // normalised or whitespace or whitespacetrimmed or impliednametrimmed - used as default
     this.blockLevelTags = ['h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'p', 'hr', 'pre', 'table',
         'address', 'article', 'aside', 'blockquote', 'caption', 'col', 'colgroup', 'dd', 'div', 
         'dt', 'dir', 'fieldset', 'figcaption', 'figure', 'footer', 'form',  'header', 'hgroup', 'hr', 
@@ -2185,13 +2631,63 @@ Text.prototype = {
                 return undefined;
             }
         }else{
-           return dom(node).text(); 
+           return this.textContent( dom, node.textContent, this.textFormat );
         }
+    },
+    
+    
+    // strip tags from html like textContent
+    textContent: function( dom, text, textFormat ){
+       this.textFormat = (textFormat)? textFormat : this.textFormat;
+       if(text){
+          var out = '',
+              regex = /(<([^>]+)>)/ig;
+            
+          out = text.replace(regex, "");   
+          if(this.textFormat === 'whitespacetrimmed') {    
+             out = this.trimEnds( out );
+          }
+          
+          //return entities.decode( out, 2 );
+          return this.decodeEntities( dom, out );
+       }else{
+          return text; 
+       }
+    },
+    
+    
+    // removes whitespace, tabs and returns from start and end of text
+    trimEnds: function( text ){
+        if(text && text.length){
+            var i = text.length,
+                x = 0;
+            
+            // turn all whitespace chars at end into spaces
+            while (i--) {
+                if(this.isOnlyWhiteSpace(text[i])){
+                    text[i] = ' ';
+                }else{
+                    break;
+                }
+            }
+            
+            // turn all whitespace chars at start into spaces
+            i = text.length;
+            while (x < i) {
+                if(this.isOnlyWhiteSpace(text[x])){
+                    text[x] = ' ';
+                }else{
+                    break;
+                }
+                x++;
+            }
+        }
+        return this.trim(text);
     },
 
 
 
-    // extracts the text nodes in the tree
+    // extracts the text nodes in the dom tree
     walkTreeForText: function( node ) {
         var out = '',
             j = 0;
@@ -2233,6 +2729,7 @@ Text.prototype = {
         }
     },
 
+
     // remove spaces at front and back of string
     trim: function( str ) {
         return str.replace(/^\s+|\s+$/g, '');
@@ -2243,7 +2740,13 @@ Text.prototype = {
     removeWhiteSpace: function( str ){
         return str.replace(/[\t\n\r ]+/g, ' ');
     },
+    
+    // is a string only contain white space chars
+    isOnlyWhiteSpace: function( str ){
+        return !(/[^\t\n\r ]/.test( str ));
+    },
 
+    // use dom to resolve any entity encoding issues
     decodeEntities: function( dom, str ){
         return dom.createTextNode( str ).nodeValue;
     }
@@ -2253,12 +2756,167 @@ Text.prototype = {
 
 microformats.parser.text = {};
 
+
 microformats.parser.text.parse = function(dom, node, textFormat){
     var text = new Text();
     return text.parse(dom, node, textFormat);
 } 
 
 
+microformats.parser.text.textContent = function(dom, htmlStr, textFormat){
+    var text = new Text();
+    return text.textContent( dom, htmlStr, textFormat );
+} 
+
+
+
+
+/*
+    HTML Parser 
+    extracts HTML from DOM nodes
+    Copyright (C) 2010 - 2015 Glenn Jones. All Rights Reserved.
+    MIT License: https://raw.github.com/glennjones/microformat-node/master/license.txt
+
+    Used to create a HTML string from DOM, rather than .html().
+    Was created to get around issue of not been able to remove nodes with 'data-include' attr
+
+    */
+
+'use strict';
+
+
+function Html(){
+    this.voidElt = ['area', 'base', 'br', 'col', 'hr', 'img', 'input', 'link', 'meta', 'param', 'command', 'keygen', 'source'];
+} 
+
+
+Html.prototype = {
+    
+    domUtils: microformats.parser.domUtils,
+
+    // gets the text from dom node 
+    parse: function(dom, node ){
+        var out = '',
+            j = 0;
+
+        // we don not want the outer container
+        if(node.childNodes && node.childNodes.length > 0){
+            for (j = 0; j < node.childNodes.length; j++) {
+                var text = this.walkTreeForHtml( dom, node.childNodes[j] );
+                if(text !== undefined){
+                    out += text;
+                }
+            }
+        }
+
+        if(out !== undefined){
+            return out;
+        }else{
+            return undefined;
+        }
+    },
+
+
+
+    // extracts the text nodes in the tree
+    walkTreeForHtml: function( dom, node ) {
+        var out = '',
+            j = 0;
+
+        // if node is a text node get its text
+        if(node.nodeType && node.nodeType === 3){
+            out += this.getElementText( node ); 
+        }
+
+    
+        // exclude text which has been added with uf include pattern  - 
+        if(node.nodeType && node.nodeType === 1 && this.domUtils.hasAttribute(dom, node, 'data-include') === false){
+
+            // begin tag
+            out += '<' + node.tagName.toLowerCase();  
+
+            // add attributes
+            var attrs = this.getOrderedAttributes(node)
+            for (j = 0; j < attrs.length; j++) {
+                out += ' ' + attrs[j].name +  '=' + '"' + attrs[j].value + '"';
+            }
+
+            if(this.voidElt.indexOf(node.tagName.toLowerCase()) === -1){
+                out += '>';
+            }
+
+            // get the text of the child nodes
+            if(node.childNodes && node.childNodes.length > 0){
+                
+                for (j = 0; j < node.childNodes.length; j++) {
+                    var text = this.walkTreeForHtml( dom, node.childNodes[j] );
+                    if(text !== undefined){
+                        out += text;
+                    }
+                }
+            }
+
+            // end tag
+            if(this.voidElt.indexOf(node.tagName.toLowerCase()) > -1){
+                out += ' />'; 
+            }else{
+                out += '</' + node.tagName.toLowerCase() + '>'; 
+            }
+        } 
+        
+        return (out === '')? undefined : out;
+    },    
+
+
+    // get the text from a node in the dom
+    getElementText: function( node ){
+        if(node.data){
+            return node.data;
+        }else{
+            return '';
+        }
+    },
+    
+    
+    // gets the attributes of a node - ordered as they are used in the node
+    getOrderedAttributes: function( node ){
+        var nodeStr = node.outerHTML,
+            attrs = [];
+            
+        for (var i = 0; i < node.attributes.length; i++) {
+            var attr = node.attributes[i];
+                attr.indexNum = nodeStr.indexOf(attr.name);
+                
+            attrs.push( attr );
+        }
+        return attrs.sort( this.sortObjects( 'indexNum' ) );
+    },
+    
+
+   
+    // sort objects in an array by given property
+    sortObjects: function(property, reverse) {
+        reverse = (reverse) ? -1 : 1;
+        return function (a, b) {
+            a = a[property];
+            b = b[property];
+            if (a < b) return reverse * -1;
+            if (a > b) return reverse * 1;
+            return 0;
+        };
+    }
+
+
+};
+
+
+microformats.parser.html = {};
+
+
+microformats.parser.html.parse = function(dom, node, textFormat){
+    var html = new Html();
+    return html.parse(dom, node, textFormat);
+} 
 
 /*
     Copyright (C) 2010 - 2013 Glenn Jones. All Rights Reserved.
@@ -2480,7 +3138,7 @@ microformats.parser.maps['h-geo'] = {
 microformats.parser.maps['h-item'] = {
 	root: 'item',
 	name: 'h-item',
-	subTree: true,
+	subTree: false,
 	properties: {
 		'fn': {
 			'map': 'p-name'
