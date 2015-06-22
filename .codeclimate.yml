@@ -1,0 +1,13 @@
+# Save as .codeclimate.yml (note leading .) in project root directory
+languages:
+  Ruby: false
+  JavaScript: true
+  PHP: false
+  Python: false
+# exclude_paths:
+ - "examples/*" 
+ - "test/*" 
+ - "microformats-shiv.js" 
+ - "microformats-shiv.min.js" 
+ - "microformats-shiv.min.js.map" 
+ - "update-tests.js" 
