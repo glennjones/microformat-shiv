@@ -15,7 +15,7 @@ var path			= require('path'),
 	download 		= require('download-github-repo');
 
 
-var repo = 'glennjones/tests',
+var repo = 'microformats/tests',  // glennjones/tests
 	tempDir = path.resolve(__dirname,'temp-tests'),
 	testDir = 'javascript',
 	testDirResolve = path.resolve(__dirname,'test', testDir),

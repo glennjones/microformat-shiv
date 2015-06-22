@@ -1,3 +1,5 @@
+'use strict';
+
 module.exports = function( grunt ) {
 	grunt.initConfig({
 		pkg: grunt.file.readJSON('package.json'),
@@ -13,6 +15,7 @@ module.exports = function( grunt ) {
 				src: ['<banner:meta.banner>'].concat([
 						'lib/parser.js', 
 						'lib/utilities.js', 
+						'lib/domparser.js',
 						'lib/domutils.js',
 						'lib/isodate.js',
 						'lib/dates.js',
@@ -54,22 +57,22 @@ module.exports = function( grunt ) {
 			files: ['gruntfile.js', 'lib/*.js']
 		},
 		jshint: {
-			files: ['Gruntfile.js', 'lib/**/*.js', 'test/**/*.js'],
+			files: ['Gruntfile.js', 'lib/**/*.js'],
 			options: {
 				curly: true,
 				eqeqeq: true,
-				immed: true,
 				latedef: true,
-				newcap: true,
 				noarg: true,
-				sub: true,
 				undef: true,
+				unused: true,
 				boss: true,
 				eqnull: true,
-				browser: false,
+				browser: true,
 				node: true,
-				strict: false,
-				quotmark: 'single'
+				strict: true,
+				quotmark: 'single',
+				moz: true,
+				predef: [ 'microformats', 'ISODate' ]
 			},
 			globals: {}
 		},
@@ -78,6 +81,13 @@ module.exports = function( grunt ) {
 				'reporter': 'list'
 			},
 		    all: ['test/microformats-mocha-tests.html']
+		},
+		mochacov: {
+		    options: {
+			    reporter: 'html-cov',
+			    require: ['should']
+		    },
+		    all: ['test/javascript/mf-*.js']
 		},
 		watch: {
 			files: 'lib/*.js',
@@ -92,10 +102,12 @@ module.exports = function( grunt ) {
 	grunt.loadNpmTasks('grunt-contrib-watch');
   	grunt.loadNpmTasks('grunt-jsmin-sourcemap');
 	grunt.loadNpmTasks('grunt-mocha-phantomjs');
+	grunt.loadNpmTasks('grunt-mocha-cov');
 
 	// Default task.
 	grunt.registerTask( 'default', ['concat', 'copy', 'jsmin-sourcemap']);
 	grunt.registerTask( 'test', ['mocha_phantomjs:all']);
+	grunt.registerTask( 'coverage', ['mochacov']);
 
 
 
