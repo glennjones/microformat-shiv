@@ -17,9 +17,9 @@ var path			= require('path'),
 
 var repo = 'microformats/tests',  // glennjones/tests
 	tempDir = path.resolve(__dirname,'temp-tests'),
-	testDir = 'javascript',
+	testDir = 'standards-tests',
 	testDirResolve = path.resolve(__dirname,'test', testDir),
-	testPagePath = path.resolve(__dirname,'test/microformat-tests.html'),
+	testPagePath = path.resolve(__dirname,'test/mocha-tests.html'),
 	testJSPath = path.resolve(__dirname,'test/data.js');
 
 
@@ -166,25 +166,37 @@ function buildTest( testData, testStructure, version, repo ){
 		out = '';
 	out += '<html><head><title>Mocha</title>\r\n';
     out += '<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">\r\n';
-    out += '<link rel="stylesheet" href="css/mocha.css" />\r\n';
-    out += '<script src="../microformat-shiv.js"></script>\r\n';
-   // out += '<script src="javascript/mocha.js"></script>\r\n';
-   // out += '<script src="javascript/chai.js"></script>\r\n';
+    out += '<link rel="stylesheet" href="../node_modules/mocha/mocha.css" />\r\n';
+	out += '<link rel="stylesheet" href="css/mocha-custom.css" />\r\n\r\n';
 	
 	out += '<script src="../node_modules/chai/chai.js"></script>\r\n';
-    out += '<script src="../node_modules/mocha/mocha.js"></script>\r\n';
+    out += '<script src="../node_modules/mocha/mocha.js"></script>\r\n\r\n';
+	
+    out += '<script data-cover src="../lib/parser.js"></script>\r\n';
+    out += '<script data-cover src="../lib/utilities.js"></script>\r\n';
+    out += '<script data-cover src="../lib/domparser.js"></script>\r\n';
+    out += '<script data-cover src="../lib/domutils.js"></script>\r\n';
+    out += '<script data-cover src="../lib/isodate.js"></script>\r\n';
+    out += '<script data-cover src="../lib/dates.js"></script>\r\n';
+    out += '<script data-cover src="../lib/text.js"></script>\r\n';
+    out += '<script data-cover src="../lib/html.js"></script>\r\n';
+    out += '<script data-cover src="../microformat-shiv-maps.js"></script>\r\n\r\n';
 	
     out += '<script src="javascript/helper.js"></script>\r\n';
     out += '<script>mocha.setup("bdd")</script>\r\n';
 	
+	out += '\r\n\r\n // standards test';
 	relativeTestPaths.forEach(function(item){
 		out += '<script src="' + testDir + '/' + item + '"></script>\r\n';
 	});
+	
+    out += '\r\n<script src="../node_modules/blanket/dist/qunit/blanket.min.js"> </script>\r\n';
+    out += '<script src="../node_modules/blanket/src/adapters/mocha-blanket.js"></script>\r\n\r\n';
 
-    out += '<script>window.onload= function(){\r\n';
-	out += 'if (window.mochaPhantomJS) {\r\nmochaPhantomJS.run();\r\n}else{\r\n mocha.run();\r\n}\r\n';
-	out += '};</script>\r\n';
-    out += '</head><body>\r\n';
+    //out += '<script>window.onload= function(){\r\n';
+	//out += 'if (window.mochaPhantomJS) {\r\nmochaPhantomJS.run();\r\n}else{\r\n mocha.run();\r\n}\r\n';
+	//out += '};</script>\r\n';
+    //out += '</head><body>\r\n';
     out += '<h3>Microformats test suite - v' + version + '</h3>\r\n';
 	out += '<p>Mocha tests built on ' + date + '. Downloaded from github repo: ' + repo + ' version v' + version + '</p>\r\n';
     out += '<div id="mocha"></div>\r\n';

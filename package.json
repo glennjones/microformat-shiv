@@ -11,9 +11,12 @@
   },
   "main": "microformat-shiv.js",
   "devDependencies": {
+    "hapi": "8.4.x",
+    "blipp": "2.1.x",
+    "good": "6.1.x",
+    "good-console": "5.0.x",
     "mocha": "2.2.x",
     "chai": "3.0.x",
-    "should": "7.0.x",
     "download-github-repo": "0.1.x",
     "fs-extra": "0.19.x",
     "grunt": "0.4.x",
@@ -25,6 +28,14 @@
     "grunt-mocha-phantomjs": "0.6.x",
     "mocha-unfunk-reporter": "0.4.x",
     "grunt-mocha-test": "0.12.x",
-    "grunt-mocha-cov": "0.4.x"
+    "grunt-mocha-cov": "0.4.x",
+    "blanket": "1.1.x"
+  },
+  "config": {
+    "blanket": {
+      "pattern": [
+        "lib"
+      ]
+    }
   }
 }

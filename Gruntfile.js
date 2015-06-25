@@ -24,6 +24,12 @@ module.exports = function( grunt ) {
 						'lib/maps/*.js'
 					]),
 				dest: '<%= pkg.name %>.js'
+			},
+			distmap: {
+				src: ['<banner:meta.banner>'].concat([
+						'lib/maps/*.js'
+					]),
+				dest: '<%= pkg.name %>-maps.js'
 			}
 		},
 		copy: {
@@ -85,7 +91,7 @@ module.exports = function( grunt ) {
 		mochacov: {
 		    options: {
 			    reporter: 'html-cov',
-			    require: ['should']
+			    require: ['chai']
 		    },
 		    all: ['test/javascript/mf-*.js']
 		},

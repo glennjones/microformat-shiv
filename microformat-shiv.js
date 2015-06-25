@@ -1681,7 +1681,7 @@ microformats.parser.utils = {
 
     // remove spaces at front and back of string
     trim: function( str ) {
-        if(this.isString(str)){
+        if(str && this.isString(str)){
             return str.replace(/^\s+|\s+$/g, '');
         }else{
             return '';
@@ -1691,7 +1691,11 @@ microformats.parser.utils = {
     
     // replaces a character in a string and return the new string
     replaceCharAt: function( str, index, character ) {
-        return str.substr(0, index) + character + str.substr(index+character.length);
+        if(str && str.length > index){
+           return str.substr(0, index) + character + str.substr(index+character.length); 
+        }else{
+            return str;
+        }
     },
 
 
@@ -1757,9 +1761,8 @@ microformats.parser.utils = {
     try {
         // WebKit returns null on unsupported types
         textHTML = !!(new DOMParser()).parseFromString('', 'text/html');
-
     } catch (er) {
-      textHTML = false;
+        textHTML = false;
     }
 
     // If text/html supported, don't need to do anything.
@@ -1773,17 +1776,14 @@ microformats.parser.utils = {
       var doc = document.implementation.createHTMLDocument('');
       doc.documentElement.innerHTML = '<title></title><div></div>';
       htmlElInnerHTML = true;
-
     } catch (er) {
       htmlElInnerHTML = false;
     }
 
     // If if that failed, try text/xml
     if (!htmlElInnerHTML) {
-
         try {
             textXML = !!(new DOMParser()).parseFromString('', 'text/xml');
-
         } catch (er) {
             textHTML = false;
         }
@@ -1859,7 +1859,12 @@ microformats.parser.domUtils = {
 	getAttribute: function(dom, node, attributeName) {
 		return node.getAttribute(attributeName);
 	},
-
+	
+	
+	// set the attribute value
+	setAttribute: function(dom, node, name, value){
+		node.setAttribute(name, value);
+	},
 
 	// removes an attribute
 	removeAttribute: function(dom, node, attributeName) {
@@ -1891,7 +1896,7 @@ microformats.parser.domUtils = {
 	},
 
 
-
+/*
 	// returns whether an attribute has an item that start with the given value
 	hasAttributeValueByPrefix: function(dom, node, attributeName, value) {
 		var attList = [],
@@ -1908,9 +1913,9 @@ microformats.parser.domUtils = {
 		}
 		return false;
 	},
+*/
 
-
-	// return an array of elements that match an attribute/value
+	// return an array of elements that match an attribute
 	getNodesByAttribute: function(dom, node, name) {
 		var selector = '[' + name + ']';
 		return node.querySelectorAll(selector);
@@ -1937,11 +1942,6 @@ microformats.parser.domUtils = {
 		return out;
 	},
 
-
-	// set the attribute value
-	setAttribute: function(dom, node, name, value){
-		node.setAttribute(name, value);
-	},
 
 
 	// returns the attribute value only if the node tagName is in the tagNames list
@@ -1975,9 +1975,6 @@ microformats.parser.domUtils = {
 			if(child.tagName) {
 				// can filter or not by tagNames array
 				if(tagNames && this.hasTagName(child, tagNames)){
-					out = child;
-				}
-				if(!tagNames){
 					out = child;
 				}
 				// count all tag/element nodes
@@ -2063,11 +2060,13 @@ microformats.parser.domUtils = {
 	},
 
 
+	/*
 	resolveUrliFrame: function(dom, url, baseUrl){
 		var iframe = dom.createElement('iframe');
-		iframe.innerHTML('<html><head><base href="' + baseUrl+ '"><head><body><a href="' + baseUrl+ '"></a></body></html>');
+		iframe.innerHTML('<html><head><base href="' + baseUrl+ '"><head><body><a href="' + url + '"></a></body></html>');
 		return iframe.document.getElementsByTagName('a')[0].href;
 	}
+	*/
 
 
 };   
@@ -2083,27 +2082,9 @@ microformats.parser.domUtils = {
 'use strict';
 
 function ISODate( dateString, format ) {
-    this.dY = -1;
-    this.dM = -1;
-    this.dD = -1;
-    this.dDDD = -1;
-    this.tH = -1;
-    this.tM = -1;
-    this.tS = -1;
-    this.tD = -1;
-    this.tzH = -1;
-    this.tzM = -1;
-    this.tzPN = '+';
-    this.z = false;
+    this.clear();
 
-    // auto defaults to W3C
-    this.autoProfile = {
-       sep: 'T',
-       dsep: '-',
-       tsep: ':',
-       tzsep: ':'
-    };
-    this.format = (format)? format : 'auto'; // auto or uf or W3C or RFC3339 or HTML5
+    this.format = (format)? format : 'auto'; // auto or W3C or RFC3339 or HTML5
     this.setFormatSep();
 
     // optional should be full iso date/time string 
@@ -2113,9 +2094,57 @@ function ISODate( dateString, format ) {
 }
 
 ISODate.prototype = {
+    
+    
+    // clear all state
+    clear: function(){
+        this.clearDate();
+        this.clearTime();
+        this.clearTimeZone();
+        this.setAutoProfileState();
+    },
+    
+    // clear date state
+    clearDate: function(){
+        this.dY = -1;
+        this.dM = -1;
+        this.dD = -1;
+        this.dDDD = -1;
+    },
+    
+    // clear time state
+    clearTime: function(){
+        this.tH = -1;
+        this.tM = -1;
+        this.tS = -1;
+        this.tD = -1;
+    },
+    
+    // clear timezone state
+    clearTimeZone: function(){
+        this.tzH = -1;
+        this.tzM = -1;
+        this.tzPN = '+';
+        this.z = false;
+    },
+    
+    // resets the auto profile state
+    setAutoProfileState: function(){
+        this.autoProfile = {
+           sep: 'T',
+           dsep: '-',
+           tsep: ':',
+           tzsep: ':',
+           tzZulu: 'Z'
+        };
+    },
+    
+   
 
     // parses a full iso date/time string i.e. 2008-05-01T15:45:19Z
     parse: function( dateString, format ) {
+        this.clear();
+        
         var parts = [],
             tzArray = [],
             position = 0,
@@ -2127,16 +2156,25 @@ ISODate.prototype = {
             this.format = format;
         }
         
+
+        
         // discover date time separtor for auto profile
-        if(dateString.toString().indexOf('t') > -1) {
+        // Set to 'T' by default
+        if(dateString.indexOf('t') > -1) {
             this.autoProfile.sep = 't';
         }
-        if(dateString.toString().toUpperCase().indexOf('T') === -1) {
+        if(dateString.indexOf('z') > -1) {
+            this.autoProfile.tzZulu = 'z';
+        }
+        if(dateString.indexOf('Z') > -1) {
+            this.autoProfile.tzZulu = 'Z';
+        }
+        if(dateString.toUpperCase().indexOf('T') === -1) {
             this.autoProfile.sep = ' ';
         }     
 
 
-        dateString = dateString.toString().toUpperCase().replace(' ','T');
+        dateString = dateString.toUpperCase().replace(' ','T');
 
         // break on 'T' divider or space
         if(dateString.indexOf('T') > -1) {
@@ -2183,12 +2221,14 @@ ISODate.prototype = {
                 }
             }
         }
-        return this.toString();
+        return this.toString( format );
     },
 
 
     // parses just the date element of a iso date/time string i.e. 2008-05-01
-    parseDate: function( dateString ) {
+    parseDate: function( dateString, format ) {
+        this.clearDate();
+        
         var parts = [];
             
         // discover timezone separtor for auto profile // default is ':'
@@ -2220,12 +2260,13 @@ ISODate.prototype = {
                 this.dD = parts[3];
             }
         }
-        return this.toString();
+        return this.toString(format);
     },
 
 
     // parses just the time element of a iso date/time string i.e. 13:30:45
-    parseTime: function( timeString ) {
+    parseTime: function( timeString, format ) {
+        this.clearTime();
         var parts = [];
             
         // discover date separtor for auto profile // default is ':'
@@ -2247,32 +2288,46 @@ ISODate.prototype = {
         if(parts[4]) {
             this.tD = parts[4];
         }
-        return this.toString();
+        return this.toTimeString(format);
     },
 
 
     // parses just the time element of a iso date/time string i.e. +08:00
-    parseTimeZone: function( timeString ) {
+    parseTimeZone: function( timeString, format ) {
+        this.clearTimeZone();
         var parts = [];
+        
+        if(timeString.toLowerCase() === 'z'){
+            this.z = true;
+            // set case for z
+            this.autoProfile.tzZulu = (timeString === 'z')? 'z' : 'Z';
+        }else{
             
-        // discover timezone separtor for auto profile // default is ':'
-        if(timeString.indexOf(':') === -1) {
-            this.autoProfile.tzsep = '';
-        }   
-       
-        // finds timezone +HH:MM and +HHMM  ie +13:30 and +1330
-        parts = timeString.match( /([\-\+]{1})?(\d\d)?:?(\d\d)?/ );
-        if(parts[1]) {
-            this.tzPN = parts[1];
+            // discover timezone separtor for auto profile // default is ':'
+            if(timeString.indexOf(':') === -1) {
+                this.autoProfile.tzsep = '';
+            }   
+           
+            // finds timezone +HH:MM and +HHMM  ie +13:30 and +1330
+            parts = timeString.match( /([\-\+]{1})?(\d\d)?:?(\d\d)?/ );
+            if(parts[1]) {
+                this.tzPN = parts[1];
+            }
+            if(parts[2]) {
+                this.tzH = parts[2];
+            }
+            if(parts[3]) {
+                this.tzM = parts[3];
+            } 
+            
+  
         }
-        if(parts[2]) {
-            this.tzH = parts[2];
-        }
-        if(parts[3]) {
-            this.tzM = parts[3];
-        }
-        return this.toString();
+        this.tzZulu = 'z';    
+        return this.toTimeString( format );
     },
+    
+    
+ 
 
 
     // returns iso date/time string in in W3C Note, RFC 3339, HTML5, Microformat profile or auto
@@ -2291,7 +2346,7 @@ ISODate.prototype = {
                 if(this.dD > 0 && this.dD < 32) {
                     output += this.dsep + this.dD;
                     if(this.tH > -1 && this.tH < 25) {
-                        output += this.sep + this.toTimeString( this );
+                        output += this.sep + this.toTimeString( format );
                     }
                 }
             }
@@ -2299,7 +2354,7 @@ ISODate.prototype = {
                 output += this.dsep + this.dDDD;
             }
         } else if(this.tH > -1) {
-            output += this.toTimeString( this );
+            output += this.toTimeString( format );
         }
 
         return output;
@@ -2307,7 +2362,7 @@ ISODate.prototype = {
 
 
     // returns just the time string element of a iso date/time
-    toTimeString: function( iso, format ) {
+    toTimeString: function( format ) {
         var out = '';
 
         if(format){
@@ -2316,27 +2371,29 @@ ISODate.prototype = {
         this.setFormatSep();
         
         // time and can only be created with a full date
-        if(iso.tH) {
-            if(iso.tH > -1 && iso.tH < 25) {
-                out += iso.tH;
-                if(iso.tM > -1 && iso.tM < 61){
-                    out += this.tsep + iso.tM;
-                    if(iso.tS > -1 && iso.tS < 61){
-                        out += this.tsep + iso.tS;
-                        if(iso.tD > -1){
-                            out += '.' + iso.tD;
+        if(this.tH) {
+            if(this.tH > -1 && this.tH < 25) {
+                out += this.tH;
+                if(this.tM > -1 && this.tM < 61){
+                    out += this.tsep + this.tM;
+                    if(this.tS > -1 && this.tS < 61){
+                        out += this.tsep + this.tS;
+                        if(this.tD > -1){
+                            out += '.' + this.tD;
                         }
                     }
                 }
                 
+                
+          
                 // time zone offset 
-                if(iso.z) {
-                    out += 'Z';
+                if(this.z) {
+                    out += this.tzZulu;
                 } else {
-                    if(iso.tzH && iso.tzH > -1 && iso.tzH < 25) {
-                        out += iso.tzPN + iso.tzH;
-                        if(iso.tzM > -1 && iso.tzM < 61){
-                            out += this.tzsep + iso.tzM;
+                    if(this.tzH && this.tzH > -1 && this.tzH < 25) {
+                        out += this.tzPN + this.tzH;
+                        if(this.tzM > -1 && this.tzM < 61){
+                            out += this.tzsep + this.tzM;
                         }
                     }
                 }
@@ -2348,31 +2405,27 @@ ISODate.prototype = {
 
     // congifures the separators for a given profile
     setFormatSep: function() {
-        switch( this.format ) {
-            case 'RFC3339':
+        switch( this.format.toLowerCase() ) {
+            case 'rfc3339':
                 this.sep = 'T';
                 this.dsep = '';
                 this.tsep = '';
                 this.tzsep = '';
+                this.tzZulu = 'Z';
                 break;
-            case 'W3C':
+            case 'w3c':
                 this.sep = 'T';
                 this.dsep = '-';
                 this.tsep = ':';
                 this.tzsep = ':';
+                this.tzZulu = 'Z';
                 break;
-            case 'HTML5':
+            case 'html5':
                 this.sep = ' ';
                 this.dsep = '-';
                 this.tsep = ':';
                 this.tzsep = ':';
-                break;
-            case 'uf':
-                // old microformats profiles
-                this.sep = ' ';
-                this.dsep = '-';
-                this.tsep = ':';
-                this.tzsep = ':';
+                this.tzZulu = 'Z';
                 break;
             default:
                 // auto - defined by format of input string
@@ -2380,8 +2433,10 @@ ISODate.prototype = {
                 this.dsep = this.autoProfile.dsep;
                 this.tsep = this.autoProfile.tsep;
                 this.tzsep = this.autoProfile.tzsep;
+                this.tzZulu = this.autoProfile.tzZulu;
         }
     },
+
 
     hasFullDate: function() {
         return(this.dY !== -1 && this.dM !== -1 && this.dD !== -1);
@@ -2418,29 +2473,35 @@ ISODate.prototype = {
 microformats.parser.dates = {
 
     utils:  microformats.parser.utils,
-
-    removeAMPM: function(str) {
-        return str.replace('pm', '').replace('p.m.', '').replace('am', '').replace('a.m.', '');
-    },
-
-
+    
+    
+    // does string contain am
     hasAM: function(time) {
         time = time.toLowerCase();
         return(time.indexOf('am') > -1 || time.indexOf('a.m.') > -1);
     },
 
 
+    // does string contain pm
     hasPM: function(time) {
         time = time.toLowerCase();
         return(time.indexOf('pm') > -1 || time.indexOf('p.m.') > -1);
     },
 
 
-    // is str a ISO duration  i.e.  PY17M or PW12
+    // remove am and pm from a string and return it
+    removeAMPM: function(str) {
+        return str.replace('pm', '').replace('p.m.', '').replace('am', '').replace('a.m.', '');
+    },
+
+   
+
+    // very simple test of weather ISO date string is a duration  i.e.  PY17M or PW12
     isDuration: function(str) {
         if(this.utils.isString(str)){
             str = str.toLowerCase();
-            if(this.utils.startWith(str, 'p') && !str.match('t') && !str.match('-') && !str.match(':')) {
+            if(this.utils.startWith(str, 'p') ){
+                //&& str.match(/^P(?=\w*\d)(?:\d+Y|Y)?(?:\d+M|M)?(?:\d+D|D)?(?:\d+W|W)?(?:T(?:\d+H|H)?(?:\d+M|M)?(?:\d+(?:\­.\d{1,2})?S|S)?)?$/) ) {
                 return true;
             }
         }
@@ -2496,15 +2557,12 @@ microformats.parser.dates = {
                 if(time.match(':')) {
                     times = time.split(':');
                 } else {
+                    // single number time ie 5pm
                     times[0] = time;
                     times[0] = this.removeAMPM(times[0]);
                 }
-
-                if(this.hasAM(time)) {
-                    if(times[0] === '12') {
-                        times[0] = '00';
-                    }
-                }
+                
+                // change pm hours to 24 hour number
                 if(this.hasPM(time)) {
                     if(times[0] < 12) {
                         times[0] = parseInt(times[0], 10) + 12;
@@ -2515,11 +2573,15 @@ microformats.parser.dates = {
                 if(times[0] && times[0].length === 1) {
                     times[0] = '0' + times[0];
                 }
+                
+                // rejoin time elements together
                 if(times[0]) {
                     time = times.join(':');
                 }
             }
         }
+        
+        // remove am/pm strings
         return this.removeAMPM(time);
     },
 
@@ -2537,55 +2599,80 @@ microformats.parser.dates = {
             isodate.tD = isotime.tD;
             return isodate;
         } else {
+            if(isodate.hasFullDate()){
+                return isodate;
+            }
             return new ISODate();
         }
     },
 
 
-    // passed an array of date/time string fragments it creates an iso 
-    // datetime string using microformat rules for value and value-title
+    // passed an array of date/time string fragments it creates an iso datetime
+    // used for microformat value and value-title rules
     concatFragments: function (arr, format) {
-        var out = null,
+        var out = new ISODate(),
             i = 0,
             date = '',
             time = '',
             offset = '',
             value = '';
-
-        for(i = 0; i < arr.length; i++) {
-            value = arr[i].toUpperCase();
-            // if the fragment already contains a full date just return it once its converted W3C profile
-            if(value.match('T')) {
-                return new ISODate(value, format);
+        
+        // if the fragment already contains a full date just return it once its converted to profile
+        if(arr[0].toUpperCase().match('T')) {
+            return new ISODate(arr[0], format);
+        }else{
+            for(i = 0; i < arr.length; i++) {
+            value = arr[i];
+  
+            // date pattern
+            if( value.charAt(4) === '-' && out.hasFullDate() === false ){
+                out.parseDate(value);
             }
-            // if it looks like a date
-            if(value.charAt(4) === '-') {
-                date = value;
-                // if it looks like a timezone    
-            } else if((value.charAt(0) === '-') || (value.charAt(0) === '+') || (value === 'Z')) {
-                if(value.length === 2) {
-                    offset = value[0] + '0' + value[1];
-                } else {
-                    offset = value;
+            
+            // time pattern
+            if( (value.indexOf(':') > -1 || this.utils.isNumber( this.parseAmPmTime(value) )) && out.hasTime() === false ) {
+                // split time And timezone
+                var items = this.splitTimeAndZone(value);
+                value = items[0];
+                
+                // parse any use of am/pm
+                value = this.parseAmPmTime(value);
+                out.parseTime(value);
+                
+                // parse any timezone that ws appended to time
+                if(items.length > 1){
+                     out.parseTimeZone(items[1]);
                 }
-            } else {
-                // else if could be a time 
-                time = this.parseAmPmTime(value);
             }
-        }
+            
+            // timezone pattern
+            if(value.charAt(0) === '-' || value.charAt(0) === '+' || value.toUpperCase() === 'Z') {
+                if( out.hasTimeZone() === false ){
+                    out.parseTimeZone(value);
+                }
+            }
 
-        if(date !== '') {
-            return new ISODate(date + (time ? 'T' : '') + time + offset, format);
-        } else {
-            out = new ISODate(value, format);
-            if(time !== '') {
-                out.parseTime(time);
-            }
-            if(offset !== '') {
-                out.parseTime(offset);
-            }
-            return out;
         }
+        return out;
+            
+        }
+    },
+    
+    
+    // parses time string by spliting time and timezone, return an array
+    splitTimeAndZone: function ( time ){
+       var out = [time],
+           chars = ['-','+','z','Z'],
+           i = chars.length;
+           
+        while (i--) {
+          if(time.indexOf(chars[i]) > -1){
+              out[0] = time.slice( 0, time.indexOf(chars[i]) );
+              out.push( time.slice( time.indexOf(chars[i]) ) );
+              break;
+           }
+        }
+       return out;
     }
 
 };
@@ -2609,7 +2696,7 @@ microformats.parser.dates = {
 
 
 function Text(){
-    this.textFormat = 'whitespacetrimmed'; // normalised or whitespace or whitespacetrimmed or impliednametrimmed - used as default
+    this.textFormat = 'whitespacetrimmed'; // normalised or whitespace or whitespacetrimmed - used as default
     this.blockLevelTags = ['h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'p', 'hr', 'pre', 'table',
         'address', 'article', 'aside', 'blockquote', 'caption', 'col', 'colgroup', 'dd', 'div', 
         'dt', 'dir', 'fieldset', 'figcaption', 'figure', 'footer', 'form',  'header', 'hgroup', 'hr', 
@@ -2625,18 +2712,13 @@ Text.prototype = {
     // gets the text from dom node 
     parse: function(dom, node, textFormat){
         var out;
-
         this.textFormat = (textFormat)? textFormat : this.textFormat;
         if(this.textFormat === 'normalised'){
             out = this.walkTreeForText( node );
             if(out !== undefined){
-                out = out.replace( /&nbsp;/g, ' ') ;    // exchanges html entity for space into space char
-                out = this.removeWhiteSpace( out );     // removes linefeeds, tabs and addtional spaces
-                out = this.decodeEntities( dom, out );  // decode HTML entities
-                out = out.replace( '–', '-' );          // correct dash decoding
-                return this.trim( out );
+                return this.normalise( dom, out );
             }else{
-                return undefined;
+                return '';
             }
         }else{
            return this.textContent( dom, node.textContent, this.textFormat );
@@ -2644,7 +2726,15 @@ Text.prototype = {
     },
     
     
-    // strip tags from html like textContent
+    // get text from html string  
+    parseText: function( dom, text, textFormat ){
+       var node = document.createElement('div');
+       node.innerHTML = text;
+       return this.parse( dom, node, textFormat );
+    },
+    
+    
+    // whitespace or whitespacetrimmed
     textContent: function( dom, text, textFormat ){
        this.textFormat = (textFormat)? textFormat : this.textFormat;
        if(text){
@@ -2659,8 +2749,18 @@ Text.prototype = {
           //return entities.decode( out, 2 );
           return this.decodeEntities( dom, out );
        }else{
-          return text; 
+          return ''; 
        }
+    },
+    
+    
+    // normalise text 
+    normalise: function( dom, text ){
+        text = text.replace( /&nbsp;/g, ' ') ;    // exchanges html entity for space into space char
+        text = this.removeWhiteSpace( text );     // removes linefeeds, tabs and addtional spaces
+        text = this.decodeEntities( dom, text );  // decode HTML entities
+        text = text.replace( '–', '-' );          // correct dash decoding
+        return this.trim( text );
     },
     
     
@@ -2701,7 +2801,7 @@ Text.prototype = {
         var out = '',
             j = 0;
 
-        if(this.excludeTags.indexOf( node.name ) > -1){
+        if(node.tagName && this.excludeTags.indexOf( node.tagName.toLowerCase() ) > -1){
             return out;
         }
 
@@ -2721,7 +2821,7 @@ Text.prototype = {
         }
 
         // if its a block level tag add an additional space at the end
-        if(this.blockLevelTags.indexOf( node.name ) !== -1){
+        if(node.tagName && this.blockLevelTags.indexOf( node.tagName.toLowerCase() ) !== -1){
             out += ' ';
         } 
         
@@ -2768,9 +2868,9 @@ Text.prototype = {
 };
 
 
-microformats.parser.text = {};
+microformats.parser.text = new Text();
 
-
+/*
 microformats.parser.text.parse = function(dom, node, textFormat){
     var text = new Text();
     return text.parse(dom, node, textFormat);
@@ -2781,6 +2881,7 @@ microformats.parser.text.textContent = function(dom, htmlStr, textFormat){
     var text = new Text();
     return text.textContent( dom, htmlStr, textFormat );
 };
+*/
 
 
 
@@ -2791,7 +2892,7 @@ microformats.parser.text.textContent = function(dom, htmlStr, textFormat){
     Copyright (C) 2010 - 2015 Glenn Jones. All Rights Reserved.
     MIT License: https://raw.github.com/glennjones/microformat-node/master/license.txt
 
-    Used to create a HTML string from DOM, rather than .html().
+    Used to create a HTML string from DOM, rather than .outerHTML or .html().
     Was created to get around issue of not been able to remove nodes with 'data-include' attr
 
 */
@@ -2822,11 +2923,7 @@ Html.prototype = {
             }
         }
 
-        if(out !== undefined){
-            return out;
-        }else{
-            return undefined;
-        }
+        return out;
     },
 
 
@@ -2927,13 +3024,13 @@ Html.prototype = {
 };
 
 
-microformats.parser.html = {};
+microformats.parser.html = new Html();
 
 
-microformats.parser.html.parse = function(dom, node, textFormat){
-    var html = new Html();
-    return html.parse(dom, node, textFormat);
-}; 
+//microformats.parser.html.parse = function(dom, node, textFormat){
+//    var html = new Html();
+//    return html.parse(dom, node, textFormat);
+//}; 
 
 /*
     Copyright (C) 2010 - 2015 Glenn Jones. All Rights Reserved.
