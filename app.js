@@ -53,18 +53,18 @@ server.route([{
 	}
 },{
 	method: ['GET'],
-	path: '/node_modules/blanket/dist/qunit/blanket.min.js',
+	path: '/node_modules/poncho/node_modules/blanket/dist/qunit/blanket.min.js',
     handler: {
 		file: {
-			path: './node_modules/blanket/dist/qunit/blanket.min.js'
+			path: './node_modules/poncho/node_modules/blanket/dist/qunit/blanket.min.js'
 		}
 	}
 },{
 	method: ['GET'],
-	path: '/node_modules/blanket/src/adapters/mocha-blanket.js',
+	path: '/node_modules/poncho/node_modules/blanket/src/adapters/mocha-blanket.js',
     handler: {
 		file: {
-			path: './node_modules/blanket/src/adapters/mocha-blanket.js'
+			path: './node_modules/poncho/node_modules/blanket/src/adapters/mocha-blanket.js'
 		}
 	}
 },{

@@ -1,5 +1,10 @@
 # microformat-shiv
 
+
+[![MIT license](http://img.shields.io/badge/license-MIT-blue.svg?style=flat)](https://raw.github.com/glennjones/microformat-shic/master/license.txt)
+[![Codacy Badge](https://www.codacy.com/project/badge/520b9cab36254761b100c33d3e3899e3)](https://www.codacy.com/app/glennjonesnet/microformat-shiv)
+
+
 microformat-shiv is a light-weight cross browser javascript [microformats 2](http://microformats.org/wiki/microformats-2) parser. Browsers should come with APIs to parse semantic content such as microformats, unfortunately this has yet to happen.
 
 * A light-weight cross browser JavaScript 
@@ -109,12 +114,20 @@ The library includes web pages which run the [microfomats test suite](https://gi
     \test\microfomats-mocha-tests.html
     
    
- ### Other tests tools
- There are also two other tests tools:
- 
+### Other tests tools
+There are also two other tests tools:
+
     \test\testrunner.html (clients side version microfomats test suite testrunner)
     \test\parse.html (clients side form to test parsing microfomats html)
     
+### Test Coverage tools
+
+    http://localhost:3000/mocha-tests2.html 
+
+    $ ./node_modules/.bin/poncho --reporter lcov test/mocha-tests.html
+    $ ./node_modules/.bin/poncho --reporter lcov test/mocha-tests.html | ./node_modules/codacy-coverage/bin/codacy-coverage.js
+
+
 
 ### Support or Contact
 

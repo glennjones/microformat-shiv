@@ -26,10 +26,11 @@
     "grunt-contrib-watch": "0.6.x",
     "grunt-jsmin-sourcemap": "1.9.x",
     "grunt-mocha-phantomjs": "0.6.x",
-    "mocha-unfunk-reporter": "0.4.x",
     "grunt-mocha-test": "0.12.x",
-    "grunt-mocha-cov": "0.4.x",
-    "blanket": "1.1.x"
+    "poncho": "0.1.x",
+    "codacy-coverage": "1.1.x",
+    "mocha-lcov-reporter": "0.0.x",
+    "coveralls": "2.11.x"
   },
   "config": {
     "blanket": {
@@ -39,3 +40,4 @@
     }
   }
 }
+
