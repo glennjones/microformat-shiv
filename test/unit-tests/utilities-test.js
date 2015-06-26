@@ -71,7 +71,16 @@ describe('utilities', function() {
        assert.isFalse( microformats.parser.utils.hasProperties( {} ) );
    });
    
-
+   
+   it('sortObjects', function(){
+       var arr = [{'name': 'one'},{'name': 'two'},{'name': 'three'},{'name': 'three'}];
+       
+       assert.deepEqual( arr.sort( microformats.parser.utils.sortObjects( 'name', true ) ), [{"name":"two"},{"name":"three"},{'name': 'three'},{"name":"one"}] );
+       assert.deepEqual( arr.sort( microformats.parser.utils.sortObjects( 'name', false ) ), [{"name":"one"},{"name":"three"},{'name': 'three'},{"name":"two"}] );
+   });
+   
+   
+  
    
    
 });

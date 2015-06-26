@@ -1,8 +1,15 @@
 /*
+   microformat-shiv - v0.3.4
+   Built: 2015-06-26 09:06 - http://microformat-shiv.com
+   Copyright (c) 2015 Glenn Jones
+   Licensed MIT 
+*/
+
+
+/*
     Copyright (C) 2010 - 2015 Glenn Jones. All Rights Reserved.
     MIT License: https://raw.github.com/glennjones/microformat-shiv/master/license.txt  
 */
-'use strict';
 
 microformats.parser.maps['h-adr'] = {
 	root: 'adr',
@@ -24,7 +31,6 @@ microformats.parser.maps['h-adr'] = {
     Copyright (C) 2010 - 2015 Glenn Jones. All Rights Reserved.
     MIT License: https://raw.github.com/glennjones/microformat-shiv/master/license.txt  
 */
-'use strict';
 
 microformats.parser.maps['h-card'] =  {
 	root: 'vcard',
@@ -99,7 +105,6 @@ microformats.parser.maps['h-card'] =  {
     Copyright (C) 2010 - 2015 Glenn Jones. All Rights Reserved.
     MIT License: https://raw.github.com/glennjones/microformat-shiv/master/license.txt  
 */
-'use strict';
 
 microformats.parser.maps['h-entry'] = {
 	root: 'hentry',
@@ -145,7 +150,6 @@ microformats.parser.maps['h-entry'] = {
     Copyright (C) 2010 - 2015 Glenn Jones. All Rights Reserved.
     MIT License: https://raw.github.com/glennjones/microformat-shiv/master/license.txt  
 */
-'use strict';
 
 microformats.parser.maps['h-event'] = {  
 	root: 'vevent',
@@ -203,7 +207,6 @@ microformats.parser.maps['h-event'] = {
     Copyright (C) 2010 - 2015 Glenn Jones. All Rights Reserved.
     MIT License: https://raw.github.com/glennjones/microformat-shiv/master/license.txt  
 */
-'use strict';
 
 microformats.parser.maps['h-geo'] = {
 	root: 'geo',
@@ -219,7 +222,6 @@ microformats.parser.maps['h-geo'] = {
     Copyright (C) 2010 - 2015 Glenn Jones. All Rights Reserved.
     MIT License: https://raw.github.com/glennjones/microformat-shiv/master/license.txt  
 */
-'use strict';
 
 microformats.parser.maps['h-item'] = {
 	root: 'item',
@@ -243,7 +245,6 @@ microformats.parser.maps['h-item'] = {
     Copyright (C) 2010 - 2015 Glenn Jones. All Rights Reserved.
     MIT License: https://raw.github.com/glennjones/microformat-shiv/master/license.txt  
 */
-'use strict';
 
 microformats.parser.maps['h-listing'] = {
   root: 'hlisting',
@@ -278,7 +279,6 @@ microformats.parser.maps['h-listing'] = {
     Copyright (C) 2010 - 2015 Glenn Jones. All Rights Reserved.
     MIT License: https://raw.github.com/glennjones/microformat-shiv/master/license.txt  
 */
-'use strict';
 
 microformats.parser.maps['h-news'] = {
   root: 'hnews',
@@ -314,7 +314,6 @@ microformats.parser.maps['h-news'] = {
     Copyright (C) 2010 - 2015 Glenn Jones. All Rights Reserved.
     MIT License: https://raw.github.com/glennjones/microformat-shiv/master/license.txt  
 */
-'use strict';
 
 microformats.parser.maps['h-org'] = {
     root: 'h-x-org',  // drop this from v1 as it causes issue with fn org hcard pattern
@@ -331,7 +330,6 @@ microformats.parser.maps['h-org'] = {
     Copyright (C) 2010 - 2015 Glenn Jones. All Rights Reserved.
     MIT License: https://raw.github.com/glennjones/microformat-shiv/master/license.txt  
 */
-'use strict';
 
 microformats.parser.maps['h-product'] = {
   root: 'hproduct',
@@ -374,7 +372,6 @@ microformats.parser.maps['h-product'] = {
     Copyright (C) 2010 - 2015 Glenn Jones. All Rights Reserved.
     MIT License: https://raw.github.com/glennjones/microformat-shiv/master/license.txt  
 */
-'use strict';
 
 microformats.parser.maps['h-recipe'] = {
   root: 'hrecipe',
@@ -414,7 +411,6 @@ microformats.parser.maps['h-recipe'] = {
     Copyright (C) 2010 - 2015 Glenn Jones. All Rights Reserved.
     MIT License: https://raw.github.com/glennjones/microformat-shiv/master/license.txt  
 */
-'use strict';
 
 microformats.parser.maps['h-resume'] = {
 	root: 'hresume',
@@ -442,7 +438,6 @@ microformats.parser.maps['h-resume'] = {
     Copyright (C) 2010 - 2015 Glenn Jones. All Rights Reserved.
     MIT License: https://raw.github.com/glennjones/microformat-shiv/master/license.txt  
 */
-'use strict';
 
 microformats.parser.maps['h-review-aggregate'] = {
     root: 'hreview-aggregate',
@@ -478,7 +473,6 @@ microformats.parser.maps['h-review-aggregate'] = {
     Copyright (C) 2010 - 2015 Glenn Jones. All Rights Reserved.
     MIT License: https://raw.github.com/glennjones/microformat-shiv/master/license.txt  
 */
-'use strict';
 
 microformats.parser.maps['h-review'] = {
     root: 'hreview',
@@ -519,7 +513,6 @@ microformats.parser.maps['h-review'] = {
     Copyright (C) 2010 - 2015 Glenn Jones. All Rights Reserved.
     MIT License: https://raw.github.com/glennjones/microformat-shiv/master/license.txt  
 */
-'use strict';
 
 microformats.parser.rels = {
 	// xfn

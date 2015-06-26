@@ -194,6 +194,10 @@ describe('domutils', function() {
    
    
 
+   it('getElementText', function(){
+       assert.equal(  microformats.parser.domUtils.getElementText( {} ), '' );
+   });
+   
 
 
  

@@ -1,18 +1,23 @@
-'use strict';
 
 module.exports = function( grunt ) {
 	grunt.initConfig({
 		pkg: grunt.file.readJSON('package.json'),
 		meta: {
-			banner: '/*! <%= pkg.title || pkg.name %> - v<%= pkg.version %> - ' +
-			'<%= grunt.template.today("yyyy-mm-dd") %>\n' +
-			'<%= pkg.homepage ? "* " + pkg.homepage + "\n" : "" %>' +
-			'* Copyright (c) <%= grunt.template.today("yyyy") %> <%= pkg.author %>;' +
-			' Licensed <%= pkg.license %> */'
+			banner: '/*\n   <%= pkg.title || pkg.name %> - v<%= pkg.version %>\n' +
+			'   Built: <%= grunt.template.today("yyyy-mm-dd hh:mm") %> - ' + '<%= pkg.homepage %>\n' +
+			'   Copyright (c) <%= grunt.template.today("yyyy") %> <%= pkg.author %>\n' +
+			'   Licensed <%= pkg.license %> \n*/\n\n\n' 
 		},
 		concat: {
 			dist: {
-				src: ['<banner:meta.banner>'].concat([
+				options: {
+					banner: '<%= meta.banner %>',
+					process: function(src) {
+			          return src.replace(/(^|\n)[ \t]*('use strict'|"use strict");?\s*/g, '');
+			        },
+				},
+				files:{
+					'<%= pkg.name %>.js': [
 						'lib/parser.js', 
 						'lib/utilities.js', 
 						'lib/domparser.js',
@@ -22,14 +27,19 @@ module.exports = function( grunt ) {
 						'lib/text.js',
 						'lib/html.js',
 						'lib/maps/*.js'
-					]),
-				dest: '<%= pkg.name %>.js'
+					]
+				}
 			},
-			distmap: {
-				src: ['<banner:meta.banner>'].concat([
-						'lib/maps/*.js'
-					]),
-				dest: '<%= pkg.name %>-maps.js'
+			map: {
+				options: {
+					banner: '<%= meta.banner %>',
+					process: function(src) {
+			          return src.replace(/(^|\n)[ \t]*('use strict'|"use strict");?\s*/g, '');
+			        },
+				},
+				files:{
+					'<%= pkg.name %>-maps.js': ['lib/maps/*.js']
+				}
 			}
 		},
 		copy: {
@@ -46,22 +56,26 @@ module.exports = function( grunt ) {
 					}]
 	        }
 	    },
-	    min: {
+	    uglify: {
+			options: {
+		      banner: '<%= meta.banner %>',
+			  sourceMap: true,
+        	  sourceMapName: '<%= pkg.name %>.min.js.map'
+		    },
 		    dist: {
-		      src: ['<%= pkg.name %>.js'],
-		      dest: '<%= pkg.name %>.min.js'
+				files: [{
+					src: '<%= pkg.name %>.js',
+                	dest: '<%= pkg.name %>.min.js'
+				}]
 		    }
 		},
 		'jsmin-sourcemap': {
-	    	all: {
+	    	dist: {
 		        src: ['<%= pkg.name %>.js'],
 		        dest: '<%= pkg.name %>.min.js',
 		        destMap: '<%= pkg.name %>.min.js.map'
 	      	}
 	    },
-		lint: {
-			files: ['gruntfile.js', 'lib/*.js']
-		},
 		jshint: {
 			files: ['Gruntfile.js', 'lib/**/*.js'],
 			options: {
@@ -75,7 +89,6 @@ module.exports = function( grunt ) {
 				eqnull: true,
 				browser: true,
 				node: true,
-				strict: true,
 				quotmark: 'single',
 				moz: true,
 				predef: [ 'microformats', 'ISODate' ]
@@ -90,7 +103,7 @@ module.exports = function( grunt ) {
 		},
 		watch: {
 			files: 'lib/*.js',
-			tasks: ['concat', 'copy', 'jsmin-sourcemap']
+			tasks: ['concat', 'copy', 'uglify']
 		}
 	});
 
@@ -99,12 +112,13 @@ module.exports = function( grunt ) {
   	grunt.loadNpmTasks('grunt-contrib-copy');
   	grunt.loadNpmTasks('grunt-contrib-concat');
 	grunt.loadNpmTasks('grunt-contrib-watch');
+	grunt.loadNpmTasks('grunt-contrib-uglify');
   	grunt.loadNpmTasks('grunt-jsmin-sourcemap');
 	grunt.loadNpmTasks('grunt-mocha-phantomjs');
 
 
 	// Default task.
-	grunt.registerTask( 'default', ['concat', 'copy', 'jsmin-sourcemap']);
+	grunt.registerTask( 'default', ['concat', 'copy', 'uglify']);
 	grunt.registerTask( 'test', ['mocha_phantomjs:all']);
 
 

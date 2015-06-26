@@ -42,11 +42,7 @@ describe('text', function() {
    });
 
    
-   // TODO move to domutils
-   it('getElementText', function(){
-       assert.equal(  microformats.parser.text.getElementText( {} ), '' );
-   });
-   
+
    
   
 });

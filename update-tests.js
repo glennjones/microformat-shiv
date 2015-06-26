@@ -20,7 +20,7 @@ var repo = 'microformats/tests',  // glennjones/tests
 	testDir = 'standards-tests',
 	testDirResolve = path.resolve(__dirname,'test', testDir),
 	testPagePath = path.resolve(__dirname,'test/mocha-tests.html'),
-	testJSPath = path.resolve(__dirname,'test/data.js');
+	testJSPath = path.resolve(__dirname,'test/javascript/data.js');
 
 
 download(repo, tempDir, function(err, data){

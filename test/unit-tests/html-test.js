@@ -38,20 +38,7 @@ describe('html', function() {
        
    });
   
-   // TODO move to utils
-   it('sortObjects', function(){
-       var arr = [{'name': 'one'},{'name': 'two'},{'name': 'three'},{'name': 'three'}];
-       
-       assert.deepEqual( arr.sort( microformats.parser.html.sortObjects( 'name', true ) ), [{"name":"two"},{"name":"three"},{'name': 'three'},{"name":"one"}] );
-       assert.deepEqual( arr.sort( microformats.parser.html.sortObjects( 'name', false ) ), [{"name":"one"},{"name":"three"},{'name': 'three'},{"name":"two"}] );
-   });
-   
-   
-   // TODO move to domutils
-   it('getElementText', function(){
-       assert.equal(  microformats.parser.html.getElementText( {} ), '' );
-   });
-   
+
  
 
    

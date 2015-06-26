@@ -1,18 +1,23 @@
+/*
+   microformat-shiv - v0.3.4
+   Built: 2015-06-26 09:06 - http://microformat-shiv.com
+   Copyright (c) 2015 Glenn Jones
+   Licensed MIT 
+*/
+
+
 /*!
 	Parser
 	Copyright (C) 2010 - 2015 Glenn Jones. All Rights Reserved.
 	MIT License: https://raw.github.com/glennjones/microformat-shiv/master/license.txt
 */
-'use strict';
 
  /*jshint -W079 */
 var microformats = {}; 
 
-
-
 // The module pattern
 microformats.Parser = function () {
-    this.version = '0.3.4';
+    //this.version = '0.4.0';
 	this.rootPrefix = 'h-';
 	this.propertyPrefixes = ['p-', 'dt-', 'u-', 'e-'];
 	this.options = {
@@ -29,7 +34,6 @@ microformats.Parser = function () {
 	this.maps = {};
 	this.rels = {};
 };
-
 
 microformats.Parser.prototype = {
 
@@ -242,7 +246,9 @@ microformats.Parser.prototype = {
 
 		// build any array of v1 root names    
 		for(key in this.maps) {
-			classList.push(this.maps[key].root);
+			if (this.maps.hasOwnProperty(key)) {
+				classList.push(this.maps[key].root);
+			}
 		}
 
 		// get all elements that have a class attribute  
@@ -425,7 +431,7 @@ microformats.Parser.prototype = {
 				if(!value) {
 					uf.properties.name = [this.text.parse(dom, node, textFormat)];
 				}else{
-					uf.properties.name = [this.text.textContent(dom, value, textFormat)];
+					uf.properties.name = [this.text.parseText(dom, value, textFormat)];
 				}
 			}
 			
@@ -956,7 +962,7 @@ microformats.Parser.prototype = {
 		}
 		if(out.length > 0) {
 			if(propertyType === 'p') {
-				return out.join(' ').replace(/[\t\n\r ]+/g, ' ');
+				return this.text.parseText(dom, out.join(' '), this.options.textFormat);
 			}
 			if(propertyType === 'u') {
 				return out.join('');
@@ -1072,30 +1078,33 @@ microformats.Parser.prototype = {
 							map = context.getMapping(ufName);
 							if(map) {
 								for(key in map.properties) {
-									prop = map.properties[key];
-									propName = (prop.map) ? prop.map : 'p-' + key;
-
-									if(key === item) {
-										if(prop.uf) {
-											// loop all the classList make sure 
-											//   1. this property is a root
-											//   2. that there is not already a equivalent v2 property ie url and u-url on the same element
-											y = 0;
-											while(y < i) {
-												v2Name = context.getV2RootName(items[y]);
-												// add new root
-												if(prop.uf.indexOf(v2Name) > -1 && out.root.indexOf(v2Name) === -1) {
-													out.root.push(v2Name);
+									if (map.properties.hasOwnProperty(key)) {
+										
+										prop = map.properties[key];
+										propName = (prop.map) ? prop.map : 'p-' + key;
+	
+										if(key === item) {
+											if(prop.uf) {
+												// loop all the classList make sure 
+												//   1. this property is a root
+												//   2. that there is not already a equivalent v2 property ie url and u-url on the same element
+												y = 0;
+												while(y < i) {
+													v2Name = context.getV2RootName(items[y]);
+													// add new root
+													if(prop.uf.indexOf(v2Name) > -1 && out.root.indexOf(v2Name) === -1) {
+														out.root.push(v2Name);
+													}
+													y++;
 												}
-												y++;
-											}
-											//only add property once
-											if(out.properties.indexOf(propName) === -1) {
-												out.properties.push(propName);
-											}
-										} else {
-											if(out.properties.indexOf(propName) === -1) {
-												out.properties.push(propName);
+												//only add property once
+												if(out.properties.indexOf(propName) === -1) {
+													out.properties.push(propName);
+												}
+											} else {
+												if(out.properties.indexOf(propName) === -1) {
+													out.properties.push(propName);
+												}
 											}
 										}
 									}
@@ -1194,20 +1203,22 @@ microformats.Parser.prototype = {
 		map = this.getMapping(ufName);
 		if(map) {
 			for(var key in map.properties) {
-				var prop = map.properties[key],
-					propName = (prop.map) ? prop.map : 'p-' + key,
-					relCount = 0;
-
-				// if property as an alt rel=* mapping run test
-				if(prop.relAlt && this.domUtils.hasAttribute(dom, node, 'rel')) {
-					i = prop.relAlt.length;
-					while(i--) {
-						if(this.domUtils.hasAttributeValue(dom, node, 'rel', prop.relAlt[i])) {
-							relCount++;
+				if (map.properties.hasOwnProperty(key)) {
+					var prop = map.properties[key],
+						propName = (prop.map) ? prop.map : 'p-' + key,
+						relCount = 0;
+	
+					// if property as an alt rel=* mapping run test
+					if(prop.relAlt && this.domUtils.hasAttribute(dom, node, 'rel')) {
+						i = prop.relAlt.length;
+						while(i--) {
+							if(this.domUtils.hasAttributeValue(dom, node, 'rel', prop.relAlt[i])) {
+								relCount++;
+							}
 						}
-					}
-					if(relCount === prop.relAlt.length) {
-						out = propName;
+						if(relCount === prop.relAlt.length) {
+							out = propName;
+						}
 					}
 				}
 			}
@@ -1658,7 +1669,6 @@ if (typeof exports !== 'undefined') {
    Copyright (C) 2010 - 2013 Glenn Jones. All Rights Reserved.
    MIT License: https://raw.github.com/glennjones/microformat-shiv/master/license.txt
 */
-'use strict';
 
 microformats.parser.utils = {
 
@@ -1697,6 +1707,36 @@ microformats.parser.utils = {
             return str;
         }
     },
+    
+    
+    // removes whitespace, tabs and returns from start and end of text
+    trimWhitespace: function( text ){
+        if(text && text.length){
+            var i = text.length,
+                x = 0;
+            
+            // turn all whitespace chars at end into spaces
+            while (i--) {
+                if(this.isOnlyWhiteSpace(text[i])){
+                    text = this.replaceCharAt( text, i, ' ' );
+                }else{
+                    break;
+                }
+            }
+            
+            // turn all whitespace chars at start into spaces
+            i = text.length;
+            while (x < i) {
+                if(this.isOnlyWhiteSpace(text[x])){
+                    text = this.replaceCharAt( text, i, ' ' );
+                }else{
+                    break;
+                }
+                x++;
+            }
+        }
+        return this.trim(text);
+    },
 
 
     // is a string only contain white space chars
@@ -1726,6 +1766,23 @@ microformats.parser.utils = {
             }
         }
         return false;
+    },
+    
+    
+    // sort objects in an array by given property
+    sortObjects: function(property, reverse) {
+        reverse = (reverse) ? -1 : 1;
+        return function (a, b) {
+            a = a[property];
+            b = b[property];
+            if (a < b) {
+                return reverse * -1;
+            }
+            if (a > b) {
+                return reverse * 1;
+            }
+            return 0;
+        };
     }
 
 };
@@ -1741,8 +1798,6 @@ microformats.parser.utils = {
     Public domain.
 */
 
-
-'use strict';
 
 (function(DOMParser) {
 
@@ -1840,9 +1895,11 @@ microformats.parser.utils = {
    Copyright (C) 2010 - 2015 Glenn Jones. All Rights Reserved.
    MIT License: https://raw.github.com/glennjones/microformat-shiv/master/license.txt 
 */
-'use strict';
+
 
 microformats.parser.domUtils = {
+	
+	utils:  microformats.parser.utils,
 
 	innerHTML: function(dom, node){
 		return node.innerHTML;
@@ -1895,25 +1952,6 @@ microformats.parser.domUtils = {
 		return (attList.indexOf(value) > -1);
 	},
 
-
-/*
-	// returns whether an attribute has an item that start with the given value
-	hasAttributeValueByPrefix: function(dom, node, attributeName, value) {
-		var attList = [],
-			x = 0,
-			i;
-
-		attList = this.getAttributeList(dom, node, attributeName);
-		i = attList.length;
-		while(x < i) {
-			if(this.utils.startWith(this.utils.trim(attList[x]), value)) {
-				return true;
-			}
-			x++;
-		}
-		return false;
-	},
-*/
 
 	// return an array of elements that match an attribute
 	getNodesByAttribute: function(dom, node, name) {
@@ -2058,7 +2096,37 @@ microformats.parser.domUtils = {
 		}
 		return url;
 	},
-
+	
+	
+	// get the text from a node in the dom
+    getElementText: function( node ){
+        if(node && node.data){
+            return node.data;
+        }else{
+            return '';
+        }
+    },
+    
+    
+    // gets the attributes of a node - ordered as they are used in the node
+    getOrderedAttributes: function( node ){
+        var nodeStr = node.outerHTML,
+            attrs = [];
+            
+        for (var i = 0; i < node.attributes.length; i++) {
+            var attr = node.attributes[i];
+                attr.indexNum = nodeStr.indexOf(attr.name);
+                
+            attrs.push( attr );
+        }
+        return attrs.sort( this.utils.sortObjects( 'indexNum' ) );
+    },
+    
+	
+    // use dom to resolve any entity encoding issues
+    decodeEntities: function( dom, str ){
+        return dom.createTextNode( str ).nodeValue;
+    },
 
 	/*
 	resolveUrliFrame: function(dom, url, baseUrl){
@@ -2079,7 +2147,6 @@ microformats.parser.domUtils = {
     Copyright (C) 2010 - 2015 Glenn Jones. All Rights Reserved.
     MIT License: https://raw.github.com/glennjones/microformat-shiv/master/license.txt
  */
-'use strict';
 
 function ISODate( dateString, format ) {
     this.clear();
@@ -2467,10 +2534,8 @@ ISODate.prototype = {
     Helper functions for microformat date parsing, and fragment concat
     Copyright (C) 2010 - 2015 Glenn Jones. All Rights Reserved.
     MIT License: https://raw.github.com/glennjones/microformat-shiv/master/license.txt
-*/
-'use strict';
-
-microformats.parser.dates = {
+*/microformats.parser.dates = {
+    
 
     utils:  microformats.parser.utils,
     
@@ -2501,7 +2566,6 @@ microformats.parser.dates = {
         if(this.utils.isString(str)){
             str = str.toLowerCase();
             if(this.utils.startWith(str, 'p') ){
-                //&& str.match(/^P(?=\w*\d)(?:\d+Y|Y)?(?:\d+M|M)?(?:\d+D|D)?(?:\d+W|W)?(?:T(?:\d+H|H)?(?:\d+M|M)?(?:\d+(?:\­.\d{1,2})?S|S)?)?$/) ) {
                 return true;
             }
         }
@@ -2612,9 +2676,6 @@ microformats.parser.dates = {
     concatFragments: function (arr, format) {
         var out = new ISODate(),
             i = 0,
-            date = '',
-            time = '',
-            offset = '',
             value = '';
         
         // if the fragment already contains a full date just return it once its converted to profile
@@ -2692,7 +2753,6 @@ microformats.parser.dates = {
     * It turns all whitespace into single spaces
     * It trims the final output
 */
-'use strict';
 
 
 function Text(){
@@ -2708,6 +2768,9 @@ function Text(){
 
 
 Text.prototype = {
+    
+    utils:  microformats.parser.utils,
+    domUtils: microformats.parser.domUtils,
 
     // gets the text from dom node 
     parse: function(dom, node, textFormat){
@@ -2743,11 +2806,11 @@ Text.prototype = {
             
           out = text.replace(regex, '');   
           if(this.textFormat === 'whitespacetrimmed') {    
-             out = this.trimEnds( out );
+             out = this.utils.trimWhitespace( out );
           }
           
           //return entities.decode( out, 2 );
-          return this.decodeEntities( dom, out );
+          return this.domUtils.decodeEntities( dom, out );
        }else{
           return ''; 
        }
@@ -2757,44 +2820,12 @@ Text.prototype = {
     // normalise text 
     normalise: function( dom, text ){
         text = text.replace( /&nbsp;/g, ' ') ;    // exchanges html entity for space into space char
-        text = this.removeWhiteSpace( text );     // removes linefeeds, tabs and addtional spaces
-        text = this.decodeEntities( dom, text );  // decode HTML entities
+        text = this.utils.removeWhiteSpace( text );     // removes linefeeds, tabs and addtional spaces
+        text = this.domUtils.decodeEntities( dom, text );  // decode HTML entities
         text = text.replace( '–', '-' );          // correct dash decoding
-        return this.trim( text );
+        return this.utils.trim( text );
     },
     
-    
-    // removes whitespace, tabs and returns from start and end of text
-    trimEnds: function( text ){
-        var out = '';
-        if(text && text.length){
-            var i = text.length,
-                x = 0;
-            
-            // turn all whitespace chars at end into spaces
-            while (i--) {
-                if(this.isOnlyWhiteSpace(text[i])){
-                    text = this.replaceCharAt( text, i, ' ' );
-                }else{
-                    break;
-                }
-            }
-            
-            // turn all whitespace chars at start into spaces
-            i = text.length;
-            while (x < i) {
-                if(this.isOnlyWhiteSpace(text[x])){
-                    text = this.replaceCharAt( text, i, ' ' );
-                }else{
-                    break;
-                }
-                x++;
-            }
-        }
-        return this.trim(text);
-    },
-
-
 
     // extracts the text nodes in the dom tree
     walkTreeForText: function( node ) {
@@ -2807,7 +2838,7 @@ Text.prototype = {
 
         // if node is a text node get its text
         if(node.nodeType && node.nodeType === 3){
-            out += this.getElementText( node ); 
+            out += this.domUtils.getElementText( node ); 
         }
 
         // get the text of the child nodes
@@ -2826,45 +2857,8 @@ Text.prototype = {
         } 
         
         return (out === '')? undefined : out ;
-    },    
-
-
-    // get the text from a node in the dom
-    getElementText: function( node ){
-        if(node.nodeValue){
-            return node.nodeValue;
-        }else{
-            return '';
-        }
-    },
-
-
-    // remove spaces at front and back of string
-    trim: function( str ) {
-        return str.replace(/^\s+|\s+$/g, '');
-    },
-
-
-    // removes white space from a string
-    removeWhiteSpace: function( str ){
-        return str.replace(/[\t\n\r ]+/g, ' ');
-    },
-    
-    // is a string only contain white space chars
-    isOnlyWhiteSpace: function( str ){
-        return !(/[^\t\n\r ]/.test( str ));
-    },
-
-    // use dom to resolve any entity encoding issues
-    decodeEntities: function( dom, str ){
-        return dom.createTextNode( str ).nodeValue;
-    },
-    
-    // replaces a character in a string and return the new string
-    replaceCharAt: function( str, index, character ) {
-        return str.substr(0, index) + character + str.substr(index+character.length);
     }
-
+    
 };
 
 
@@ -2896,7 +2890,6 @@ microformats.parser.text.textContent = function(dom, htmlStr, textFormat){
     Was created to get around issue of not been able to remove nodes with 'data-include' attr
 
 */
-'use strict';
 
 
 function Html(){
@@ -2906,7 +2899,9 @@ function Html(){
 
 Html.prototype = {
     
+    utils:  microformats.parser.utils,
     domUtils: microformats.parser.domUtils,
+    
 
     // gets the text from dom node 
     parse: function(dom, node ){
@@ -2935,7 +2930,7 @@ Html.prototype = {
 
         // if node is a text node get its text
         if(node.nodeType && node.nodeType === 3){
-            out += this.getElementText( node ); 
+            out += this.domUtils.getElementText( node ); 
         }
 
     
@@ -2946,7 +2941,7 @@ Html.prototype = {
             out += '<' + node.tagName.toLowerCase();  
 
             // add attributes
-            var attrs = this.getOrderedAttributes(node);
+            var attrs = this.domUtils.getOrderedAttributes(node);
             for (j = 0; j < attrs.length; j++) {
                 out += ' ' + attrs[j].name +  '=' + '"' + attrs[j].value + '"';
             }
@@ -2978,49 +2973,6 @@ Html.prototype = {
     },    
 
 
-    // get the text from a node in the dom
-    getElementText: function( node ){
-        if(node.data){
-            return node.data;
-        }else{
-            return '';
-        }
-    },
-    
-    
-    // gets the attributes of a node - ordered as they are used in the node
-    getOrderedAttributes: function( node ){
-        var nodeStr = node.outerHTML,
-            attrs = [];
-            
-        for (var i = 0; i < node.attributes.length; i++) {
-            var attr = node.attributes[i];
-                attr.indexNum = nodeStr.indexOf(attr.name);
-                
-            attrs.push( attr );
-        }
-        return attrs.sort( this.sortObjects( 'indexNum' ) );
-    },
-    
-
-   
-    // sort objects in an array by given property
-    sortObjects: function(property, reverse) {
-        reverse = (reverse) ? -1 : 1;
-        return function (a, b) {
-            a = a[property];
-            b = b[property];
-            if (a < b) {
-                return reverse * -1;
-            }
-            if (a > b) {
-                return reverse * 1;
-            }
-            return 0;
-        };
-    }
-
-
 };
 
 
@@ -3036,7 +2988,6 @@ microformats.parser.html = new Html();
     Copyright (C) 2010 - 2015 Glenn Jones. All Rights Reserved.
     MIT License: https://raw.github.com/glennjones/microformat-shiv/master/license.txt  
 */
-'use strict';
 
 microformats.parser.maps['h-adr'] = {
 	root: 'adr',
@@ -3058,7 +3009,6 @@ microformats.parser.maps['h-adr'] = {
     Copyright (C) 2010 - 2015 Glenn Jones. All Rights Reserved.
     MIT License: https://raw.github.com/glennjones/microformat-shiv/master/license.txt  
 */
-'use strict';
 
 microformats.parser.maps['h-card'] =  {
 	root: 'vcard',
@@ -3133,7 +3083,6 @@ microformats.parser.maps['h-card'] =  {
     Copyright (C) 2010 - 2015 Glenn Jones. All Rights Reserved.
     MIT License: https://raw.github.com/glennjones/microformat-shiv/master/license.txt  
 */
-'use strict';
 
 microformats.parser.maps['h-entry'] = {
 	root: 'hentry',
@@ -3179,7 +3128,6 @@ microformats.parser.maps['h-entry'] = {
     Copyright (C) 2010 - 2015 Glenn Jones. All Rights Reserved.
     MIT License: https://raw.github.com/glennjones/microformat-shiv/master/license.txt  
 */
-'use strict';
 
 microformats.parser.maps['h-event'] = {  
 	root: 'vevent',
@@ -3237,7 +3185,6 @@ microformats.parser.maps['h-event'] = {
     Copyright (C) 2010 - 2015 Glenn Jones. All Rights Reserved.
     MIT License: https://raw.github.com/glennjones/microformat-shiv/master/license.txt  
 */
-'use strict';
 
 microformats.parser.maps['h-geo'] = {
 	root: 'geo',
@@ -3253,7 +3200,6 @@ microformats.parser.maps['h-geo'] = {
     Copyright (C) 2010 - 2015 Glenn Jones. All Rights Reserved.
     MIT License: https://raw.github.com/glennjones/microformat-shiv/master/license.txt  
 */
-'use strict';
 
 microformats.parser.maps['h-item'] = {
 	root: 'item',
@@ -3277,7 +3223,6 @@ microformats.parser.maps['h-item'] = {
     Copyright (C) 2010 - 2015 Glenn Jones. All Rights Reserved.
     MIT License: https://raw.github.com/glennjones/microformat-shiv/master/license.txt  
 */
-'use strict';
 
 microformats.parser.maps['h-listing'] = {
   root: 'hlisting',
@@ -3312,7 +3257,6 @@ microformats.parser.maps['h-listing'] = {
     Copyright (C) 2010 - 2015 Glenn Jones. All Rights Reserved.
     MIT License: https://raw.github.com/glennjones/microformat-shiv/master/license.txt  
 */
-'use strict';
 
 microformats.parser.maps['h-news'] = {
   root: 'hnews',
@@ -3348,7 +3292,6 @@ microformats.parser.maps['h-news'] = {
     Copyright (C) 2010 - 2015 Glenn Jones. All Rights Reserved.
     MIT License: https://raw.github.com/glennjones/microformat-shiv/master/license.txt  
 */
-'use strict';
 
 microformats.parser.maps['h-org'] = {
     root: 'h-x-org',  // drop this from v1 as it causes issue with fn org hcard pattern
@@ -3365,7 +3308,6 @@ microformats.parser.maps['h-org'] = {
     Copyright (C) 2010 - 2015 Glenn Jones. All Rights Reserved.
     MIT License: https://raw.github.com/glennjones/microformat-shiv/master/license.txt  
 */
-'use strict';
 
 microformats.parser.maps['h-product'] = {
   root: 'hproduct',
@@ -3408,7 +3350,6 @@ microformats.parser.maps['h-product'] = {
     Copyright (C) 2010 - 2015 Glenn Jones. All Rights Reserved.
     MIT License: https://raw.github.com/glennjones/microformat-shiv/master/license.txt  
 */
-'use strict';
 
 microformats.parser.maps['h-recipe'] = {
   root: 'hrecipe',
@@ -3448,7 +3389,6 @@ microformats.parser.maps['h-recipe'] = {
     Copyright (C) 2010 - 2015 Glenn Jones. All Rights Reserved.
     MIT License: https://raw.github.com/glennjones/microformat-shiv/master/license.txt  
 */
-'use strict';
 
 microformats.parser.maps['h-resume'] = {
 	root: 'hresume',
@@ -3476,7 +3416,6 @@ microformats.parser.maps['h-resume'] = {
     Copyright (C) 2010 - 2015 Glenn Jones. All Rights Reserved.
     MIT License: https://raw.github.com/glennjones/microformat-shiv/master/license.txt  
 */
-'use strict';
 
 microformats.parser.maps['h-review-aggregate'] = {
     root: 'hreview-aggregate',
@@ -3512,7 +3451,6 @@ microformats.parser.maps['h-review-aggregate'] = {
     Copyright (C) 2010 - 2015 Glenn Jones. All Rights Reserved.
     MIT License: https://raw.github.com/glennjones/microformat-shiv/master/license.txt  
 */
-'use strict';
 
 microformats.parser.maps['h-review'] = {
     root: 'hreview',
@@ -3553,7 +3491,6 @@ microformats.parser.maps['h-review'] = {
     Copyright (C) 2010 - 2015 Glenn Jones. All Rights Reserved.
     MIT License: https://raw.github.com/glennjones/microformat-shiv/master/license.txt  
 */
-'use strict';
 
 microformats.parser.rels = {
 	// xfn
