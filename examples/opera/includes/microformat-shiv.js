@@ -2522,6 +2522,15 @@ Modules = (function (m) {
 
         
         // does string contain am
+        /**
+ * Clamp coordinates between the
+ * allowed min/max values.
+ *
+ * @param  {Object} pos {x,y}
+ * @return {Object} {x,y}
+ */
+        
+        
         hasAM: function(time) {
             time = time.toLowerCase();
             return(time.indexOf('am') > -1 || time.indexOf('a.m.') > -1);

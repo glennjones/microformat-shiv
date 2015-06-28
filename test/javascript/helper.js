@@ -14,7 +14,7 @@ helper.parseHTML = function( htmlFragment, baseUrl, umd){
 		options;
 		
 	if(umd !== undefined){
-		umd === false;
+		umd == false;
 	}
 
 	doc = document.implementation.createHTMLDocument("New Document");
