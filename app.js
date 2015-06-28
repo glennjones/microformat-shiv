@@ -21,14 +21,6 @@ server.route([{
 	}
 },{
 	method: ['GET'],
-	path: '/microformat-shiv-maps.js',
-    handler: {
-		file: {
-			path: './microformat-shiv-maps.js'
-		}
-	}
-},{
-	method: ['GET'],
 	path: '/node_modules/chai/chai.js',
     handler: {
 		file: {

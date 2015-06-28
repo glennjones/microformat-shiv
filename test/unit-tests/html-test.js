@@ -14,27 +14,27 @@ describe('html', function() {
            node = document.createElement('div');
            
        node.innerHTML = html;
-       assert.equal( microformats.parser.html.parse( document, node ), html );
+       assert.equal(Modules.html.parse( document, node ), html );
        
        // make sure excludes 'data-include' marked items
        var child = document.createElement('p');
        child.setAttribute('data-include', 'true');
        node.appendChild(child);
-       assert.equal( microformats.parser.html.parse( document, node ), html );
+       assert.equal( Modules.html.parse( document, node ), html );
        
        node = document.createElement('div');
        node.innerHTML = bloghtml;
-       assert.equal( microformats.parser.html.parse( document, node ), bloghtml );
+       assert.equal( Modules.html.parse( document, node ), bloghtml );
        
        node = document.createElement('div');
-       assert.equal( microformats.parser.html.parse( document, node ), '' );
+       assert.equal( Modules.html.parse( document, node ), '' );
        
        child = document.createElement('br');
        node.appendChild(child);
-       assert.equal( microformats.parser.html.parse( document, node ), '<br />' );
+       assert.equal( Modules.html.parse( document, node ), '<br />' );
        
        node = document.createComment('test comment');
-       assert.equal( microformats.parser.html.parse( document, node ), '' );
+       assert.equal( Modules.html.parse( document, node ), '' );
        
    });
   

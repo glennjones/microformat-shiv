@@ -13,7 +13,7 @@ describe('domutils', function() {
            node = document.createElement('div');
            
        node.innerHTML = html;
-       assert.equal( microformats.parser.domUtils.innerHTML( document, node ), html );
+       assert.equal( Modules.domUtils.innerHTML( document, node ), html );
    });
    
    
@@ -21,8 +21,8 @@ describe('domutils', function() {
        var node = document.createElement('a');
            
        node.href = 'http://glennjones.net';
-       assert.isTrue( microformats.parser.domUtils.hasAttribute( document, node, 'href' ) );
-       assert.isFalse( microformats.parser.domUtils.hasAttribute( document, node, 'class' ) );
+       assert.isTrue( Modules.domUtils.hasAttribute( document, node, 'href' ) );
+       assert.isFalse( Modules.domUtils.hasAttribute( document, node, 'class' ) );
    });
    
    
@@ -30,15 +30,15 @@ describe('domutils', function() {
        var node = document.createElement('a');
            
        node.href = 'http://glennjones.net';
-       assert.equal( microformats.parser.domUtils.getAttribute( document, node, 'href' ),  'http://glennjones.net' );
+       assert.equal( Modules.domUtils.getAttribute( document, node, 'href' ),  'http://glennjones.net' );
    });
    
    
    it('setAttribute', function(){
        var node = document.createElement('a');
            
-       microformats.parser.domUtils.setAttribute(document, node, 'href', 'http://glennjones.net')
-       assert.equal( microformats.parser.domUtils.getAttribute( document, node, 'href' ),  'http://glennjones.net' );
+       Modules.domUtils.setAttribute(document, node, 'href', 'http://glennjones.net')
+       assert.equal( Modules.domUtils.getAttribute( document, node, 'href' ),  'http://glennjones.net' );
    });
    
    
@@ -46,8 +46,8 @@ describe('domutils', function() {
        var node = document.createElement('a');
            
        node.href = 'http://glennjones.net';
-       microformats.parser.domUtils.removeAttribute(document, node, 'href')
-       assert.isFalse( microformats.parser.domUtils.hasAttribute( document, node, 'href' ) );
+       Modules.domUtils.removeAttribute(document, node, 'href')
+       assert.isFalse( Modules.domUtils.hasAttribute( document, node, 'href' ) );
    });
    
 
@@ -55,9 +55,9 @@ describe('domutils', function() {
        var node = document.createElement('a');
            
        node.rel = 'next';
-       assert.deepEqual( microformats.parser.domUtils.getAttributeList( document, node, 'rel'),  ['next'] );
+       assert.deepEqual( Modules.domUtils.getAttributeList( document, node, 'rel'),  ['next'] );
        node.rel = 'next bookmark';
-       assert.deepEqual( microformats.parser.domUtils.getAttributeList( document, node, 'rel'),  ['next','bookmark'] );
+       assert.deepEqual( Modules.domUtils.getAttributeList( document, node, 'rel'),  ['next','bookmark'] );
    });
    
    
@@ -66,11 +66,11 @@ describe('domutils', function() {
            
        node.href = 'http://glennjones.net';
        node.rel = 'next bookmark';
-       assert.isTrue( microformats.parser.domUtils.hasAttributeValue( document, node, 'href', 'http://glennjones.net' ) );
-       assert.isFalse( microformats.parser.domUtils.hasAttributeValue( document, node, 'href', 'http://codebits.glennjones.net' ) );
-       assert.isFalse( microformats.parser.domUtils.hasAttributeValue( document, node, 'class', 'p-name' ) );
-       assert.isTrue( microformats.parser.domUtils.hasAttributeValue( document, node, 'rel', 'bookmark' ) );
-       assert.isFalse( microformats.parser.domUtils.hasAttributeValue( document, node, 'rel', 'previous' ) );
+       assert.isTrue( Modules.domUtils.hasAttributeValue( document, node, 'href', 'http://glennjones.net' ) );
+       assert.isFalse( Modules.domUtils.hasAttributeValue( document, node, 'href', 'http://codebits.glennjones.net' ) );
+       assert.isFalse( Modules.domUtils.hasAttributeValue( document, node, 'class', 'p-name' ) );
+       assert.isTrue( Modules.domUtils.hasAttributeValue( document, node, 'rel', 'bookmark' ) );
+       assert.isFalse( Modules.domUtils.hasAttributeValue( document, node, 'rel', 'previous' ) );
    });
    
    /*
@@ -79,11 +79,11 @@ describe('domutils', function() {
            
        node.className = 'p-location h-geo';
        node.rel = 'next bookmark';
-       assert.isTrue( microformats.parser.domUtils.hasAttributeValueByPrefix( document, node, 'class', 'p-' ) );
-       //assert.isTrue( microformats.parser.domUtils.hasAttributeValueByPrefix( document, node, 'class', 'h-' ) );
-       //assert.isFalse( microformats.parser.domUtils.hasAttributeValueByPrefix( document, node, 'class', 'u-' ) );
-       //assert.isFalse( microformats.parser.domUtils.hasAttributeValue( document, node, 'rel', 'p-' ) );
-       //assert.isFalse( microformats.parser.domUtils.hasAttributeValue( document, node, 'href', 'p-' ) );
+       assert.isTrue( Modules.domUtils.hasAttributeValueByPrefix( document, node, 'class', 'p-' ) );
+       //assert.isTrue( Modules.domUtils.hasAttributeValueByPrefix( document, node, 'class', 'h-' ) );
+       //assert.isFalse( Modules.domUtils.hasAttributeValueByPrefix( document, node, 'class', 'u-' ) );
+       //assert.isFalse( Modules.domUtils.hasAttributeValue( document, node, 'rel', 'p-' ) );
+       //assert.isFalse( Modules.domUtils.hasAttributeValue( document, node, 'href', 'p-' ) );
    });
    */
    
@@ -91,8 +91,8 @@ describe('domutils', function() {
        var node = document.createElement('ul');
        node.innerHTML = '<li class="h-card">one</li><li>two</li><li class="h-card">three</li>';
            
-       assert.equal( microformats.parser.domUtils.getNodesByAttribute( document, node, 'class' ).length, 2 );
-       assert.equal( microformats.parser.domUtils.getNodesByAttribute( document, node, 'href' ).length, 0 );
+       assert.equal( Modules.domUtils.getNodesByAttribute( document, node, 'class' ).length, 2 );
+       assert.equal( Modules.domUtils.getNodesByAttribute( document, node, 'href' ).length, 0 );
    });
    
    
@@ -100,9 +100,9 @@ describe('domutils', function() {
        var node = document.createElement('ul');
        node.innerHTML = '<li class="h-card">one</li><li>two</li><li class="h-card">three</li><li class="p-name">four</li>';
            
-       assert.equal( microformats.parser.domUtils.getNodesByAttributeValue( document, node, 'class', 'h-card' ).length, 2 );
-       assert.equal( microformats.parser.domUtils.getNodesByAttributeValue( document, node, 'class', 'p-name' ).length, 1 );
-       assert.equal( microformats.parser.domUtils.getNodesByAttributeValue( document, node, 'class', 'u-url' ).length, 0 );
+       assert.equal( Modules.domUtils.getNodesByAttributeValue( document, node, 'class', 'h-card' ).length, 2 );
+       assert.equal( Modules.domUtils.getNodesByAttributeValue( document, node, 'class', 'p-name' ).length, 1 );
+       assert.equal( Modules.domUtils.getNodesByAttributeValue( document, node, 'class', 'u-url' ).length, 0 );
    });
    
 
@@ -111,9 +111,9 @@ describe('domutils', function() {
            
        node.href = 'http://glennjones.net';
            
-       assert.equal( microformats.parser.domUtils.getAttrValFromTagList( document, node, ['a','area'], 'href' ), 'http://glennjones.net' );
-       assert.equal( microformats.parser.domUtils.getAttrValFromTagList( document, node, ['a','area'], 'class' ), null );
-       assert.equal( microformats.parser.domUtils.getAttrValFromTagList( document, node, ['p'], 'href' ), null );
+       assert.equal( Modules.domUtils.getAttrValFromTagList( document, node, ['a','area'], 'href' ), 'http://glennjones.net' );
+       assert.equal( Modules.domUtils.getAttrValFromTagList( document, node, ['a','area'], 'class' ), null );
+       assert.equal( Modules.domUtils.getAttrValFromTagList( document, node, ['p'], 'href' ), null );
    });
    
    
@@ -124,12 +124,12 @@ describe('domutils', function() {
        node.innerHTML = html,
        
        // one instance of a element   
-       assert.equal( microformats.parser.domUtils.isSingleDescendant( document, node, ['a', 'link']).outerHTML, html );
-       assert.equal( microformats.parser.domUtils.isSingleDescendant( document, node, ['img','area']), null );
+       assert.equal( Modules.domUtils.isSingleDescendant( document, node, ['a', 'link']).outerHTML, html );
+       assert.equal( Modules.domUtils.isSingleDescendant( document, node, ['img','area']), null );
        
        // two instances of a element  
        node.appendChild(document.createElement('a'));
-       assert.equal( microformats.parser.domUtils.isSingleDescendant( document, node, ['a', 'link']), null );
+       assert.equal( Modules.domUtils.isSingleDescendant( document, node, ['a', 'link']), null );
        
 
    });
@@ -142,15 +142,15 @@ describe('domutils', function() {
        node.innerHTML = html,
        
        // one instance of a element   
-       assert.equal( microformats.parser.domUtils.isOnlySingleDescendantOfType( document, node, ['a', 'link']).outerHTML, html );
-       assert.equal( microformats.parser.domUtils.isOnlySingleDescendantOfType( document, node, ['img','area']), null );
+       assert.equal( Modules.domUtils.isOnlySingleDescendantOfType( document, node, ['a', 'link']).outerHTML, html );
+       assert.equal( Modules.domUtils.isOnlySingleDescendantOfType( document, node, ['img','area']), null );
        
        node.appendChild(document.createElement('p'));
-       assert.equal( microformats.parser.domUtils.isOnlySingleDescendantOfType( document, node, ['a', 'link']).outerHTML, html );
+       assert.equal( Modules.domUtils.isOnlySingleDescendantOfType( document, node, ['a', 'link']).outerHTML, html );
        
        // two instances of a element  
        node.appendChild(document.createElement('a'));
-       assert.equal( microformats.parser.domUtils.isOnlySingleDescendantOfType( document, node, ['a', 'link']), null );
+       assert.equal( Modules.domUtils.isOnlySingleDescendantOfType( document, node, ['a', 'link']), null );
        
 
    });
@@ -160,7 +160,7 @@ describe('domutils', function() {
        var node = document.createElement('div'),
            child = document.createElement('a');
            
-       microformats.parser.domUtils.appendChild( document, node, child ); 
+       Modules.domUtils.appendChild( document, node, child ); 
        assert.equal( node.innerHTML, '<a></a>' );
    });
    
@@ -172,7 +172,7 @@ describe('domutils', function() {
        node.appendChild(child)    
       
        assert.equal( node.innerHTML, '<a></a>' );     
-       microformats.parser.domUtils.removeChild( document, child ); 
+       Modules.domUtils.removeChild( document, child ); 
        assert.equal( node.innerHTML, '' );
    });
    
@@ -181,21 +181,21 @@ describe('domutils', function() {
        var node = document.createElement('div');
            
        node.innerHTML = 'text content';
-       assert.equal( microformats.parser.domUtils.clone( document, node ).outerHTML, '<div>text content</div>' );
+       assert.equal( Modules.domUtils.clone( document, node ).outerHTML, '<div>text content</div>' );
    });
    
    
    it('resolveUrl', function(){
-       assert.equal( microformats.parser.domUtils.resolveUrl( document, 'docs/index.html', 'http://example.org' ), 'http://example.org/docs/index.html' );
-       assert.equal( microformats.parser.domUtils.resolveUrl( document, '../index.html', 'http://example.org/docs/' ), 'http://example.org/index.html' );
-       assert.equal( microformats.parser.domUtils.resolveUrl( document, '/', 'http://example.org/' ), 'http://example.org/' );
-       assert.equal( microformats.parser.domUtils.resolveUrl( document, 'http://glennjones.net/', 'http://example.org/' ), 'http://glennjones.net/' );
+       assert.equal( Modules.domUtils.resolveUrl( document, 'docs/index.html', 'http://example.org' ), 'http://example.org/docs/index.html' );
+       assert.equal( Modules.domUtils.resolveUrl( document, '../index.html', 'http://example.org/docs/' ), 'http://example.org/index.html' );
+       assert.equal( Modules.domUtils.resolveUrl( document, '/', 'http://example.org/' ), 'http://example.org/' );
+       assert.equal( Modules.domUtils.resolveUrl( document, 'http://glennjones.net/', 'http://example.org/' ), 'http://glennjones.net/' );
    });
    
    
 
    it('getElementText', function(){
-       assert.equal(  microformats.parser.domUtils.getElementText( {} ), '' );
+       assert.equal(  Modules.domUtils.getElementText( {} ), '' );
    });
    
 

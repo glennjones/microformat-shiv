@@ -6,6 +6,7 @@
 <script src="../node_modules/chai/chai.js"></script>
 <script src="../node_modules/mocha/mocha.js"></script>
 
+<!--  loads Modules to help with debugging ie windows.Modules -->
 <script data-cover src="../lib/parser.js"></script>
 <script data-cover src="../lib/utilities.js"></script>
 <script data-cover src="../lib/domparser.js"></script>
@@ -14,12 +15,13 @@
 <script data-cover src="../lib/dates.js"></script>
 <script data-cover src="../lib/text.js"></script>
 <script data-cover src="../lib/html.js"></script>
-<script data-cover src="../microformat-shiv-maps.js"></script>
+<script data-cover src="../lib/maps.js"></script>
+
+<!-- loads Microformats the full umd version ie windows.Microformat -->
+<script src="microformat-shiv.js"></script>
 
 <script src="javascript/helper.js"></script>
 <script>mocha.setup("bdd")</script>
-
-
 <script src="standards-tests/mf-mixed-h-card-mixedpropertries.js"></script>
 <script src="standards-tests/mf-mixed-h-card-tworoots.js"></script>
 <script src="standards-tests/mf-mixed-h-entry-mixedroots.js"></script>
@@ -155,11 +157,11 @@
 <script src="unit-tests/utilities-test.js"></script>
 <script src="unit-tests/parser-test.js"></script>
 
-<script src="../node_modules/poncho/node_modules/blanket/dist/qunit/blanket.min.js"></script>
+
+<script src="../node_modules/poncho/node_modules/blanket/dist/qunit/blanket.min.js"> </script>
 <script src="../node_modules/poncho/node_modules/blanket/src/adapters/mocha-blanket.js"></script>
 
-
 <h3>Microformats test suite - v0.1.18</h3>
-<p>Mocha tests built on Tue Jun 23 2015 16:14:26 GMT+0100 (BST). Downloaded from github repo: microformats/tests version v0.1.18</p>
+<p>Mocha tests built on Sun Jun 28 2015 17:06:25 GMT+0100 (BST). Downloaded from github repo: microformats/tests version v0.1.18</p>
 <div id="mocha"></div>
 </body></html>

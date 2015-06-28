@@ -47,8 +47,15 @@ window.onload = function() {
             options.textFormat = 'normalised';
         }
         
-        // parse
-        mfJSON = microformats.getItems( options );
+        // parse direct into Modules to help debugging
+        if(window.Modules){
+            var parser = new Modules.Parser();
+            mfJSON = parser.get(document, node, options);
+        }else if(window.Microformats){
+            options.document = document;
+            mfJSON = Microformats.get(options);
+        }
+
         
         // format output
         parserJSONElt.innerHTML = htmlEscape( js_beautify( JSON.stringify(mfJSON) ) );

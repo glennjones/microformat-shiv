@@ -1,0 +1,163 @@
+<html><head><title>Mocha</title>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<link rel="stylesheet" href="../node_modules/mocha/mocha.css" />
+<link rel="stylesheet" href="css/mocha-custom.css" />
+
+<script src="../node_modules/chai/chai.js"></script>
+<script src="../node_modules/mocha/mocha.js"></script>
+
+<!--  loads Modules to help with debugging ie windows.Modules -->
+<script data-cover src="../lib/parser.js"></script>
+<script data-cover src="../lib/utilities.js"></script>
+<script data-cover src="../lib/domparser.js"></script>
+<script data-cover src="../lib/domutils.js"></script>
+<script data-cover src="../lib/isodate.js"></script>
+<script data-cover src="../lib/dates.js"></script>
+<script data-cover src="../lib/text.js"></script>
+<script data-cover src="../lib/html.js"></script>
+<script data-cover src="../lib/maps.js"></script>
+
+<!-- loads Microformats the full umd version ie windows.Microformat -->
+<script src="microformat-shiv.js"></script>
+
+<script src="javascript/helper.js"></script>
+<script>mocha.setup("bdd")</script>
+<script src="standards-tests/mf-mixed-h-card-mixedpropertries.js"></script>
+<script src="standards-tests/mf-mixed-h-card-tworoots.js"></script>
+<script src="standards-tests/mf-mixed-h-entry-mixedroots.js"></script>
+<script src="standards-tests/mf-mixed-h-resume-mixedroots.js"></script>
+<script src="standards-tests/mf-v1-adr-justaname.js"></script>
+<script src="standards-tests/mf-v1-adr-simpleproperties.js"></script>
+<script src="standards-tests/mf-v1-geo-abbrpattern.js"></script>
+<script src="standards-tests/mf-v1-geo-hidden.js"></script>
+<script src="standards-tests/mf-v1-geo-justaname.js"></script>
+<script src="standards-tests/mf-v1-geo-simpleproperties.js"></script>
+<script src="standards-tests/mf-v1-geo-valuetitleclass.js"></script>
+<script src="standards-tests/mf-v1-hcalendar-ampm.js"></script>
+<script src="standards-tests/mf-v1-hcalendar-attendees.js"></script>
+<script src="standards-tests/mf-v1-hcalendar-combining.js"></script>
+<script src="standards-tests/mf-v1-hcalendar-concatenate.js"></script>
+<script src="standards-tests/mf-v1-hcalendar-justahyperlink.js"></script>
+<script src="standards-tests/mf-v1-hcalendar-justaname.js"></script>
+<script src="standards-tests/mf-v1-hcalendar-time.js"></script>
+<script src="standards-tests/mf-v1-hcard-email.js"></script>
+<script src="standards-tests/mf-v1-hcard-format.js"></script>
+<script src="standards-tests/mf-v1-hcard-hyperlinkedphoto.js"></script>
+<script src="standards-tests/mf-v1-hcard-justahyperlink.js"></script>
+<script src="standards-tests/mf-v1-hcard-justaname.js"></script>
+<script src="standards-tests/mf-v1-hcard-multiple.js"></script>
+<script src="standards-tests/mf-v1-hcard-name.js"></script>
+<script src="standards-tests/mf-v1-hcard-single.js"></script>
+<script src="standards-tests/mf-v1-hentry-justahyperlink.js"></script>
+<script src="standards-tests/mf-v1-hentry-justaname.js"></script>
+<script src="standards-tests/mf-v1-hentry-summarycontent.js"></script>
+<script src="standards-tests/mf-v1-hnews-all.js"></script>
+<script src="standards-tests/mf-v1-hnews-minimum.js"></script>
+<script src="standards-tests/mf-v1-hproduct-aggregate.js"></script>
+<script src="standards-tests/mf-v1-hproduct-justahyperlink.js"></script>
+<script src="standards-tests/mf-v1-hproduct-justaname.js"></script>
+<script src="standards-tests/mf-v1-hproduct-simpleproperties.js"></script>
+<script src="standards-tests/mf-v1-hresume-affiliation.js"></script>
+<script src="standards-tests/mf-v1-hresume-contact.js"></script>
+<script src="standards-tests/mf-v1-hresume-education.js"></script>
+<script src="standards-tests/mf-v1-hresume-justaname.js"></script>
+<script src="standards-tests/mf-v1-hresume-skill.js"></script>
+<script src="standards-tests/mf-v1-hresume-work.js"></script>
+<script src="standards-tests/mf-v1-hreview-hyperlink.js"></script>
+<script src="standards-tests/mf-v1-hreview-implieditem.js"></script>
+<script src="standards-tests/mf-v1-hreview-item.js"></script>
+<script src="standards-tests/mf-v1-hreview-justaname.js"></script>
+<script src="standards-tests/mf-v1-hreview-photo.js"></script>
+<script src="standards-tests/mf-v1-hreview-vcard.js"></script>
+<script src="standards-tests/mf-v1-hreview-aggregate-hcard.js"></script>
+<script src="standards-tests/mf-v1-hreview-aggregate-justahyperlink.js"></script>
+<script src="standards-tests/mf-v1-hreview-aggregate-vevent.js"></script>
+<script src="standards-tests/mf-v1-includes-hcarditemref.js"></script>
+<script src="standards-tests/mf-v1-includes-heventitemref.js"></script>
+<script src="standards-tests/mf-v1-includes-hyperlink.js"></script>
+<script src="standards-tests/mf-v1-includes-object.js"></script>
+<script src="standards-tests/mf-v1-includes-table.js"></script>
+<script src="standards-tests/mf-v2-h-adr-geo.js"></script>
+<script src="standards-tests/mf-v2-h-adr-geourl.js"></script>
+<script src="standards-tests/mf-v2-h-adr-justaname.js"></script>
+<script src="standards-tests/mf-v2-h-adr-simpleproperties.js"></script>
+<script src="standards-tests/mf-v2-h-as-note-note.js"></script>
+<script src="standards-tests/mf-v2-h-card-baseurl.js"></script>
+<script src="standards-tests/mf-v2-h-card-childimplied.js"></script>
+<script src="standards-tests/mf-v2-h-card-extendeddescription.js"></script>
+<script src="standards-tests/mf-v2-h-card-hcard.js"></script>
+<script src="standards-tests/mf-v2-h-card-horghcard.js"></script>
+<script src="standards-tests/mf-v2-h-card-hyperlinkedphoto.js"></script>
+<script src="standards-tests/mf-v2-h-card-justahyperlink.js"></script>
+<script src="standards-tests/mf-v2-h-card-justaname.js"></script>
+<script src="standards-tests/mf-v2-h-card-nested.js"></script>
+<script src="standards-tests/mf-v2-h-card-p-property.js"></script>
+<script src="standards-tests/mf-v2-h-card-relativeurls.js"></script>
+<script src="standards-tests/mf-v2-h-entry-impliedvalue-nested.js"></script>
+<script src="standards-tests/mf-v2-h-entry-justahyperlink.js"></script>
+<script src="standards-tests/mf-v2-h-entry-justaname.js"></script>
+<script src="standards-tests/mf-v2-h-entry-summarycontent.js"></script>
+<script src="standards-tests/mf-v2-h-entry-u-property.js"></script>
+<script src="standards-tests/mf-v2-h-entry-urlincontent.js"></script>
+<script src="standards-tests/mf-v2-h-event-ampm.js"></script>
+<script src="standards-tests/mf-v2-h-event-attendees.js"></script>
+<script src="standards-tests/mf-v2-h-event-combining.js"></script>
+<script src="standards-tests/mf-v2-h-event-concatenate.js"></script>
+<script src="standards-tests/mf-v2-h-event-dates.js"></script>
+<script src="standards-tests/mf-v2-h-event-dt-property.js"></script>
+<script src="standards-tests/mf-v2-h-event-justahyperlink.js"></script>
+<script src="standards-tests/mf-v2-h-event-justaname.js"></script>
+<script src="standards-tests/mf-v2-h-event-time.js"></script>
+<script src="standards-tests/mf-v2-h-geo-abbrpattern.js"></script>
+<script src="standards-tests/mf-v2-h-geo-altitude.js"></script>
+<script src="standards-tests/mf-v2-h-geo-hidden.js"></script>
+<script src="standards-tests/mf-v2-h-geo-justaname.js"></script>
+<script src="standards-tests/mf-v2-h-geo-simpleproperties.js"></script>
+<script src="standards-tests/mf-v2-h-geo-valuetitleclass.js"></script>
+<script src="standards-tests/mf-v2-h-news-all.js"></script>
+<script src="standards-tests/mf-v2-h-news-minimum.js"></script>
+<script src="standards-tests/mf-v2-h-org-hyperlink.js"></script>
+<script src="standards-tests/mf-v2-h-org-simple.js"></script>
+<script src="standards-tests/mf-v2-h-org-simpleproperties.js"></script>
+<script src="standards-tests/mf-v2-h-product-aggregate.js"></script>
+<script src="standards-tests/mf-v2-h-product-justahyperlink.js"></script>
+<script src="standards-tests/mf-v2-h-product-justaname.js"></script>
+<script src="standards-tests/mf-v2-h-product-simpleproperties.js"></script>
+<script src="standards-tests/mf-v2-h-recipe-all.js"></script>
+<script src="standards-tests/mf-v2-h-recipe-minimum.js"></script>
+<script src="standards-tests/mf-v2-h-resume-affiliation.js"></script>
+<script src="standards-tests/mf-v2-h-resume-contact.js"></script>
+<script src="standards-tests/mf-v2-h-resume-education.js"></script>
+<script src="standards-tests/mf-v2-h-resume-justaname.js"></script>
+<script src="standards-tests/mf-v2-h-resume-skill.js"></script>
+<script src="standards-tests/mf-v2-h-resume-work.js"></script>
+<script src="standards-tests/mf-v2-h-review-hyperlink.js"></script>
+<script src="standards-tests/mf-v2-h-review-implieditem.js"></script>
+<script src="standards-tests/mf-v2-h-review-item.js"></script>
+<script src="standards-tests/mf-v2-h-review-justaname.js"></script>
+<script src="standards-tests/mf-v2-h-review-photo.js"></script>
+<script src="standards-tests/mf-v2-h-review-vcard.js"></script>
+<script src="standards-tests/mf-v2-h-review-aggregate-hevent.js"></script>
+<script src="standards-tests/mf-v2-h-review-aggregate-justahyperlink.js"></script>
+<script src="standards-tests/mf-v2-h-review-aggregate-simpleproperties.js"></script>
+<script src="standards-tests/mf-v2-rel-duplicate-rels.js"></script>
+<script src="standards-tests/mf-v2-rel-license.js"></script>
+<script src="standards-tests/mf-v2-rel-nofollow.js"></script>
+<script src="standards-tests/mf-v2-rel-rel-urls.js"></script>
+<script src="standards-tests/mf-v2-rel-varying-text-duplicate-rels.js"></script>
+<script src="standards-tests/mf-v2-rel-xfn-all.js"></script>
+<script src="standards-tests/mf-v2-rel-xfn-elsewhere.js"></script>
+<script src="standards-tests/mf-v2-rel=alternate-alternate.js"></script>
+
+<script src="unit-tests/dates-test.js"></script>
+<script src="unit-tests/isodate-test.js"></script>
+<script src="unit-tests/domutils-test.js"></script>
+<script src="unit-tests/html-test.js"></script>
+<script src="unit-tests/text-test.js"></script>
+<script src="unit-tests/utilities-test.js"></script>
+<script src="unit-tests/parser-test.js"></script>
+
+<h3>Microformats test suite - v0.1.18</h3>
+<p>Mocha tests built on Sun Jun 28 2015 17:06:25 GMT+0100 (BST). Downloaded from github repo: microformats/tests version v0.1.18</p>
+<div id="mocha"></div>
+</body></html>

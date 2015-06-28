@@ -1,7 +1,7 @@
 /*
 Microformats Test Suite - Downloaded from github repo: microformats/tests version v0.1.18 
 Mocha integration test from: microformats-mixed/h-resume/mixedroots
-The test was built on Tue Jun 23 2015 16:14:26 GMT+0100 (BST)
+The test was built on Sun Jun 28 2015 17:06:25 GMT+0100 (BST)
 */
 
 assert = chai.assert;

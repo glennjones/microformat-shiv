@@ -12,12 +12,18 @@ module.exports = function( grunt ) {
 			dist: {
 				options: {
 					banner: '<%= meta.banner %>',
-					process: function(src) {
-			          return src.replace(/(^|\n)[ \t]*('use strict'|"use strict");?\s*/g, '');
+					process: function(src, filename) {
+					  console.log(filename);
+			          src = src.replace(/(^|\n)[ \t]*('use strict'|"use strict");?\s*/g, '');
+					  if(filename.indexOf('parser.js') === -1){
+					  	src = src.replace('var Modules', 'Modules');
+					  }
+					  return src;
 			        },
 				},
 				files:{
 					'<%= pkg.name %>.js': [
+						'umd/umd-start.js', 
 						'lib/parser.js', 
 						'lib/utilities.js', 
 						'lib/domparser.js',
@@ -26,19 +32,24 @@ module.exports = function( grunt ) {
 						'lib/dates.js',
 						'lib/text.js',
 						'lib/html.js',
-						'lib/maps/*.js'
+						'lib/maps.js',
+						'umd/umd-end.js',
 					]
 				}
 			},
 			map: {
 				options: {
 					banner: '<%= meta.banner %>',
-					process: function(src) {
-			          return src.replace(/(^|\n)[ \t]*('use strict'|"use strict");?\s*/g, '');
+					process: function(src, filename) {
+			          src = src.replace(/(^|\n)[ \t]*('use strict'|"use strict");?\s*/g, '');
+					  if(filename.indexOf('h-adr.js') === -1){
+					  	src = src.replace('var Modules', 'Modules');
+					  }
+					  return src;
 			        },
 				},
 				files:{
-					'<%= pkg.name %>-maps.js': ['lib/maps/*.js']
+					'lib/maps.js': ['lib/maps/*.js']
 				}
 			}
 		},
@@ -77,7 +88,7 @@ module.exports = function( grunt ) {
 	      	}
 	    },
 		jshint: {
-			files: ['Gruntfile.js', 'lib/**/*.js'],
+			files: ['lib/**/*.js','Gruntfile.js','<%= pkg.name %>.js'],
 			options: {
 				curly: true,
 				eqeqeq: true,
@@ -91,7 +102,7 @@ module.exports = function( grunt ) {
 				node: true,
 				quotmark: 'single',
 				moz: true,
-				predef: [ 'microformats', 'ISODate' ]
+				predef: [ 'define' ]
 			},
 			globals: {}
 		},
@@ -102,8 +113,8 @@ module.exports = function( grunt ) {
 		    all: ['test/mocha-tests.html']
 		},
 		watch: {
-			files: 'lib/*.js',
-			tasks: ['concat', 'copy', 'uglify']
+			files: ['lib/**/*.js','umd/**/*.js','Gruntfile.js'],
+			tasks: ['concat:map', 'concat:dist', 'copy', 'uglify']
 		}
 	});
 
@@ -115,11 +126,13 @@ module.exports = function( grunt ) {
 	grunt.loadNpmTasks('grunt-contrib-uglify');
   	grunt.loadNpmTasks('grunt-jsmin-sourcemap');
 	grunt.loadNpmTasks('grunt-mocha-phantomjs');
+	grunt.loadNpmTasks('grunt-umd');
 
 
 	// Default task.
-	grunt.registerTask( 'default', ['concat', 'copy', 'uglify']);
+	grunt.registerTask( 'default', ['concat:map', 'concat:dist', 'copy', 'uglify']);
 	grunt.registerTask( 'test', ['mocha_phantomjs:all']);
+	grunt.registerTask( 'umd', ['umd:default']);
 
 
 

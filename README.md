@@ -107,27 +107,27 @@ There is a simple method called getCounts, which will return the number of each 
     </script>    
 
 
-### Mocha.js tests
+### Unit and microformats standards integration tests
 
 The library includes web pages which run the [microfomats test suite](https://github.com/microformats/tests).The tests are built using Mocha.js and you can run them directly from the files in this repo.
 
-    \test\microfomats-mocha-tests.html
+    http://localhost:3000/mocha-tests-client.html
     
-   
-### Other tests tools
-There are also two other tests tools:
-
-    \test\testrunner.html (clients side version microfomats test suite testrunner)
-    \test\parse.html (clients side form to test parsing microfomats html)
     
 ### Test Coverage tools
 
-    http://localhost:3000/mocha-tests2.html 
+    http://localhost:3000/mocha-tests-client.html 
 
-    $ ./node_modules/.bin/poncho --reporter lcov test/mocha-tests.html
-    $ ./node_modules/.bin/poncho --reporter lcov test/mocha-tests.html | ./node_modules/codacy-coverage/bin/codacy-coverage.js
+    $ ./node_modules/.bin/poncho --reporter lcov test/mocha-tests-server.html
+    $ ./node_modules/.bin/poncho --reporter lcov test/mocha-tests-server.html | ./node_modules/codacy-coverage/bin/codacy-coverage.js
 
 
+### Other tests and debugging tools
+There are also three other tests tools:
+
+    http://localhost:3000/test/testrunner.html (clients side version microfomats test suite testrunner)
+    http://localhost:3000/test/parse.html (clients side form to for parsing and debugging)
+    http://localhost:3000/test/parse-umd.html (clients side form to test the full umd wrapped version of the code)
 
 ### Support or Contact
 

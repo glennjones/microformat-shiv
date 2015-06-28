@@ -6,6 +6,8 @@
 <script src="../node_modules/chai/chai.js"></script>
 <script src="../node_modules/mocha/mocha.js"></script>
 
+
+<!-- loads Modules to help with debugging ie windows.Modules -->
 <script data-cover src="../lib/parser.js"></script>
 <script data-cover src="../lib/utilities.js"></script>
 <script data-cover src="../lib/domparser.js"></script>
@@ -14,7 +16,11 @@
 <script data-cover src="../lib/dates.js"></script>
 <script data-cover src="../lib/text.js"></script>
 <script data-cover src="../lib/html.js"></script>
-<script data-cover src="../microformat-shiv-maps.js"></script>
+<script data-cover src="../lib/maps.js"></script>
+
+<!-- loads Microformats the full umd version ie windows.Microformat -->
+<script src="../microformat-shiv.js"></script>
+
 
 <script src="javascript/helper.js"></script>
 <script>mocha.setup("bdd")</script>

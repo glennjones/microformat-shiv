@@ -51,7 +51,7 @@ function buildTest( test ){
         'node': div,
         'baseUrl': 'http://example.com'
     }
-    var mfJSON = microformats.getItems( options );
+    var mfJSON = Microformats.get( options );
 	parserElt.innerHTML = htmlEscape( js_beautify( JSON.stringify(mfJSON) ) );
     
     // diff json
@@ -91,7 +91,7 @@ function passTest( test ){
         'node': div,
         'baseUrl': 'http://example.com'
     }
-    var mfJSON = microformats.getItems( options );
+    var mfJSON = Microformats.get( options );
     
     // diff json
     var diff = DeepDiff(JSON.parse(test.json),  mfJSON);

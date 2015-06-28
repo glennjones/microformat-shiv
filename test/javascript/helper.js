@@ -7,11 +7,15 @@
 
 var helper = {};
 
-helper.parseHTML = function(htmlFragment,baseUrl){
+helper.parseHTML = function( htmlFragment, baseUrl, umd){
 
 	var doc,
 		node,
 		options;
+		
+	if(umd !== undefined){
+		umd === false;
+	}
 
 	doc = document.implementation.createHTMLDocument("New Document");
 	node =  document.createElement('div')
@@ -24,6 +28,13 @@ helper.parseHTML = function(htmlFragment,baseUrl){
 		'node': node
 	};
 
-	return microformats.getItems(options);
+	// either Modules or Microformats (umd) object
+    if(umd === false){
+        var parser = new Modules.Parser();
+        return parser.get(document, node, options);
+    }else if(window.Microformats){
+        options.document = document;
+        return Microformats.get(options);
+    }
 
 }

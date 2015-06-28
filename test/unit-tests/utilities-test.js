@@ -3,80 +3,80 @@ describe('utilities', function() {
   
     
    it('isString', function(){     
-       assert.isTrue( microformats.parser.utils.isString( 'abc' ) );
-       assert.isFalse( microformats.parser.utils.isString( 123 ) );
-       assert.isFalse( microformats.parser.utils.isString( 1.23 ) );
-       assert.isFalse( microformats.parser.utils.isString( {'abc': 'abc'} ) );
-       assert.isFalse( microformats.parser.utils.isString( ['abc'] ) );
-       assert.isFalse( microformats.parser.utils.isString( true ) );
+       assert.isTrue( Modules.utils.isString( 'abc' ) );
+       assert.isFalse( Modules.utils.isString( 123 ) );
+       assert.isFalse( Modules.utils.isString( 1.23 ) );
+       assert.isFalse( Modules.utils.isString( {'abc': 'abc'} ) );
+       assert.isFalse( Modules.utils.isString( ['abc'] ) );
+       assert.isFalse( Modules.utils.isString( true ) );
    });
    
    
    it('isArray', function(){
-       assert.isTrue( microformats.parser.utils.isArray( ['abc'] ) );
-       assert.isFalse( microformats.parser.utils.isArray( 123 ) );
-       assert.isFalse( microformats.parser.utils.isArray( 1.23 ) );  
-       assert.isFalse( microformats.parser.utils.isArray( 'abc' ) );
-       assert.isFalse( microformats.parser.utils.isArray( {'abc': 'abc'} ) );
-       assert.isFalse( microformats.parser.utils.isArray( true ) );
+       assert.isTrue( Modules.utils.isArray( ['abc'] ) );
+       assert.isFalse( Modules.utils.isArray( 123 ) );
+       assert.isFalse( Modules.utils.isArray( 1.23 ) );  
+       assert.isFalse( Modules.utils.isArray( 'abc' ) );
+       assert.isFalse( Modules.utils.isArray( {'abc': 'abc'} ) );
+       assert.isFalse( Modules.utils.isArray( true ) );
    });
    
    
    it('isNumber', function(){
-       assert.isTrue( microformats.parser.utils.isNumber( 123 ) );
-       assert.isTrue( microformats.parser.utils.isNumber( 1.23 ) );  
-       assert.isFalse( microformats.parser.utils.isNumber( 'abc' ) );
-       assert.isFalse( microformats.parser.utils.isNumber( {'abc': 'abc'} ) );
-       assert.isFalse( microformats.parser.utils.isNumber( ['abc'] ) );
-       assert.isFalse( microformats.parser.utils.isNumber( true ) );
+       assert.isTrue( Modules.utils.isNumber( 123 ) );
+       assert.isTrue( Modules.utils.isNumber( 1.23 ) );  
+       assert.isFalse( Modules.utils.isNumber( 'abc' ) );
+       assert.isFalse( Modules.utils.isNumber( {'abc': 'abc'} ) );
+       assert.isFalse( Modules.utils.isNumber( ['abc'] ) );
+       assert.isFalse( Modules.utils.isNumber( true ) );
    });
 
 
    it('startWith', function(){
-       assert.isTrue( microformats.parser.utils.startWith( 'p-name', 'p-' ) );
-       assert.isFalse( microformats.parser.utils.startWith( 'p-name', 'name' ) );
-       assert.isFalse( microformats.parser.utils.startWith( 'p-name', 'u-' ) );
+       assert.isTrue( Modules.utils.startWith( 'p-name', 'p-' ) );
+       assert.isFalse( Modules.utils.startWith( 'p-name', 'name' ) );
+       assert.isFalse( Modules.utils.startWith( 'p-name', 'u-' ) );
    });
    
    
    it('trim', function(){
-       assert.equal( microformats.parser.utils.trim( ' Glenn Jones ' ), 'Glenn Jones' );
-       assert.equal( microformats.parser.utils.trim( 'Glenn Jones' ), 'Glenn Jones' );
-       assert.equal( microformats.parser.utils.trim( undefined ), '' );
+       assert.equal( Modules.utils.trim( ' Glenn Jones ' ), 'Glenn Jones' );
+       assert.equal( Modules.utils.trim( 'Glenn Jones' ), 'Glenn Jones' );
+       assert.equal( Modules.utils.trim( undefined ), '' );
    });
    
   
    it('replaceCharAt', function(){
-       assert.equal( microformats.parser.utils.replaceCharAt( 'Glenn Jones', 5, '-' ), 'Glenn-Jones' );
-       assert.equal( microformats.parser.utils.replaceCharAt( 'Glenn Jones', 50, '-' ), 'Glenn Jones' );
+       assert.equal( Modules.utils.replaceCharAt( 'Glenn Jones', 5, '-' ), 'Glenn-Jones' );
+       assert.equal( Modules.utils.replaceCharAt( 'Glenn Jones', 50, '-' ), 'Glenn Jones' );
    });   
    
    
    it('isOnlyWhiteSpace', function(){
-       assert.isTrue( microformats.parser.utils.isOnlyWhiteSpace( '  ') );
-       assert.isTrue( microformats.parser.utils.isOnlyWhiteSpace( '  \n\r') );
-       assert.isFalse( microformats.parser.utils.isOnlyWhiteSpace( '  text\n\r') );
+       assert.isTrue( Modules.utils.isOnlyWhiteSpace( '  ') );
+       assert.isTrue( Modules.utils.isOnlyWhiteSpace( '  \n\r') );
+       assert.isFalse( Modules.utils.isOnlyWhiteSpace( '  text\n\r') );
    });
    
    
    it('removeWhiteSpace', function(){
-       assert.equal( microformats.parser.utils.removeWhiteSpace( '  '), ' ' );
-       assert.equal( microformats.parser.utils.removeWhiteSpace( '  \n\r'), ' ' );
-       assert.equal( microformats.parser.utils.removeWhiteSpace( '  text\n\r'), ' text ' );
+       assert.equal( Modules.utils.removeWhiteSpace( '  '), ' ' );
+       assert.equal( Modules.utils.removeWhiteSpace( '  \n\r'), ' ' );
+       assert.equal( Modules.utils.removeWhiteSpace( '  text\n\r'), ' text ' );
    }); 
    
    
    it('hasProperties', function(){
-       assert.isTrue( microformats.parser.utils.hasProperties( {name: 'glennjones'} ) );
-       assert.isFalse( microformats.parser.utils.hasProperties( {} ) );
+       assert.isTrue( Modules.utils.hasProperties( {name: 'glennjones'} ) );
+       assert.isFalse( Modules.utils.hasProperties( {} ) );
    });
    
    
    it('sortObjects', function(){
        var arr = [{'name': 'one'},{'name': 'two'},{'name': 'three'},{'name': 'three'}];
        
-       assert.deepEqual( arr.sort( microformats.parser.utils.sortObjects( 'name', true ) ), [{"name":"two"},{"name":"three"},{'name': 'three'},{"name":"one"}] );
-       assert.deepEqual( arr.sort( microformats.parser.utils.sortObjects( 'name', false ) ), [{"name":"one"},{"name":"three"},{'name': 'three'},{"name":"two"}] );
+       assert.deepEqual( arr.sort( Modules.utils.sortObjects( 'name', true ) ), [{"name":"two"},{"name":"three"},{'name': 'three'},{"name":"one"}] );
+       assert.deepEqual( arr.sort( Modules.utils.sortObjects( 'name', false ) ), [{"name":"one"},{"name":"three"},{'name': 'three'},{"name":"two"}] );
    });
    
    
