@@ -1,6 +1,6 @@
 /*
    microformat-shiv - v0.3.4
-   Built: 2015-06-29 10:06 - http://microformat-shiv.com
+   Built: 2015-06-29 04:06 - http://microformat-shiv.com
    Copyright (c) 2015 Glenn Jones
    Licensed MIT 
 */
@@ -30,28 +30,34 @@ var Modules = (function (m) {
 	
     m.Parser = function () {
 	    //this.version = '0.4.0';
+		this.rootNode = null,
+		this.document = null,
 		this.rootPrefix = 'h-';
 		this.propertyPrefixes = ['p-', 'dt-', 'u-', 'e-'];
 		this.options = {
 			'baseUrl': '',
 			'filters': [],
-			'version1': true,
-			'children': true,
-			'childrenRel': false,
-			'rel': true,
-			'includes': true,
 			'textFormat': 'whitespacetrimmed',
 			'dateFormat': 'auto'
 		};
+		
+		// create objects in case modules don't load
 		m.maps = (m.maps)? m.maps : {};
 		m.rels = (m.rels)? m.rels : {};
 	};
 	
 	
-	m.Parser.prototype = {
 	
-		// internal parse function 
-		get: function(dom, rootNode, options) {
+	m.Parser.prototype = {
+		
+		
+		/**
+         * internal parse function 
+         *
+         * @param  {Object} options
+         * @return {Object}
+         */
+		get: function(rootNode, options) {
 			var errors = null,
 				out = {},
 				data = [],
@@ -61,21 +67,33 @@ var Modules = (function (m) {
 	
 			this.mergeOptions(options);
 			this.rootID = 0;
+			this.rootNode = null;
+			this.document = null;
 	
-			if(!dom || !rootNode){
-				errors = [{'error': 'No DOM or rootNode given'}];
+			if(!rootNode){
+				errors = [{'error': 'No node given to parser microformats from'}];
 				return {'errors': errors, 'data': {}};
 			}else{
+				this.rootNode = rootNode;
+				
+				// load from options or get from ownerDocument
+				if(options.document){
+					this.document = options.document;
+				}else{
+					this.document = m.domUtils.ownerDocument(rootNode);
+				}
+				
 	
 				// add includes
-				if(this.options.includes){
-					this.addIncludes(dom, rootNode);
+				if(this.addIncludes){
+					this.addIncludes(rootNode);
 				}
+				
 				
 				// find base tag to set baseUrl
 	 			baseTag = rootNode.querySelector('base');
 				if(baseTag) {
-					href = m.domUtils.getAttribute(dom, baseTag, 'href');
+					href = m.domUtils.getAttribute(baseTag, 'href');
 					if(href){
 						this.options.baseUrl = href;
 					}
@@ -83,40 +101,40 @@ var Modules = (function (m) {
 				
 				if(this.options.filters.length > 0){
 					// parse flat list of items
-					var struct = this.findFilterNodes(dom, rootNode, this.options.filters);
+					var struct = this.findFilterNodes(rootNode, this.options.filters);
 					data = this.walkRoot(struct[0], struct[1]);
 				}else{
 					// parse whole document from root
-					data = this.walkRoot(dom, rootNode);
+					data = this.walkRoot(rootNode);
 				}
 				//out = {'errors': errors, 'data': {'items': data}};
 	
 	
 				out.items = data;
+				
 				// find any rel
-				if(this.options.rel){
-					rels = this.findRels(dom, rootNode);
+				if(this.findRels){
+					rels = this.findRels(rootNode);
 					out.rels = rels.rels;
 					out['rel-urls'] = rels['rel-urls'];
 					if(rels.alternate){
 						out.alternates = rels.alternate;
 					}
 				}
-	
+				
 			}
-			this.clearUpDom(dom);
+			this.clearUpDom(this.rootNode);
 			return out;
 		},
 		
 		
-		
 		/*
 		// find uf's of a given type and return a dom and node structure of just that type of ufs
-		findFilterNodes: function(dom, rootNode, filters) {
+		findFilterNodes: function(rootNode, filters) {
 			
 			var newDom = cheerio.load('<div></div>', {xmlMode: true}),
 				newRootNode = dom.root(),
-				items = this.findRootNodes(dom, rootNode),
+				items = this.findRootNodes(rootNode),
 				i = 0,
 				x = 0,
 				y = 0;
@@ -128,8 +146,8 @@ var Modules = (function (m) {
 				while(x < i) {
 					var y = filters.length;
 					while (y--) {
-						if(domUtils.hasAttributeValue(dom, items[x], 'class', filters[y])){
-							var clone = domUtils.clone(dom, items[x]);
+						if(domUtils.hasAttributeValue(items[x], 'class', filters[y])){
+							var clone = domUtils.clone(items[x]);
 							domUtils.appendChild(newDom, newRootNode, clone);
 						}
 					}
@@ -146,10 +164,13 @@ var Modules = (function (m) {
 		},
 	
 	
-	
-	
-		// get the count of items
-		count: function(dom, rootNode) {
+		/**
+         * get the count of microformats
+         *
+         * @param  {DOM Node} rootNode
+         * @return {Int}
+         */
+		count: function(rootNode) {
 			var out = {},
 				items,
 				classItems,
@@ -164,10 +185,10 @@ var Modules = (function (m) {
 				}
 			}		
 				
-			items = this.findRootNodes(dom, rootNode);	
+			items = this.findRootNodes(rootNode);	
 			i = items.length;
 			while(i--) {
-				classItems = m.domUtils.getAttributeList(dom, items[i], 'class');
+				classItems = m.domUtils.getAttributeList(items[i], 'class');
 				x = classItems.length;
 				while(x--) {
 					// find v2 names
@@ -187,8 +208,14 @@ var Modules = (function (m) {
 			return out;
 		},
 	
-	
-		// is the uf type in the filter list
+		
+		/**
+         * is the microformats type in the filter list
+         *
+         * @param  {Object} uf
+		 * @param  {Array} filters
+         * @return {Boolean}
+         */
 		shouldInclude: function(uf, filters) {
 			var i;
 	
@@ -205,9 +232,15 @@ var Modules = (function (m) {
 			}
 		},
 	
-	
-		// finds uf within the tree of a parent uf but where they have on property
-		findChildItems: function(dom, rootNode, ufName) {
+		
+		/**
+         * finds microformat within the tree microformat a parent uf - child has to have properties to count
+         *
+         * @param  {DOM Node} rootNode
+		 * @param  {String} ufName
+         * @return {Array}
+         */
+		findChildItems: function(rootNode, ufName) {
 			var items, 
 				out = [],
 				ufs = [],
@@ -216,14 +249,14 @@ var Modules = (function (m) {
 				z,			
 				y;
 	
-			items = this.findRootNodes(dom, rootNode, true);
+			items = this.findRootNodes(rootNode, true);
 			if(items.length > 0) {
 				i = items.length;
 				x = 0; // 1 excludes parent
 				while(x < i) {
-					var classes = this.getUfClassNames(dom, items[x], ufName);
+					var classes = this.getUfClassNames(items[x], ufName);
 					if(classes.root.length > 0 && classes.properties.length === 0) {
-						ufs = this.walkTree(dom, items[x], true);
+						ufs = this.walkTree(items[x], true);
 						y = ufs.length;
 						z = 0;
 						while(z < y) {
@@ -242,11 +275,14 @@ var Modules = (function (m) {
 		},
 	
 	
-	
-	
-	
-		// returns all the root nodes in a document
-		findRootNodes: function(dom, rootNode, fromChildren) {
+		/**
+         * finds  all microformat roots in a rootNode
+         *
+         * @param  {DOM Node} rootNode
+		 * @param  {Boolean} fromChildren
+         * @return {Array}
+         */
+		findRootNodes: function(rootNode, fromChildren) {
 			var arr = null,			
 				out = [], 
 				classList = [],
@@ -273,10 +309,10 @@ var Modules = (function (m) {
 				//}else{
 				//	nodes = rootNode.children();
 				//}
-				//arr = m.domUtils.getNodesByAttribute(dom, nodes, 'class');
-				arr = m.domUtils.getNodesByAttribute(dom, rootNode, 'class');
+				//arr = m.domUtils.getNodesByAttribute(nodes, 'class');
+				arr = m.domUtils.getNodesByAttribute(rootNode, 'class');
 			} else {
-				arr = m.domUtils.getNodesByAttribute(dom, rootNode, 'class');
+				arr = m.domUtils.getNodesByAttribute(rootNode, 'class');
 			}
 	
 	
@@ -285,7 +321,7 @@ var Modules = (function (m) {
 			i = arr.length;
 			while(x < i) {
 	
-				items = m.domUtils.getAttributeList(dom, arr[x], 'class');
+				items = m.domUtils.getAttributeList(arr[x], 'class');
 	
 				// loop classes on an element
 				y = items.length;
@@ -309,27 +345,32 @@ var Modules = (function (m) {
 		},
 		
 		
-		// starts the tree walk to find microformats
-		walkRoot: function(dom, node){
+		/**
+         * starts the tree walk to find microformats
+         *
+         * @param  {DOM Node} node
+         * @return {Array}
+         */
+		walkRoot: function(node){
 			var context = this,
 				classes,
 				items = [],
 				out = [];
 	
-			classes = this.getUfClassNames(dom, node);
+			classes = this.getUfClassNames(node);
 			// if a root uf node
 			if(classes && classes.root.length > 0){
-				items = this.walkTree(dom, node);
+				items = this.walkTree(node);
 	
 				if(items.length > 0){
 					out = out.concat(items);
 				}
 			}else{
 				// check if there are children and one of the children has a root uf
-				if(node && node.children && node.children.length > 0 && this.findRootNodes(dom, node, true).length > -1){
+				if(node && node.children && node.children.length > 0 && this.findRootNodes(node, true).length > -1){
 					for (var i = 0; i < node.children.length; i++) {
 						var child = node.children[i];
-						items = context.walkRoot(dom, child);
+						items = context.walkRoot(child);
 						if(items.length > 0){
 							out = out.concat(items);
 						}
@@ -340,24 +381,29 @@ var Modules = (function (m) {
 		},
 	
 	
-		// starts the tree walking for a single microformat
-		walkTree: function(dom, node) {
+		/**
+         * starts the tree walking for a single microformat
+         *
+         * @param  {DOM Node} node
+         * @return {Array}
+         */
+		walkTree: function(node) {
 			var classes,
 				out = [],
 				obj,
 				itemRootID;
 	
 			// loop roots found on one element
-			classes = this.getUfClassNames(dom, node);
+			classes = this.getUfClassNames(node);
 			if(classes && classes.root.length && classes.root.length > 0){
 	
 				this.rootID++;
 				itemRootID = this.rootID;
 				obj = this.createUfObject(classes.root);
 	
-				this.walkChildren(dom, node, obj, classes.root, itemRootID, classes);
+				this.walkChildren(node, obj, classes.root, itemRootID, classes);
 				if(this.impliedRules){
-					this.impliedRules(dom, node, obj, classes);
+					this.impliedRules(node, obj, classes);
 				}
 				out.push(obj);
 			
@@ -367,10 +413,16 @@ var Modules = (function (m) {
 		},
 	
 	
-	
-		
-		// find child properties of microformat
-		walkChildren: function(dom, node, out, ufName, rootID, parentClasses) {
+		/**
+         * finds child properties of microformat
+         *
+         * @param  {DOM Node} node
+		 * @param  {Object} out
+		 * @param  {String} ufName
+		 * @param  {Int} rootID
+		 * @param  {Object} parentClasses
+         */
+		walkChildren: function(node, out, ufName, rootID, parentClasses) {
 			var context = this,
 				rootItem,
 				itemRootID,
@@ -388,14 +440,14 @@ var Modules = (function (m) {
 				child = node.children[y];
 		
 				// get uf classes for this single element
-				var classes = context.getUfClassNames(dom, child, ufName);
+				var classes = context.getUfClassNames(child, ufName);
 	
 				// a property which is a microformat
 				if(classes.root.length > 0 && classes.properties.length > 0 && !child.addedAsRoot) {
 					// create object with type, property and value
 					rootItem = context.createUfObject(
 						classes.root, 
-						m.text.parse(dom, child, context.options.textFormat)
+						m.text.parse(this.document, child, context.options.textFormat)
 					);
 					
 					// modifies value with "implied value rule"
@@ -421,11 +473,11 @@ var Modules = (function (m) {
 					i = rootItem.type.length;
 					itemRootID = context.rootID;
 					while(x < i) {
-						context.walkChildren(dom, child, rootItem, rootItem.type, itemRootID, classes);
+						context.walkChildren(child, rootItem, rootItem.type, itemRootID, classes);
 						x++;
 					}
 					if(this.impliedRules){
-						context.impliedRules(dom, child, rootItem, classes);
+						context.impliedRules(child, rootItem, classes);
 					}
 	
 				}
@@ -437,7 +489,7 @@ var Modules = (function (m) {
 					i = classes.properties.length;
 					while(x < i) {
 	
-						value = context.getValue(dom, child, classes.properties[x], out);
+						value = context.getValue(child, classes.properties[x], out);
 						propertyName = context.removePropPrefix(classes.properties[x]);
 						
 						// modifies value with "implied value rule"
@@ -449,7 +501,7 @@ var Modules = (function (m) {
 	
 						// if the value is not empty 
 						// and we have not added this value into a property with the same name already
-						if(value !== '' && !context.hasRootID(dom, child, rootID, propertyName)) {
+						if(value !== '' && !context.hasRootID(child, rootID, propertyName)) {
 						//if(value !== '') {
 							// add the property as a an array of properties 
 							if(out.properties[propertyName]) {
@@ -458,54 +510,54 @@ var Modules = (function (m) {
 								out.properties[propertyName] = [value];
 							}
 							// add rootid to node so we track it use
-							context.appendRootID(dom, child, rootID, propertyName);
+							context.appendRootID(child, rootID, propertyName);
 						}
 						x++;
 					}
 	
-					context.walkChildren(dom, child, out, ufName, rootID, classes);
+					context.walkChildren(child, out, ufName, rootID, classes);
 				}
 	
 				// if the node has no uf classes, see if its children have
 				if(classes.root.length === 0 && classes.properties.length === 0) {
-					context.walkChildren(dom, child, out, ufName, rootID, classes);
+					context.walkChildren(child, out, ufName, rootID, classes);
 				}
 				
 				
 				// if the node is child root that should be add to children tree
-				if(context.options.children){
-					if(classes.root.length > 0 && classes.properties.length === 0) {
-			
-						// create object with type, property and value
-						rootItem = context.createUfObject(
-							classes.root, 
-							m.text.parse(dom, child, context.options.textFormat)
-						);
-	
-						// add the microformat as an array of properties
-						if(!out.children){
-							out.children =  [];
-						}
-	
-						if(!context.hasRootID(dom, child, rootID, 'child-root')) {
-							out.children.push(rootItem);
-							context.appendRootID(dom, child, rootID, 'child-root');
-							context.rootID++;
-						}
-	
-						x = 0;
-						i = rootItem.type.length;
-						itemRootID = context.rootID;
-						while(x < i) {
-							context.walkChildren(dom, child, rootItem, rootItem.type, itemRootID, classes);
-							x++;
-						}
-						if(context.impliedRules){
-							context.impliedRules(dom, child, rootItem, classes);
-						}
-						
+				
+				if(classes.root.length > 0 && classes.properties.length === 0) {
+		
+					// create object with type, property and value
+					rootItem = context.createUfObject(
+						classes.root, 
+						m.text.parse(this.document, child, context.options.textFormat)
+					);
+
+					// add the microformat as an array of properties
+					if(!out.children){
+						out.children =  [];
 					}
+
+					if(!context.hasRootID(child, rootID, 'child-root')) {
+						out.children.push(rootItem);
+						context.appendRootID(child, rootID, 'child-root');
+						context.rootID++;
+					}
+
+					x = 0;
+					i = rootItem.type.length;
+					itemRootID = context.rootID;
+					while(x < i) {
+						context.walkChildren(child, rootItem, rootItem.type, itemRootID, classes);
+						x++;
+					}
+					if(context.impliedRules){
+						context.impliedRules(child, rootItem, classes);
+					}
+					
 				}
+				
 	
 	
 				y++;
@@ -514,46 +566,59 @@ var Modules = (function (m) {
 		},
 	
 	
-		// gets the value of a property
-		getValue: function(dom, node, className, uf) {
+		/**
+         * gets the value of a property from a node
+         *
+         * @param  {DOM Node} node
+		 * @param  {String} className
+		 * @param  {Object} uf
+         * @return {String || Object}
+         */
+		getValue: function(node, className, uf) {
 			var value = '';
 	
 			if(m.utils.startWith(className, 'p-')) {
-				value = this.getPValue(dom, node, true);
+				value = this.getPValue(node, true);
 			}
 	
 			if(m.utils.startWith(className, 'e-')) {
-				value = this.getEValue(dom, node);
+				value = this.getEValue(node);
 			}
 	
 			if(m.utils.startWith(className, 'u-')) {
-				value = this.getUValue(dom, node, true);
+				value = this.getUValue(node, true);
 			}
 	
 			if(m.utils.startWith(className, 'dt-')) {
-				value = this.getDTValue(dom, node, className, uf, true);
+				value = this.getDTValue(node, className, uf, true);
 			}
 			return value;
 		},
 	
 	
-		// gets the value of node which contain 'p-' property
-		getPValue: function(dom, node, valueParse) {
+		/**
+         * gets the value of node which contain 'p-' property
+         *
+         * @param  {DOM Node} node
+		 * @param  {Boolean} valueParse
+         * @return {String}
+         */
+		getPValue: function(node, valueParse) {
 			var out = '';
 			if(valueParse) {
-				out = this.getValueClass(dom, node, 'p');
+				out = this.getValueClass(node, 'p');
 			}
 	
 			if(!out && valueParse) {
-				out = this.getValueTitle(dom, node);
+				out = this.getValueTitle(node);
 			}
 	
 			if(!out) {
-				out = m.domUtils.getAttrValFromTagList(dom, node, ['abbr'], 'title');
+				out = m.domUtils.getAttrValFromTagList(node, ['abbr'], 'title');
 			}
 	
 			if(!out) {
-				out = m.domUtils.getAttrValFromTagList(dom, node, ['data'], 'value');
+				out = m.domUtils.getAttrValFromTagList(node, ['data'], 'value');
 			}
 	
 			if(node.name === 'br' || node.name === 'hr') {
@@ -561,38 +626,43 @@ var Modules = (function (m) {
 			}
 	
 			if(!out) {
-				out = m.domUtils.getAttrValFromTagList(dom, node, ['img', 'area'], 'alt');
+				out = m.domUtils.getAttrValFromTagList(node, ['img', 'area'], 'alt');
 			}
 	
 			if(!out) {
-				out = m.text.parse(dom, node, this.options.textFormat);
+				out = m.text.parse(this.document, node, this.options.textFormat);
 			}
 	
 			return(out) ? out : '';
 		},
 	
 	
-		// get the value of node which contain 'e-' property
-		getEValue: function(dom, node) {
+		/**
+         * gets the value of node which contain 'e-' property
+         *
+         * @param  {DOM Node} node
+         * @return {Object}
+         */
+		getEValue: function(node) {
 					
 			var out = {value: '', html: ''};
 	
 			// replace all relative links with absolute ones where it can
-			function expandUrls(dom, node, attrName, baseUrl){
+			function expandUrls(node, attrName, baseUrl){
 				var i,
 					nodes,
 					attr;
 	
-				nodes = m.domUtils.getNodesByAttribute(dom, node, attrName);
+				nodes = m.domUtils.getNodesByAttribute(node, attrName);
 				i = nodes.length;
 				while (i--) {
 					try{
 						// the url parser can blow up if the format is not right
-						attr = m.domUtils.getAttribute(dom, nodes[i], attrName);
+						attr = m.domUtils.getAttribute(nodes[i], attrName);
 						if(attr && attr !== '' && baseUrl !== '' && attr.indexOf(':') === -1) {
 							//attr = urlParser.resolve(baseUrl, attr);
-							attr = m.domUtils.resolveUrl(dom, attr, baseUrl);
-							m.domUtils.setAttribute(dom, nodes[i], attrName, attr);
+							attr = m.domUtils.resolveUrl(attr, baseUrl);
+							m.domUtils.setAttribute(nodes[i], attrName, attr);
 						}	
 					}catch(err){
 						// do nothing convert only the urls we can leave the rest as they where
@@ -600,91 +670,101 @@ var Modules = (function (m) {
 				}
 			}
 			
-			expandUrls(dom, node, 'src', this.options.baseUrl);
-			expandUrls(dom, node, 'href', this.options.baseUrl);
+			expandUrls(node, 'src', this.options.baseUrl);
+			expandUrls(node, 'href', this.options.baseUrl);
 	
-			out.value = m.text.parse(dom, node, this.options.textFormat);
-			out.html = m.html.parse(dom, node);
+			out.value = m.text.parse(this.document, node, this.options.textFormat);
+			out.html = m.html.parse(node);
 	
 			return out;
-		
-			
-			//node = this.expandURLs(dom, node, this.options.baseUrl)
-			//return m.domUtils.innerHTML(dom, node);
 		},
-	
-	
-		// get the value of node which contain 'u-' property
-		getUValue: function(dom, node, valueParse) {
+		
+		
+		/**
+         * gets the value of node which contain 'u-' property
+         *
+         * @param  {DOM Node} node
+		 * @param  {Boolean} valueParse
+         * @return {String}
+         */
+		getUValue: function(node, valueParse) {
 			// not sure this should be used for u property
 			var out = '';
 			if(valueParse) {
-				out = this.getValueClass(dom, node, 'u');
+				out = this.getValueClass(node, 'u');
 			}
 	
 			if(!out && valueParse) {
-				out = this.getValueTitle(dom, node);
+				out = this.getValueTitle(node);
 			}
 	
 			if(!out) {
-				out = m.domUtils.getAttrValFromTagList(dom, node, ['a', 'area'], 'href');
+				out = m.domUtils.getAttrValFromTagList(node, ['a', 'area'], 'href');
 			}
 	
 			if(!out) {
-				out = m.domUtils.getAttrValFromTagList(dom, node, ['img'], 'src');
+				out = m.domUtils.getAttrValFromTagList(node, ['img'], 'src');
 			}
 	
 			if(!out) {
-				out = m.domUtils.getAttrValFromTagList(dom, node, ['object'], 'data');
+				out = m.domUtils.getAttrValFromTagList(node, ['object'], 'data');
 			}
 	
 			// if we have no protocal separator, turn relative url to absolute ones
 			if(out && out !== '' && out.indexOf(':') === -1) {
-				out = m.domUtils.resolveUrl(dom, out, this.options.baseUrl);
+				out = m.domUtils.resolveUrl(out, this.options.baseUrl);
 			}
 	
 			if(!out) {
-				out = m.domUtils.getAttrValFromTagList(dom, node, ['abbr'], 'title');
+				out = m.domUtils.getAttrValFromTagList(node, ['abbr'], 'title');
 			}
 	
 			if(!out) {
-				out = m.domUtils.getAttrValFromTagList(dom, node, ['data'], 'value');
+				out = m.domUtils.getAttrValFromTagList(node, ['data'], 'value');
 			}
 	
 			if(!out) {
-				out = m.text.parse(dom, node, this.options.textFormat);
+				out = m.text.parse(this.document, node, this.options.textFormat);
 			}
 	
 			return(out) ? out : '';
 		},
 	
-	
-		// get the value of node which contain 'dt-' property
-		getDTValue: function(dom, node, className, uf, valueParse) {
+
+		/**
+         * gets the value of node which contain 'dt-' property
+         *
+         * @param  {DOM Node} node
+		 * @param  {String} className
+		 * @param  {Object} uf
+		 * @param  {Boolean} valueParse
+         * @return {String}
+         */
+		getDTValue: function(node, className, uf, valueParse) {
 			var out = '';
 	
 			if(valueParse) {
-				out = this.getValueClass(dom, node, 'dt');
+				out = this.getValueClass(node, 'dt');
 			}
 	
 			if(!out && valueParse) {
-				out = this.getValueTitle(dom, node);
+				out = this.getValueTitle(node);
 			}
 	
 			if(!out) {
-				out = m.domUtils.getAttrValFromTagList(dom, node, ['time', 'ins', 'del'], 'datetime');
+				out = m.domUtils.getAttrValFromTagList(node, ['time', 'ins', 'del'], 'datetime');
 			}
 	
 			if(!out) {
-				out = m.domUtils.getAttrValFromTagList(dom, node, ['abbr'], 'title');
+				out = m.domUtils.getAttrValFromTagList(node, ['abbr'], 'title');
 			}
 	
 			if(!out) {
-				out = m.domUtils.getAttrValFromTagList(dom, node, ['data'], 'value');
+				out = m.domUtils.getAttrValFromTagList(node, ['data'], 'value');
 			}
 	
 			if(!out) {
-				out = m.text.parse(dom, node, this.options.textFormat);
+				out = m.text.parse(this.document, node, this.options.textFormat);
 			}
 	
 			if(out) {
@@ -710,33 +790,53 @@ var Modules = (function (m) {
 		},
 	
 	
-		// appends a new rootid to a given node
-		appendRootID: function(dom, node, id, propertyName) {
-			if(this.hasRootID(dom, node, id, propertyName) === false){
+		/**
+         * appends a new rootid to a given node
+         *
+         * @param  {DOM Node} node
+		 * @param  {String} id
+		 * @param  {String} propertyName
+         */
+		appendRootID: function(node, id, propertyName) {
+			if(this.hasRootID(node, id, propertyName) === false){
 				var rootids = [];
-				if(m.domUtils.hasAttribute(dom, node,'rootids')){
-					rootids = m.domUtils.getAttributeList(dom, node,'rootids');
+				if(m.domUtils.hasAttribute(node,'rootids')){
+					rootids = m.domUtils.getAttributeList(node,'rootids');
 				}
 				rootids.push('id' + id + '-' + propertyName);
-				m.domUtils.setAttribute(dom, node, 'rootids', rootids.join(' '));
+				m.domUtils.setAttribute(node, 'rootids', rootids.join(' '));
 			}
 		},
 	
 	
-		// does a given node already have a rootid
-		hasRootID: function(dom, node, id, propertyName) {
+		/**
+         * does a given node already have a rootid
+         *
+         * @param  {DOM Node} node
+		 * @param  {String} id
+		 * @param  {String} propertyName
+		 * @return {Boolean}
+         */
+		hasRootID: function(node, id, propertyName) {
 			var rootids = [];
-			if(!m.domUtils.hasAttribute(dom, node,'rootids')){
+			if(!m.domUtils.hasAttribute(node,'rootids')){
 				return false;
 			} else {
-				rootids = m.domUtils.getAttributeList(dom, node, 'rootids');
+				rootids = m.domUtils.getAttributeList(node, 'rootids');
 				return (rootids.indexOf('id' + id + '-' + propertyName) > -1);
 			}
 		},
 	
 	
-		// gets the text of any child nodes with the class value
-		getValueClass: function(dom, node, propertyType) {
+
+		/**
+         * gets the text of any child nodes with the class value
+         *
+         * @param  {DOM Node} node
+		 * @param  {String} propertyName
+		 * @return {String || null}
+         */
+		getValueClass: function(node, propertyType) {
 			var context = this,
 				out = [],
 				child,
@@ -748,16 +848,16 @@ var Modules = (function (m) {
 			while(x < i) {
 				child = node.children[x];
 				var value = null;
-				if(m.domUtils.hasAttributeValue(dom, child, 'class', 'value')) {
+				if(m.domUtils.hasAttributeValue(child, 'class', 'value')) {
 					switch(propertyType) {
 					case 'p':
-						value = context.getPValue(dom, child, false);
+						value = context.getPValue(child, false);
 						break;
 					case 'u':
-						value = context.getUValue(dom, child, false);
+						value = context.getUValue(child, false);
 						break;
 					case 'dt':
-						value = context.getDTValue(dom, child, '', null, false);
+						value = context.getDTValue(child, '', null, false);
 						break;
 					}
 					if(value) {
@@ -768,7 +868,7 @@ var Modules = (function (m) {
 			}
 			if(out.length > 0) {
 				if(propertyType === 'p') {
-					return m.text.parseText(dom, out.join(' '), this.options.textFormat);
+					return m.text.parseText( this.document, out.join(' '), this.options.textFormat);
 				}
 				if(propertyType === 'u') {
 					return out.join('');
@@ -782,20 +882,25 @@ var Modules = (function (m) {
 		},
 		
 		
-		// returns a single string of the 'title' attr from all 
-		// the child nodes with the class 'value-title' 
-		getValueTitle: function(dom, node) {
+		/**
+         * returns a single string of the 'title' attr from all 
+		 * the child nodes with the class 'value-title'
+         *
+         * @param  {DOM Node} node
+		 * @return {String}
+         */
+		getValueTitle: function(node) {
 			var out = [],
 				items,
 				i,
 				x;
 	
-			items = m.domUtils.getNodesByAttributeValue(dom, node, 'class', 'value-title');
+			items = m.domUtils.getNodesByAttributeValue(node, 'class', 'value-title');
 			x = 0;
 			i = items.length;		
 			while(x < i) {
-				if(m.domUtils.hasAttribute(dom, items[x], 'title')) {
-					out.push(m.domUtils.getAttribute(dom, items[x], 'title'));
+				if(m.domUtils.hasAttribute(items[x], 'title')) {
+					out.push(m.domUtils.getAttribute(items[x], 'title'));
 				}
 				x++;
 			}
@@ -803,9 +908,14 @@ var Modules = (function (m) {
 		},
 		
 		
-		// finds out weather a node has h-* class v1 and v2
-		hasHClass: function(dom, node){
-			var classes = this.getUfClassNames(dom, node);
+	   /**
+         * finds out weather a node has h-* class v1 and v2 
+         *
+         * @param  {DOM Node} node
+		 * @return {Boolean}
+         */
+		hasHClass: function(node){
+			var classes = this.getUfClassNames(node);
 			if(classes.root && classes.root.length > 0){
 				return true;
 			}else{
@@ -814,8 +924,14 @@ var Modules = (function (m) {
 		},
 	
 	
-	
-		getUfClassNames: function(dom, node, ufNameArr) {
+		/**
+         * get both root and property class names form a node
+         *
+         * @param  {DOM Node} node
+		 * @param  {Array} ufNameArr
+		 * @return {Object}
+         */
+		getUfClassNames: function(node, ufNameArr) {
 			var context = this,
 				out = {
 					'root': [],
@@ -837,7 +953,7 @@ var Modules = (function (m) {
 				ufName;
 	
 	
-			classNames = m.domUtils.getAttribute(dom, node, 'class');
+			classNames = m.domUtils.getAttribute(node, 'class');
 			if(classNames) {
 				items = classNames.split(' ');
 				x = 0;
@@ -859,66 +975,66 @@ var Modules = (function (m) {
 						}
 					}
 	
-					if(context.options.version1){
-	
-						// test for mapped root classnames v1
-						for(key in m.maps) {
-							if(m.maps.hasOwnProperty(key)) {
-								// only add a root once
-								if(m.maps[key].root === item && out.root.indexOf(key) === -1) {
-									// if root map has subTree set to true
-									// test to see if we should create a property or root
-									if(m.maps[key].subTree && context.isSubTreeRoot(dom, node, m.maps[key], items) === false) {
-										out.properties.push('p-' + m.maps[key].root);
-									} else {
-										out.root.push(key);
-									}
+
+
+					// test for mapped root classnames v1
+					for(key in m.maps) {
+						if(m.maps.hasOwnProperty(key)) {
+							// only add a root once
+							if(m.maps[key].root === item && out.root.indexOf(key) === -1) {
+								// if root map has subTree set to true
+								// test to see if we should create a property or root
+								if(m.maps[key].subTree && context.isSubTreeRoot(node, m.maps[key], items) === false) {
+									out.properties.push('p-' + m.maps[key].root);
+								} else {
+									out.root.push(key);
 								}
 							}
 						}
+					}
+
+					if(ufNameArr){
+						for (var a = 0; a < ufNameArr.length; a++) {
+							ufName = ufNameArr[a];
+							// test for mapped property classnames v1
+							map = context.getMapping(ufName);
+							if(map) {
+								for(key in map.properties) {
+									if (map.properties.hasOwnProperty(key)) {
+										
+										prop = map.properties[key];
+										propName = (prop.map) ? prop.map : 'p-' + key;
 	
-						if(ufNameArr){
-							for (var a = 0; a < ufNameArr.length; a++) {
-								ufName = ufNameArr[a];
-								// test for mapped property classnames v1
-								map = context.getMapping(ufName);
-								if(map) {
-									for(key in map.properties) {
-										if (map.properties.hasOwnProperty(key)) {
-											
-											prop = map.properties[key];
-											propName = (prop.map) ? prop.map : 'p-' + key;
-		
-											if(key === item) {
-												if(prop.uf) {
-													// loop all the classList make sure 
-													//   1. this property is a root
-													//   2. that there is not already a equivalent v2 property ie url and u-url on the same element
-													y = 0;
-													while(y < i) {
-														v2Name = context.getV2RootName(items[y]);
-														// add new root
-														if(prop.uf.indexOf(v2Name) > -1 && out.root.indexOf(v2Name) === -1) {
-															out.root.push(v2Name);
-														}
-														y++;
+										if(key === item) {
+											if(prop.uf) {
+												// loop all the classList make sure 
+												//   1. this property is a root
+												//   2. that there is not already a equivalent v2 property ie url and u-url on the same element
+												y = 0;
+												while(y < i) {
+													v2Name = context.getV2RootName(items[y]);
+													// add new root
+													if(prop.uf.indexOf(v2Name) > -1 && out.root.indexOf(v2Name) === -1) {
+														out.root.push(v2Name);
 													}
-													//only add property once
-													if(out.properties.indexOf(propName) === -1) {
-														out.properties.push(propName);
-													}
-												} else {
-													if(out.properties.indexOf(propName) === -1) {
-														out.properties.push(propName);
-													}
+													y++;
+												}
+												//only add property once
+												if(out.properties.indexOf(propName) === -1) {
+													out.properties.push(propName);
+												}
+											} else {
+												if(out.properties.indexOf(propName) === -1) {
+													out.properties.push(propName);
 												}
 											}
 										}
-	
 									}
+
 								}
 							}
 						}
+					
 					}
 					x++;
 	
@@ -928,18 +1044,25 @@ var Modules = (function (m) {
 			if(ufNameArr){
 				for (var b = 0; b < ufNameArr.length; b++) {
 					ufName = ufNameArr[b];
-					impiedRel = this.findRelImpied(dom, node, ufName);
-					if(impiedRel && out.properties.indexOf(impiedRel) === -1) {
-						out.properties.push(impiedRel);
+					if(this.findRelImpied){
+						impiedRel = this.findRelImpied(node, ufName);
+						if(impiedRel && out.properties.indexOf(impiedRel) === -1) {
+							out.properties.push(impiedRel);
+						}
 					}
 				}
 			}
 	
 			return out;
 		},
-	
-	
-		// given a V1 or V2 root name return mapping object
+
+		
+		/**
+         * given a V1 or V2 root name return mapping object
+         *
+         * @param  {String} name
+		 * @return {Object || null}
+         */
 		getMapping: function(name) {
 			var key;
 			for(key in m.maps) {
@@ -950,8 +1073,13 @@ var Modules = (function (m) {
 			return null;
 		},
 	
-	
-		// given a V1 root name returns a V2 root name ie vcard >>> h-card
+		
+		/**
+         * given a V1 root name returns a V2 root name ie vcard >>> h-card
+         *
+         * @param  {String} name
+		 * @return {String || null}
+         */
 		getV2RootName: function(name) {
 			var key;
 			for(key in m.maps) {
@@ -963,8 +1091,15 @@ var Modules = (function (m) {
 		},
 	
 	
-		// use to find if a subTree mapping should be a property or root
-		isSubTreeRoot: function(dom, node, map, classList) {
+		/**
+         * is subTree mapping should be a property or root
+         *
+         * @param  {DOM Node} node
+		 * @param  {Object} map
+		 * @param  {Array} classList
+		 * @return {Boolean}
+         */
+		isSubTreeRoot: function(node, map, classList) {
 			var out,
 				hasSecondRoot,
 				i,
@@ -990,7 +1125,7 @@ var Modules = (function (m) {
 			}
 	
 			// walk the sub tree for properties that match this subTree
-			this.walkChildren(dom, node, out, map.name, null, null);
+			this.walkChildren(node, out, map.name, null, null);
 	
 			if(m.utils.hasProperties(out.properties) && hasSecondRoot === false) {
 				return true;
@@ -999,41 +1134,14 @@ var Modules = (function (m) {
 			}
 		},
 	
-	
-		// finds any alt rel=* mappings for a given node/microformat
-		findRelImpied: function(dom, node, ufName) {
-			var out,
-				map,
-				i;
-	
-			map = this.getMapping(ufName);
-			if(map) {
-				for(var key in map.properties) {
-					if (map.properties.hasOwnProperty(key)) {
-						var prop = map.properties[key],
-							propName = (prop.map) ? prop.map : 'p-' + key,
-							relCount = 0;
-		
-						// if property as an alt rel=* mapping run test
-						if(prop.relAlt && m.domUtils.hasAttribute(dom, node, 'rel')) {
-							i = prop.relAlt.length;
-							while(i--) {
-								if(m.domUtils.hasAttributeValue(dom, node, 'rel', prop.relAlt[i])) {
-									relCount++;
-								}
-							}
-							if(relCount === prop.relAlt.length) {
-								out = propName;
-							}
-						}
-					}
-				}
-			}
-			return out;
-		},
-	
-	
-		// creates a blank uf object
+
+		/**
+         * creates a blank microformats object
+         *
+         * @param  {String} name
+		 * @param  {String} value
+		 * @return {Object}
+         */
 		createUfObject: function(names, value) {
 			var out = {};
 	
@@ -1054,257 +1162,38 @@ var Modules = (function (m) {
 			return out;
 		},
 	
-	
-	
-	
-		// removes uf property prefixs from a string
-		removePropPrefix: function(str) {
+		
+		/**
+         * removes uf property prefixs from a text
+         *
+         * @param  {String} text
+		 * @return {String}
+         */
+		removePropPrefix: function(text) {
 			var i;
 	
 			i = this.propertyPrefixes.length;
 			while(i--) {
 				var prefix = this.propertyPrefixes[i];
-				if(m.utils.startWith(str, prefix)) {
-					str = str.substr(prefix.length);
+				if(m.utils.startWith(text, prefix)) {
+					text = text.substr(prefix.length);
 				}
 			}
-			return str;
+			return text;
 		},
 	
 	
-		findRels: function(dom, rootNode, fromChildren) {
-			var out = {
-					'items': [],
-					'rels': {},
-					'rel-urls': {}
-				},
-				x,
-				i,
-				y,
-				z,
-				relList,
-				items,
-				item,
-				value,
-				arr;
-	
-	
-			// get all elements that have a rel attribute
-			fromChildren = (fromChildren) ? fromChildren : false; 
-			if(fromChildren) {
-				arr = m.domUtils.getNodesByAttribute(dom, rootNode.children, 'rel');
-			} else {
-				arr = m.domUtils.getNodesByAttribute(dom, rootNode, 'rel');
-			}
-	
-			x = 0;
-			i = arr.length;
-			while(x < i) {
-				relList = m.domUtils.getAttribute(dom, arr[x], 'rel');
-	
-				if(relList) {
-					items = relList.split(' ');
-					
-					
-					// add rels
-					z = 0;
-					y = items.length;
-					while(z < y) {
-						item = m.utils.trim(items[z]);
-	
-						// get rel value
-						value = m.domUtils.getAttrValFromTagList(dom, arr[x], ['a', 'area'], 'href');
-						if(!value) {
-							value = m.domUtils.getAttrValFromTagList(dom, arr[x], ['link'], 'href');
-						}
-	
-						// create the key
-						if(!out.rels[item]) {
-							out.rels[item] = [];
-						}
-	
-						if(typeof this.options.baseUrl === 'string' && typeof value === 'string') {
-					
-							var resolved = m.domUtils.resolveUrl(dom, value, this.options.baseUrl);
-							// do not add duplicate rels - based on resolved URLs
-							if(out.rels[item].indexOf(resolved) === -1){
-								out.rels[item].push( resolved );
-							}
-						}
-						z++;
-					}
-					
-					
-					var url = null;
-					if(m.domUtils.hasAttribute(dom, arr[x], 'href')){
-						url = m.domUtils.getAttribute(dom, arr[x], 'href');
-						if(url){
-							url = m.domUtils.resolveUrl(dom, url, this.options.baseUrl );
-						}
-					}
-	
-					
-					// add to rel-urls
-					var relUrl = this.getRelProperties(dom, arr[x]);
-					relUrl.rels = items;
-					// // do not add duplicate rel-urls - based on resolved URLs
-					if(url && out['rel-urls'][url] === undefined){
-						out['rel-urls'][url] = relUrl;
-					}
-					
-					if(relList.toLowerCase().indexOf('alternate') > -1){	
-						// if its an alternate add 
-						var obj = this.getRelProperties(dom, arr[x]);
-						if(url){
-							obj.url = url;
-						}
-	
-						if(items.length > 1){
-							if(m.domUtils.hasAttribute(dom, arr[x], 'rel')){
-								var clonedRelList = relList;
-								obj.rel = m.utils.trim( clonedRelList.toLowerCase().replace('alternate','') );
-							}
-						}
-						// create the key
-						if(!out.alternate) {
-							out.alternate = [];
-						}
-						out.alternate.push( obj );
-					}
-						
-	
-					
-			
-				}
-				x++;
-			}
-			return out;
-		},
-		
-		
-		// get property values form a link
-		getRelProperties: function(dom, node){
-			var obj = {};
-			
-			if(m.domUtils.hasAttribute(dom, node, 'media')){
-				obj.media = m.domUtils.getAttribute(dom, node, 'media');
-			}
-			if(m.domUtils.hasAttribute(dom, node, 'type')){
-				obj.type = m.domUtils.getAttribute(dom, node, 'type');
-			}
-			if(m.domUtils.hasAttribute(dom, node, 'hreflang')){
-				obj.hreflang = m.domUtils.getAttribute(dom, node, 'hreflang');
-			}
-			if(m.domUtils.hasAttribute(dom, node, 'title')){
-				obj.title = m.domUtils.getAttribute(dom, node, 'title');
-			}
-			if(m.utils.trim(this.getPValue(dom, node, false)) !== ''){
-				obj.text = this.getPValue(dom, node, false);
-			}	
-			
-			return obj;
-		},
-		
-		
-		
-	
-	
-		// add all the includes ino the dom structure
-		addIncludes: function(dom, rootNode) {
-			this.addAttributeIncludes(dom, rootNode, 'itemref');
-			this.addAttributeIncludes(dom, rootNode, 'headers');
-			this.addClassIncludes(dom, rootNode);
-		},
-	
-	
-		// add attribute based includes ie 'itemref' and 'headers'
-		addAttributeIncludes: function(dom, rootNode, attributeName) {
-			var arr,
-				idList,
-				i,
-				x,
-				z,
-				y;
-	
-			arr = m.domUtils.getNodesByAttribute(dom, rootNode, attributeName);
-			x = 0;
-			i = arr.length;
-			while(x < i) {
-				idList = m.domUtils.getAttributeList(dom, arr[x], attributeName);
-				if(idList) {
-					z = 0;
-					y = idList.length;
-					while(z < y) {
-						this.apppendInclude(dom, arr[x], idList[z]);
-						z++;
-					}
-				}
-				x++;
-			}
-		},
-	
-	
-		// add class based includes
-		addClassIncludes: function(dom, rootNode) {
-			var id,
-				arr,
-				x = 0,
-				i;
-	
-			arr = m.domUtils.getNodesByAttributeValue(dom, rootNode, 'class', 'include');
-			i = arr.length;
-			while(x < i) {
-				id = m.domUtils.getAttrValFromTagList(dom, arr[x], ['a'], 'href');
-				if(!id) {
-					id = m.domUtils.getAttrValFromTagList(dom, arr[x], ['object'], 'data');
-				}
-				this.apppendInclude(dom, arr[x], id);
-				x++;
-			}
-		},
-	
-	
-		// appends a clone of an element into another node
-		apppendInclude: function(dom, node, id){
-			var include,
-				clone;
-	
-			id = m.utils.trim(id.replace('#', ''));
-			include = dom.getElementById(id);
-			if(include === null){
-				include = this.options.node.querySelector('#' + id);
-			}
-			if(include) {
-				clone = m.domUtils.clone(dom, include);
-				this.markIncludeChildren(dom, clone);
-				m.domUtils.appendChild(dom, node, clone);
-			}
-		},
-	
-	
-		// add a attribute to all the child microformats roots  
-		markIncludeChildren: function(dom, rootNode) {
-			var arr,
-				x,
-				i;
-	
-			// loop the array and add the attribute
-			arr = this.findRootNodes(dom, rootNode);
-			x = 0;
-			i = arr.length;
-			m.domUtils.setAttribute(dom, rootNode, 'data-include', 'true');
-			m.domUtils.setAttribute(dom, rootNode, 'style', 'display:none');
-			while(x < i) {
-				m.domUtils.setAttribute(dom, arr[x], 'data-include', 'true');
-				x++;
-			}
-		},
-	
-	
-		// looks at nodes in DOM structures find href and src and expandes relative URLs
-		expandURLs: function(dom, node, baseUrl){
 
-			node = m.domUtils.clone(dom, node);
+		/**
+         * expandes all relative URLs in DOM structures
+         *
+         * @param  {DOM Node} node
+		 * @param  {String} baseUrl
+		 * @return {DOM Node}
+         */
+		expandURLs: function(node, baseUrl){
+
+			node = m.domUtils.clone(node);
 	
 			function expand( nodeList, attrName ){
 				if(nodeList && nodeList.length){
@@ -1313,20 +1202,25 @@ var Modules = (function (m) {
 						// this gives the orginal text
 					    var href =  nodeList[i].getAttribute(attrName);
 					    if(href.toLowerCase().indexOf('http') !== 0){
-					    	nodeList[i].setAttribute(attrName, m.domUtils.resolveUrl(dom, href, baseUrl));
+					    	nodeList[i].setAttribute(attrName, m.domUtils.resolveUrl(href, baseUrl));
 					    }
 					}
 				}
 			}
 			
-			expand( m.domUtils.getNodesByAttribute(dom, node, 'href'), 'href' );
-			expand( m.domUtils.getNodesByAttribute(dom, node, 'src'), 'src' );
+			expand( m.domUtils.getNodesByAttribute(node, 'href'), 'href' );
+			expand( m.domUtils.getNodesByAttribute(node, 'src'), 'src' );
 			
 			return node;
 		},
 	
 	
-		// merges passed and default options -single level clone of properties
+		
+		/**
+         * merges passed and default options -single level clone of properties
+         *
+         * @param  {Object} options
+         */
 		mergeOptions: function(options) {
 			var key;
 			for(key in options) {
@@ -1335,79 +1229,46 @@ var Modules = (function (m) {
 				}
 			}
 		},
-	
-		// removes an changes made to dom during parse process
-		clearUpDom: function(dom){
+		
+		
+		/**
+         * romoves all rootid attributes
+         *
+         * @param  {DOM Node} rootNode
+         */
+		removeRootIds: function(rootNode){
 			var arr,
 				i;
-	
-			// remove all the items that where added as includes
-			arr = m.domUtils.getNodesByAttribute(dom, dom, 'data-include');
+				
+			arr = m.domUtils.getNodesByAttribute(rootNode, 'rootids');
 			i = arr.length;
 			while(i--) {
-				m.domUtils.removeChild(dom,arr[i]);
+				m.domUtils.removeAttribute(arr[i],'rootids');
 			}
-			// remove additional attibutes
-			arr = m.domUtils.getNodesByAttribute(dom, dom, 'rootids');
-			i = arr.length;
-			while(i--) {
-				m.domUtils.removeAttribute(dom, arr[i],'rootids');
-			}
+		},
+		
+		
+		/**
+         * removes all changes made to DOM
+         *
+         * @param  {DOM Node} rootNode
+         */
+		clearUpDom: function(rootNode){
+			if(this.removeIncludes){
+				this.removeIncludes(rootNode);
+			}	
+			this.removeRootIds(rootNode);
 		}
+		
 	
 	};
 	
 	
-	    m.Parser.prototype.constructor = m.Parser;
+   m.Parser.prototype.constructor = m.Parser;
 
     return m;
 
 } (Modules || {}));
-
-
-/*
-microformats.parser = new microformats.Parser();
-microformats.getItems = function(options){
-	var dom,
-		node;
-
-	dom = (options && options.document)? options.document : document;
-	node = (options && options.node)? options.node : dom;
-
-	options = (options)? options : {};
-	if(!options.baseUrl && dom && dom.location){
-		options.baseUrl = dom.location.href;
-	}
-
-	return this.parser.get(dom, node, options);
-};
-
-microformats.getCounts = function(options) {
-	var dom,
-		node;
-
-	dom = (options && options.document)? options.document : document;
-	node = (options && options.node)? options.node : dom;
-	options = (options)? options : {};
-
-	return this.parser.count(dom, node, options);
-};
-
-
-// Simple support for CommonJS
-if (typeof exports !== 'undefined') {
-	exports.microformats = microformats;
-}
-	
-
-
-
-*/
-
-
-
-
-
 /*!
 	Parser implied
 	All the functions that deal with microformats implied rules
@@ -1426,12 +1287,11 @@ Modules = (function (m) {
 		/**
 		 * applies "implied rules" microformat output structure ie name, photo, url and date 
 		 *
-		 * @param  {DOM Document} doc
 		 * @param  {DOM Node} node
 		 * @param  {Object} uf (microformat output structure)
 		 * @param  {Object} parentClasses (classes structure)
 		 */
-		 m.Parser.prototype.impliedRules = function(dom, node, uf, parentClasses) {
+		 m.Parser.prototype.impliedRules = function(node, uf, parentClasses) {
 			var context = this,
 				value,
 				newDate;
@@ -1449,15 +1309,15 @@ Modules = (function (m) {
 					.h-x>:only-node>abbr:only-node[title] 
 				*/
 				if(!uf.properties.name) {
-					value = this.getImpliedProperty(dom, node, ['img', 'area', 'abbr'], this.getNameAttr);
+					value = this.getImpliedProperty(node, ['img', 'area', 'abbr'], this.getNameAttr);
 					var textFormat = this.options.textFormat;
 					if(this.options.textFormat === 'impliednametrimmed'){
 						textFormat = 'whitespacetrimmed';
 					}
 					if(!value) {
-						uf.properties.name = [m.text.parse(dom, node, textFormat)];
+						uf.properties.name = [m.text.parse(this.document, node, textFormat)];
 					}else{
-						uf.properties.name = [m.text.parseText(dom, value, textFormat)];
+						uf.properties.name = [m.text.parseText(this.document, value, textFormat)];
 					}
 				}
 				
@@ -1480,11 +1340,11 @@ Modules = (function (m) {
 					.h-x>:only-child>object[data]:only-of-type 
 				*/
 				if(!uf.properties.photo) {
-					value = this.getImpliedProperty(dom, node, ['img', 'object'], this.getPhotoAttr);
+					value = this.getImpliedProperty(node, ['img', 'object'], this.getPhotoAttr);
 					if(value) {
 						// relative to absolute URL
 						if(value && value !== '' && this.options.baseUrl !== '' && value.indexOf(':') === -1) {
-							value = m.domUtils.resolveUrl(dom, value, this.options.baseUrl);
+							value = m.domUtils.resolveUrl(value, this.options.baseUrl);
 						}
 						uf.properties.photo = [m.utils.trim(value)];
 					}
@@ -1499,11 +1359,11 @@ Modules = (function (m) {
 				.h-x>area[href]:only-of-type:not[.h-*] 
 				*/
 				if(!uf.properties.url) {
-					value = this.getImpliedProperty(dom, node, ['a', 'area'], this.getURLAttr);
+					value = this.getImpliedProperty(node, ['a', 'area'], this.getURLAttr);
 					if(value) {
 						// relative to absolute URL
 						if(value && value !== '' && this.options.baseUrl !== '' && value.indexOf(':') === -1) {
-							value = m.domUtils.resolveUrl(dom, value, this.options.baseUrl);
+							value = m.domUtils.resolveUrl(value, this.options.baseUrl);
 						}
 						uf.properties.url = [m.utils.trim(value)];
 					}
@@ -1539,30 +1399,29 @@ Modules = (function (m) {
 		/**
 		 * get an implied property value from predefinded tag/attriubte combinations
 		 *
-		 * @param  {DOM Document} doc
 		 * @param  {DOM Node} node
 		 * @param  {String} tagList (Array of tags from which an implied value can be pull)
 		 * @param  {String} getAttrFunction (Function which can extract implied value)
 		 * @return {String || null}
 		 */
-		m.Parser.prototype.getImpliedProperty = function(dom, node, tagList, getAttrFunction) {
-			var value = getAttrFunction(dom, node),
+		m.Parser.prototype.getImpliedProperty = function(node, tagList, getAttrFunction) {
+			var value = getAttrFunction(node),
 				descendant,
 				child;
 					
 			if(!value) {
-				descendant = m.domUtils.isSingleDescendant(dom, node, tagList);
-				if(descendant && this.hasHClass(dom, descendant) === false){
-					value = getAttrFunction(dom, descendant);
+				descendant = m.domUtils.isSingleDescendant( node, tagList);
+				if(descendant && this.hasHClass(descendant) === false){
+					value = getAttrFunction(descendant);
 				}
 				if(node.children.length > 0){
-					child = m.domUtils.isSingleDescendant(dom, node);
+					child = m.domUtils.isSingleDescendant(node);
 					if(child){
 						descendant = this.
 		
-						domUtils.isSingleDescendant(dom, child, tagList);
-						if(descendant && this.hasHClass(dom, descendant) === false){
-							value = getAttrFunction(dom, descendant);
+						domUtils.isSingleDescendant(child, tagList);
+						if(descendant && this.hasHClass(descendant) === false){
+							value = getAttrFunction(descendant);
 						}
 					}
 				}
@@ -1575,14 +1434,13 @@ Modules = (function (m) {
 		/**
 		 * get an implied name value
 		 *
-		 * @param  {DOM Document} doc
 		 * @param  {DOM Node} node
 		 * @return {String || null}
 		 */		
-		m.Parser.prototype.getNameAttr = function(dom, node) {
-			var value = m.domUtils.getAttrValFromTagList(dom, node, ['img','area'], 'alt');
+		m.Parser.prototype.getNameAttr = function(node) {
+			var value = m.domUtils.getAttrValFromTagList(node, ['img','area'], 'alt');
 			if(!value) {
-				value = m.domUtils.getAttrValFromTagList(dom, node, ['abbr'], 'title');
+				value = m.domUtils.getAttrValFromTagList(node, ['abbr'], 'title');
 			}
 			return value;
 		};
@@ -1591,14 +1449,13 @@ Modules = (function (m) {
 		/**
 		 * get an implied photo value
 		 *
-		 * @param  {DOM Document} doc
 		 * @param  {DOM Node} node
 		 * @return {String || null}
 		 */	
-		m.Parser.prototype.getPhotoAttr = function(dom, node) {
-			var value = m.domUtils.getAttrValFromTagList(dom, node, ['img'], 'src');
-			if(!value && m.domUtils.hasAttributeValue(dom, node, 'class', 'include') === false) {
-				value = m.domUtils.getAttrValFromTagList(dom, node, ['object'], 'data');
+		m.Parser.prototype.getPhotoAttr = function(node) {
+			var value = m.domUtils.getAttrValFromTagList(node, ['img'], 'src');
+			if(!value && m.domUtils.hasAttributeValue(node, 'class', 'include') === false) {
+				value = m.domUtils.getAttrValFromTagList(node, ['object'], 'data');
 			}
 			return value;
 		};
@@ -1607,16 +1464,15 @@ Modules = (function (m) {
 		/**
 		 * get an implied photo value
 		 *
-		 * @param  {DOM Document} doc
 		 * @param  {DOM Node} node
 		 * @return {String || null}
 		 */		
-		m.Parser.prototype.getURLAttr = function(dom, node) {
+		m.Parser.prototype.getURLAttr = function(node) {
 			var value = null;
-			if(m.domUtils.hasAttributeValue(dom, node, 'class', 'include') === false){
-				value = m.domUtils.getAttrValFromTagList(dom, node, ['a'], 'href');
+			if(m.domUtils.hasAttributeValue(node, 'class', 'include') === false){
+				value = m.domUtils.getAttrValFromTagList(node, ['a'], 'href');
 				if(!value) {
-					value = m.domUtils.getAttrValFromTagList(dom, node, ['area'], 'href');
+					value = m.domUtils.getAttrValFromTagList(node, ['area'], 'href');
 				}
 				
 			}
@@ -1651,6 +1507,364 @@ Modules = (function (m) {
 			return uf;
 		};
 	
+	}
+
+    return m;
+
+} (Modules || {}));
+/*!
+	Parser includes
+	All the functions that deal with microformats v1 includes rules
+	Copyright (C) 2010 - 2015 Glenn Jones. All Rights Reserved.
+	MIT License: https://raw.github.com/glennjones/microformat-shiv/master/license.txt
+	
+	Dependencies  dates.js, domutils.js, html.js, isodate,js, text.js utilities.js
+*/
+
+
+Modules = (function (m) {
+	
+	// check parser module is loaded
+	if(m.Parser){
+	
+		
+		/**
+		 * appends clones of includes Nodes into the DOM structure
+		 *
+		 * @param  {DOM node} rootNode
+		 */	
+		m.Parser.prototype.addIncludes = function(rootNode) {
+			this.addAttributeIncludes(rootNode, 'itemref');
+			this.addAttributeIncludes(rootNode, 'headers');
+			this.addClassIncludes(rootNode);
+		};
+	
+		
+		/**
+		 * appends clones of includes Nodes into the DOM structure for attribute based includes
+		 *
+		 * @param  {DOM node} rootNode
+		 * @param  {String} attributeName
+		 */
+		m.Parser.prototype.addAttributeIncludes = function(rootNode, attributeName) {
+			var arr,
+				idList,
+				i,
+				x,
+				z,
+				y;
+	
+			arr = m.domUtils.getNodesByAttribute(rootNode, attributeName);
+			x = 0;
+			i = arr.length;
+			while(x < i) {
+				idList = m.domUtils.getAttributeList(arr[x], attributeName);
+				if(idList) {
+					z = 0;
+					y = idList.length;
+					while(z < y) {
+						this.apppendInclude(arr[x], idList[z]);
+						z++;
+					}
+				}
+				x++;
+			}
+		};
+	
+		
+		/**
+		 * appends clones of includes Nodes into the DOM structure for class based includes
+		 *
+		 * @param  {DOM node} rootNode
+		 */
+		m.Parser.prototype.addClassIncludes = function(rootNode) {
+			var id,
+				arr,
+				x = 0,
+				i;
+	
+			arr = m.domUtils.getNodesByAttributeValue(rootNode, 'class', 'include');
+			i = arr.length;
+			while(x < i) {
+				id = m.domUtils.getAttrValFromTagList(arr[x], ['a'], 'href');
+				if(!id) {
+					id = m.domUtils.getAttrValFromTagList(arr[x], ['object'], 'data');
+				}
+				this.apppendInclude(arr[x], id);
+				x++;
+			}
+		};
+	
+	
+		/**
+		 * appends a clone of an include into another Node using Id
+		 *
+		 * @param  {DOM node} rootNode
+		 * @param  {Stringe} id
+		 */
+		m.Parser.prototype.apppendInclude = function(node, id){
+			var include,
+				clone;
+	
+			id = m.utils.trim(id.replace('#', ''));
+			include = m.domUtils.getElementById(this.document, id);
+			if(include === null){
+				include = this.options.node.querySelector('#' + id);
+			}
+			if(include) {
+				clone = m.domUtils.clone(include);
+				this.markIncludeChildren(clone);
+				m.domUtils.appendChild(node, clone);
+			}
+		};
+	
+		
+		/**
+		 * adds a attribute marker to all the child microformats roots 
+		 *
+		 * @param  {DOM node} rootNode
+		 */ 
+		m.Parser.prototype.markIncludeChildren = function(rootNode) {
+			var arr,
+				x,
+				i;
+	
+			// loop the array and add the attribute
+			arr = this.findRootNodes(rootNode);
+			x = 0;
+			i = arr.length;
+			m.domUtils.setAttribute(rootNode, 'data-include', 'true');
+			m.domUtils.setAttribute(rootNode, 'style', 'display:none');
+			while(x < i) {
+				m.domUtils.setAttribute(arr[x], 'data-include', 'true');
+				x++;
+			}
+		};
+		
+		
+		/**
+		 * removes all appended includes clones from DOM 
+		 *
+		 * @param  {DOM node} rootNode
+		 */ 
+		m.Parser.prototype.removeIncludes = function(rootNode){
+			var arr,
+				i;
+	
+			// remove all the items that where added as includes
+			arr = m.domUtils.getNodesByAttribute(rootNode, 'data-include');
+			i = arr.length;
+			while(i--) {
+				m.domUtils.removeChild(rootNode,arr[i]);
+			}
+		};
+	
+		
+	}
+
+    return m;
+
+} (Modules || {}));
+/*!
+	Parser rels
+	All the functions that deal with microformats v2 rel structures
+	Copyright (C) 2010 - 2015 Glenn Jones. All Rights Reserved.
+	MIT License: https://raw.github.com/glennjones/microformat-shiv/master/license.txt
+	
+	Dependencies  dates.js, domutils.js, html.js, isodate,js, text.js utilities.js
+*/
+
+
+Modules = (function (m) {
+	
+	// check parser module is loaded
+	if(m.Parser){
+	
+		/**
+		 * finds rel=* structures
+		 *
+		 * @param  {DOM node} rootNode
+		 * @param  {Boolean} fromChildren
+		 * @return {Object}
+		 */
+		m.Parser.prototype.findRels = function(rootNode, fromChildren) {
+			var out = {
+					'items': [],
+					'rels': {},
+					'rel-urls': {}
+				},
+				x,
+				i,
+				y,
+				z,
+				relList,
+				items,
+				item,
+				value,
+				arr;
+	
+	
+			// get all elements that have a rel attribute
+			fromChildren = (fromChildren) ? fromChildren : false; 
+			if(fromChildren) {
+				arr = m.domUtils.getNodesByAttribute(rootNode.children, 'rel');
+			} else {
+				arr = m.domUtils.getNodesByAttribute(rootNode, 'rel');
+			}
+	
+			x = 0;
+			i = arr.length;
+			while(x < i) {
+				relList = m.domUtils.getAttribute(arr[x], 'rel');
+	
+				if(relList) {
+					items = relList.split(' ');
+					
+					
+					// add rels
+					z = 0;
+					y = items.length;
+					while(z < y) {
+						item = m.utils.trim(items[z]);
+	
+						// get rel value
+						value = m.domUtils.getAttrValFromTagList(arr[x], ['a', 'area'], 'href');
+						if(!value) {
+							value = m.domUtils.getAttrValFromTagList(arr[x], ['link'], 'href');
+						}
+	
+						// create the key
+						if(!out.rels[item]) {
+							out.rels[item] = [];
+						}
+	
+						if(typeof this.options.baseUrl === 'string' && typeof value === 'string') {
+					
+							var resolved = m.domUtils.resolveUrl(value, this.options.baseUrl);
+							// do not add duplicate rels - based on resolved URLs
+							if(out.rels[item].indexOf(resolved) === -1){
+								out.rels[item].push( resolved );
+							}
+						}
+						z++;
+					}
+					
+					
+					var url = null;
+					if(m.domUtils.hasAttribute(arr[x], 'href')){
+						url = m.domUtils.getAttribute(arr[x], 'href');
+						if(url){
+							url = m.domUtils.resolveUrl(url, this.options.baseUrl );
+						}
+					}
+	
+					
+					// add to rel-urls
+					var relUrl = this.getRelProperties(arr[x]);
+					relUrl.rels = items;
+					// // do not add duplicate rel-urls - based on resolved URLs
+					if(url && out['rel-urls'][url] === undefined){
+						out['rel-urls'][url] = relUrl;
+					}
+					
+					if(relList.toLowerCase().indexOf('alternate') > -1){	
+						// if its an alternate add 
+						var obj = this.getRelProperties(arr[x]);
+						if(url){
+							obj.url = url;
+						}
+	
+						if(items.length > 1){
+							if(m.domUtils.hasAttribute(arr[x], 'rel')){
+								var clonedRelList = relList;
+								obj.rel = m.utils.trim( clonedRelList.toLowerCase().replace('alternate','') );
+							}
+						}
+						// create the key
+						if(!out.alternate) {
+							out.alternate = [];
+						}
+						out.alternate.push( obj );
+					}
+						
+	
+					
+			
+				}
+				x++;
+			}
+			return out;
+		};
+		
+		
+		/**
+		 * gets the properties of a rel=*
+		 *
+		 * @param  {DOM node} node
+		 * @return {Object}
+		 */
+		m.Parser.prototype.getRelProperties = function(node){
+			var obj = {};
+			
+			if(m.domUtils.hasAttribute(node, 'media')){
+				obj.media = m.domUtils.getAttribute(node, 'media');
+			}
+			if(m.domUtils.hasAttribute(node, 'type')){
+				obj.type = m.domUtils.getAttribute(node, 'type');
+			}
+			if(m.domUtils.hasAttribute(node, 'hreflang')){
+				obj.hreflang = m.domUtils.getAttribute(node, 'hreflang');
+			}
+			if(m.domUtils.hasAttribute(node, 'title')){
+				obj.title = m.domUtils.getAttribute(node, 'title');
+			}
+			if(m.utils.trim(this.getPValue(node, false)) !== ''){
+				obj.text = this.getPValue(node, false);
+			}	
+			
+			return obj;
+		};
+		
+		
+		/**
+		 * finds any alt rel=* mappings for a given node/microformat
+		 *
+		 * @param  {DOM node} node
+		 * @param  {String} ufName
+		 * @return {String || undefined}
+		 */
+		m.Parser.prototype.findRelImpied = function(node, ufName) {
+			var out,
+				map,
+				i;
+	
+			map = this.getMapping(ufName);
+			if(map) {
+				for(var key in map.properties) {
+					if (map.properties.hasOwnProperty(key)) {
+						var prop = map.properties[key],
+							propName = (prop.map) ? prop.map : 'p-' + key,
+							relCount = 0;
+		
+						// if property as an alt rel=* mapping run test
+						if(prop.relAlt && m.domUtils.hasAttribute(node, 'rel')) {
+							i = prop.relAlt.length;
+							while(i--) {
+								if(m.domUtils.hasAttributeValue(node, 'rel', prop.relAlt[i])) {
+									relCount++;
+								}
+							}
+							if(relCount === prop.relAlt.length) {
+								out = propName;
+							}
+						}
+					}
+				}
+			}
+			return out;
+		};
+	
+		
 	}
 
     return m;
@@ -1954,26 +2168,48 @@ Modules = (function (modules) {
 }(DOMParser));
 /*
    dom utilities
-   the main purpose of this module is abstract DOM functions so that different types of light weight DOM can be used in node.js
+   the main purpose of this module is abstract DOM functions so that different types of light weight DOM's such as 'cherrio' can be used in node.js
    Copyright (C) 2010 - 2015 Glenn Jones. All Rights Reserved.
    MIT License: https://raw.github.com/glennjones/microformat-shiv/master/license.txt 
    
-   Dependencies  utilities.js, docparser.js
+   Dependencies  utilities.js, domparser.js
 */
 
 
 Modules = (function (modules) {
     
     modules.domUtils = {
+		
+		
+		 /**
+         * abstracts DOM ownerDocument
+         *
+		 * @param  {DOM Node} node
+         * @return {Dom Document}
+         */
+		ownerDocument: function(node){
+			return node.ownerDocument;
+		},
+		
+	
+		/**
+         * abstracts DOM textContent
+         *
+		 * @param  {DOM Node} node
+         * @return {String}
+         */
+		textContent: function(node){
+			return node.textContent;
+		},
+		
 	
 	    /**
          * abstracts DOM innerHTML
          *
-         * @param  {DOM Document} doc
 		 * @param  {DOM Node} node
          * @return {String}
          */
-		innerHTML: function(doc, node){
+		innerHTML: function(node){
 			return node.innerHTML;
 		},
 	
@@ -1981,12 +2217,11 @@ Modules = (function (modules) {
 		/**
          * abstracts DOM hasAttribute
          *
-         * @param  {DOM Document} doc
 		 * @param  {DOM Node} node
 		 * @param  {String} attributeName
          * @return {Boolean}
          */
-		hasAttribute: function(doc, node, attributeName) {
+		hasAttribute: function(node, attributeName) {
 			if(node.hasAttribute){
 				return node.hasAttribute(attributeName)
 			}
@@ -1996,12 +2231,11 @@ Modules = (function (modules) {
 		/**
          * abstracts DOM getAttribute
          *
-         * @param  {DOM Document} doc
 		 * @param  {DOM Node} node
 		 * @param  {String} attributeName
          * @return {String || null}
          */
-		getAttribute: function(doc, node, attributeName) {
+		getAttribute: function(node, attributeName) {
 			if(node.getAttribute){
 				return node.getAttribute(attributeName);
 			}
@@ -2011,12 +2245,11 @@ Modules = (function (modules) {
 		/**
          * abstracts DOM setAttribute
          *
-         * @param  {DOM Document} doc
 		 * @param  {DOM Node} node
 		 * @param  {String} attributeName
 		 * @param  {String} attributeValue
          */
-		setAttribute: function(doc, node, attributeName, attributeValue){
+		setAttribute: function(node, attributeName, attributeValue){
 			node.setAttribute(attributeName, attributeValue);
 		},
 	
@@ -2024,24 +2257,34 @@ Modules = (function (modules) {
 		/**
          * abstracts DOM removeAttribute
          *
-         * @param  {DOM Document} doc
 		 * @param  {DOM Node} node
 		 * @param  {String} attributeName
          */
-		removeAttribute: function(doc, node, attributeName) {
+		removeAttribute: function(node, attributeName) {
 			node.removeAttribute(attributeName);
+		},
+		
+		
+		/**
+         * abstracts DOM getElementById
+         *
+		 * @param  {DOM Node} node
+		 * @param  {String} id
+		 * @return {DOM Node} 
+         */
+		getElementById: function(node, id) {
+			node.getElementById(id);
 		},
 	
 	
 		/**
          * get value of an Node attribute as an Array
          *
-         * @param  {DOM Document} doc
 		 * @param  {DOM Node} node
 		 * @param  {String} attributeName
 		 * @return {Array}
          */
-		getAttributeList: function(doc, node, attributeName) {
+		getAttributeList: function(node, attributeName) {
 			var out = [],
 				attList;
 	
@@ -2060,14 +2303,13 @@ Modules = (function (modules) {
 		/**
          * does an attribute contain a value
          *
-         * @param  {DOM Document} doc
 		 * @param  {DOM Node} node
 		 * @param  {String} attributeName
 		 * @param  {String} value
 		 * @return {Boolean}
          */
-		hasAttributeValue: function(doc, node, attributeName, value) {
-			var attList = this.getAttributeList(doc, node, attributeName);
+		hasAttributeValue: function(node, attributeName, value) {
+			var attList = this.getAttributeList(node, attributeName);
 			return (attList.indexOf(value) > -1);
 		},
 	
@@ -2075,12 +2317,11 @@ Modules = (function (modules) {
 		/**
          * gets all child nodes with a given attribute
          *
-         * @param  {DOM Document} doc
 		 * @param  {DOM Node} node
 		 * @param  {String} attributeName
 		 * @return {NodeList}
          */
-		getNodesByAttribute: function(doc, node, attributeName) {
+		getNodesByAttribute: function(node, attributeName) {
 			var selector = '[' + attributeName + ']';
 			return node.querySelectorAll(selector);
 		},
@@ -2090,22 +2331,21 @@ Modules = (function (modules) {
 		/**
          * does an attribute contain a value
          *
-         * @param  {DOM Document} doc
 		 * @param  {DOM Node} node
 		 * @param  {String} attributeName
-		 * @return {NodeList}
+		 * @return {DOM NodeList}
          */
-		getNodesByAttributeValue: function(doc, rootNode, name, value) {
+		getNodesByAttributeValue: function(rootNode, name, value) {
 			var arr = [],
 				x = 0,
 				i,
 				out = [];
 	
-			arr = this.getNodesByAttribute(doc, rootNode, name);
+			arr = this.getNodesByAttribute(rootNode, name);
 			if(arr) {
 				i = arr.length;
 				while(x < i) {
-					if(this.hasAttributeValue(doc, arr[x], name, value)) {
+					if(this.hasAttributeValue(arr[x], name, value)) {
 						out.push(arr[x]);
 					}
 					x++;
@@ -2118,18 +2358,16 @@ Modules = (function (modules) {
 		/**
          * gets attribute value from controlled list of tags
          *
-         * @param  {DOM Document} doc
-		 * @param  {DOM Node} node
 		 * @param  {Array} tagNames
 		 * @param  {String} attributeName
 		 * @return {String || null}
          */
-		getAttrValFromTagList: function(doc, node, tagNames, attributeName) {
+		getAttrValFromTagList: function(node, tagNames, attributeName) {
 			var i = tagNames.length;
 	
 			while(i--) {
 				if(node.tagName.toLowerCase() === tagNames[i]) {
-					var attrValue = this.getAttribute(doc, node, attributeName);
+					var attrValue = this.getAttribute(node, attributeName);
 					if(attrValue && attrValue !== '') {
 						return attrValue;
 					}
@@ -2143,12 +2381,12 @@ Modules = (function (modules) {
 	   /**
          * is a node the only descendant of a type i.e. CSS :only-of-type 
          *
-         * @param  {DOM Document} doc
+
 		 * @param  {DOM Node} rootNode
 		 * @param  {Array} tagNames
 		 * @return {DOM Node || null}
          */
-		isSingleDescendant: function(doc, rootNode, tagNames){
+		isSingleDescendant: function(rootNode, tagNames){
 			var count = 0,
 				out = null,
 				child,
@@ -2161,7 +2399,7 @@ Modules = (function (modules) {
 				child = rootNode.children[x];
 				if(child.tagName) {
 					// can filter or not by tagNames array
-					if(tagNames && this.hasTagName(doc, child, tagNames)){
+					if(tagNames && this.hasTagName(child, tagNames)){
 						out = child;
 					}
 					// count all tag/element nodes
@@ -2181,12 +2419,11 @@ Modules = (function (modules) {
    		/**
          * is a node the only descendant of a type i.e. CSS :only-of-type 
          *
-         * @param  {DOM Document} doc
 		 * @param  {DOM Node} rootNode
 		 * @param  {Array} tagNames
 		 * @return {DOM Node || null}
          */
-		isOnlySingleDescendantOfType: function(doc, rootNode, tagNames) {
+		isOnlySingleDescendantOfType: function(rootNode, tagNames) {
 			var i = rootNode.children.length,
 				count = 0,
 				child,
@@ -2195,7 +2432,7 @@ Modules = (function (modules) {
 			while(i--) {
 				child = rootNode.children[i];
 				if(child.nodeType === 1) {
-					if(this.hasTagName(doc, child, tagNames)){
+					if(this.hasTagName(child, tagNames)){
 						out = child;
 						count++;
 					}
@@ -2212,12 +2449,11 @@ Modules = (function (modules) {
    	   /**
          * is a node one of a list of tags
          *
-         * @param  {DOM Document} doc
 		 * @param  {DOM Node} rootNode
 		 * @param  {Array} tagNames
 		 * @return {Boolean}
          */	
-		hasTagName: function(doc, node, tagNames){
+		hasTagName: function(node, tagNames){
 			var i = tagNames.length;
 			while(i--) {
 				if(node.tagName.toLowerCase() === tagNames[i]) {
@@ -2231,12 +2467,11 @@ Modules = (function (modules) {
 	   /**
          * abstracts DOM appendChild 
          *
-         * @param  {DOM Document} doc
 		 * @param  {DOM Node} node
 		 * @param  {DOM Node} childNode
          * @return {DOM Node}
          */
-		appendChild: function(doc, node, childNode){
+		appendChild: function(node, childNode){
 			return node.appendChild(childNode);
 		},
 	
@@ -2244,14 +2479,14 @@ Modules = (function (modules) {
 	   /**
          * abstracts DOM removeChild 
          *
-         * @param  {DOM Document} doc
-		 * @param  {DOM Node} node
 		 * @param  {DOM Node} childNode
-         * @return {DOM Node}
+         * @return {DOM Node || null}
          */
-		removeChild: function(doc, childNode){
+		removeChild: function(childNode){
 			if (childNode.parentNode) {
 				return childNode.parentNode.removeChild(childNode);
+			}else{
+				return null;
 			}
 		},
 	
@@ -2259,11 +2494,10 @@ Modules = (function (modules) {
 		/**
          * abstracts DOM cloneNode
          *
-         * @param  {DOM Document} doc
 		 * @param  {DOM Node} node
          * @return {DOM Node}
          */
-		clone: function(doc, node) {
+		clone: function(node) {
 			var newNode = node.cloneNode(true);
 			newNode.removeAttribute('id');
 			return newNode;
@@ -2273,12 +2507,11 @@ Modules = (function (modules) {
 		/**
          * resolves url to absolute version using baseUrl
          *
-         * @param  {DOM Document} doc
 		 * @param  {String} url
 		 * @param  {String} baseUrl
          * @return {String}
          */
-		resolveUrl: function(doc, url, baseUrl) {
+		resolveUrl: function(url, baseUrl) {
 			if(modules.utils.isString(url)){
 				if( url !== '' && url.indexOf(':') === -1 && modules.utils.isString(baseUrl) ){
 					var dp = new DOMParser();
@@ -2331,12 +2564,13 @@ Modules = (function (modules) {
 		/**
          * decodes html entities in given text
          *
-		 * @param  {DOM Node} node
+		 * @param  {DOM Document} doc
 		 * @param  String} text
          * @return {String}
          */
 	    decodeEntities: function( doc, text ){
-	        return doc.createTextNode( text ).nodeValue;
+			return text;
+	        //return doc.createTextNode( text ).nodeValue;
 	    },
 	
 
@@ -3125,23 +3359,22 @@ Modules = (function (modules) {
         /**
          * parses the text from DOM Node 
          *
-         * @param  {DOM Document} doc
 		 * @param  {DOM Node} node
          * @param  {String} textFormat
          * @return {String}
          */
-        parse: function(dom, node, textFormat){
+        parse: function(doc, node, textFormat){
             var out;
             this.textFormat = (textFormat)? textFormat : this.textFormat;
             if(this.textFormat === 'normalised'){
                 out = this.walkTreeForText( node );
                 if(out !== undefined){
-                    return this.normalise( dom, out );
+                    return this.normalise( doc, out );
                 }else{
                     return '';
                 }
             }else{
-               return this.textContent( dom, node.textContent, this.textFormat );
+               return this.formatText( doc, modules.domUtils.textContent(node), this.textFormat );
             }
         },
         
@@ -3154,22 +3387,21 @@ Modules = (function (modules) {
          * @param  {String} textFormat
          * @return {String}
          */  
-        parseText: function( dom, text, textFormat ){
-           var node = document.createElement('div');
+        parseText: function( doc, text, textFormat ){
+           var node = doc.createElement('div');
            node.innerHTML = text;
-           return this.parse( dom, node, textFormat );
+           return this.parse( doc, node, textFormat );
         },
         
         
         /**
          * parses the text from html string - only for whitespace or whitespacetrimmed formats
          *
-         * @param  {DOM Document} doc
 		 * @param  {String} text
          * @param  {String} textFormat
          * @return {String}
          */  
-        textContent: function( dom, text, textFormat ){
+        formatText: function( doc, text, textFormat ){
            this.textFormat = (textFormat)? textFormat : this.textFormat;
            if(text){
               var out = '',
@@ -3181,7 +3413,7 @@ Modules = (function (modules) {
               }
               
               //return entities.decode( out, 2 );
-              return modules.domUtils.decodeEntities( dom, out );
+              return modules.domUtils.decodeEntities( doc, out );
            }else{
               return ''; 
            }
@@ -3191,14 +3423,13 @@ Modules = (function (modules) {
         /**
          * normalises whitespace in given text 
          *
-         * @param  {DOM Document} doc
 		 * @param  {String} text
          * @return {String}
          */ 
-        normalise: function( dom, text ){
+        normalise: function( doc, text ){
             text = text.replace( /&nbsp;/g, ' ') ;    // exchanges html entity for space into space char
             text = modules.utils.removeWhiteSpace( text );     // removes linefeeds, tabs and addtional spaces
-            text = modules.domUtils.decodeEntities( dom, text );  // decode HTML entities
+            text = modules.domUtils.decodeEntities( doc, text );  // decode HTML entities
             text = text.replace( '–', '-' );          // correct dash decoding
             return modules.utils.trim( text );
         },
@@ -3271,18 +3502,17 @@ Modules = (function (modules) {
         /**
          * parse the html string from DOM Node
          *
-         * @param  {DOM Document} doc
 		 * @param  {DOM Node} node
          * @return {String}
          */ 
-        parse: function( dom, node ){
+        parse: function( node ){
             var out = '',
                 j = 0;
     
             // we don not want the outer container
             if(node.childNodes && node.childNodes.length > 0){
                 for (j = 0; j < node.childNodes.length; j++) {
-                    var text = this.walkTreeForHtml( dom, node.childNodes[j] );
+                    var text = this.walkTreeForHtml( node.childNodes[j] );
                     if(text !== undefined){
                         out += text;
                     }
@@ -3300,7 +3530,7 @@ Modules = (function (modules) {
 		 * @param  {DOM Node} node
          * @return {String}
          */ 
-        walkTreeForHtml: function( dom, node ) {
+        walkTreeForHtml: function( node ) {
             var out = '',
                 j = 0;
     
@@ -3311,7 +3541,7 @@ Modules = (function (modules) {
     
         
             // exclude text which has been added with uf include pattern  - 
-            if(node.nodeType && node.nodeType === 1 && modules.domUtils.hasAttribute(dom, node, 'data-include') === false){
+            if(node.nodeType && node.nodeType === 1 && modules.domUtils.hasAttribute(node, 'data-include') === false){
     
                 // begin tag
                 out += '<' + node.tagName.toLowerCase();  
@@ -3330,7 +3560,7 @@ Modules = (function (modules) {
                 if(node.childNodes && node.childNodes.length > 0){
                     
                     for (j = 0; j < node.childNodes.length; j++) {
-                        var text = this.walkTreeForHtml( dom, node.childNodes[j] );
+                        var text = this.walkTreeForHtml( node.childNodes[j] );
                         if(text !== undefined){
                             out += text;
                         }
@@ -3359,7 +3589,7 @@ Modules = (function (modules) {
 
 /*
    microformat-shiv - v0.3.4
-   Built: 2015-06-29 10:06 - http://microformat-shiv.com
+   Built: 2015-06-29 04:06 - http://microformat-shiv.com
    Copyright (c) 2015 Glenn Jones
    Licensed MIT 
 */
@@ -4051,7 +4281,7 @@ Modules = (function (m) {
     	}
     
 		parser = new Modules.Parser();
-    	return parser.get(dom, node, options);
+    	return parser.get(node, options);
     };
 
     return Microformats;

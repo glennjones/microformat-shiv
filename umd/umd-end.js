@@ -16,7 +16,7 @@
     	}
     
 		parser = new Modules.Parser();
-    	return parser.get(dom, node, options);
+    	return parser.get(node, options);
     };
 
     return Microformats;

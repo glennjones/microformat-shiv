@@ -50,7 +50,7 @@ window.onload = function() {
         // parse direct into Modules to help debugging
         if(window.Modules){
             var parser = new Modules.Parser();
-            mfJSON = parser.get(document, node, options);
+            mfJSON = parser.get(node, options);
         }else if(window.Microformats){
             options.document = document;
             mfJSON = Microformats.get(options);

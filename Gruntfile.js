@@ -26,6 +26,8 @@ module.exports = function( grunt ) {
 						'umd/umd-start.js', 
 						'lib/parser.js',
 						'lib/parser-implied.js', 
+						'lib/parser-includes.js', 
+						'lib/parser-rels.js', 
 						'lib/utilities.js', 
 						'lib/domparser.js',
 						'lib/domutils.js',

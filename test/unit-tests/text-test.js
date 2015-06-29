@@ -27,7 +27,6 @@ describe('text', function() {
    });
    
    
-   // TODO re-assign textContent calls to textContent
    it('parseText', function(){
        var text = '\n   <a href="http://glennjones.net">Glenn\n Jones  \n</a>   \n';
                 
@@ -37,8 +36,8 @@ describe('text', function() {
    });
   
    
-   it('textContent', function(){      
-       assert.equal( Modules.text.textContent( document, null, 'whitespacetrimmed' ), '' );
+   it('formatText', function(){      
+       assert.equal( Modules.text.formatText( document, null, 'whitespacetrimmed' ), '' );
    });
 
    
