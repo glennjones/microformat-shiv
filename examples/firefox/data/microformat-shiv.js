@@ -1,6 +1,6 @@
 /*
    microformat-shiv - v0.3.4
-   Built: 2015-06-28 05:06 - http://microformat-shiv.com
+   Built: 2015-06-29 10:06 - http://microformat-shiv.com
    Copyright (c) 2015 Glenn Jones
    Licensed MIT 
 */
@@ -356,7 +356,9 @@ var Modules = (function (m) {
 				obj = this.createUfObject(classes.root);
 	
 				this.walkChildren(dom, node, obj, classes.root, itemRootID, classes);
-				this.impliedRules(dom, node, obj, classes);
+				if(this.impliedRules){
+					this.impliedRules(dom, node, obj, classes);
+				}
 				out.push(obj);
 			
 				
@@ -365,222 +367,6 @@ var Modules = (function (m) {
 		},
 	
 	
-		// test for the need to apply the "implied rules" for name, photo and url
-		impliedRules: function(dom, node, uf, parentClasses) {
-			var context = this,
-				value,
-				descendant,
-				child,
-				newDate;
-	
-	
-			function getNameAttr(dom, node) {
-				var value = m.domUtils.getAttrValFromTagList(dom, node, ['img','area'], 'alt');
-				if(!value) {
-					value = m.domUtils.getAttrValFromTagList(dom, node, ['abbr'], 'title');
-				}
-				return value;
-			}
-	
-			function getPhotoAttr(dom, node) {
-				var value = m.domUtils.getAttrValFromTagList(dom, node, ['img'], 'src');
-				if(!value) {
-					value = m.domUtils.getAttrValFromTagList(dom, node, ['object'], 'data');
-				}
-				return value;
-			}
-			
-			function getURLAttr(dom, node) {
-				var value = null;
-				if(m.domUtils.hasAttributeValue(dom, node, 'class', 'include') === false){
-					value = m.domUtils.getAttrValFromTagList(dom, node, ['a'], 'href');
-					if(!value) {
-						value = m.domUtils.getAttrValFromTagList(dom, node, ['area'], 'href');
-					}
-					
-				}
-				return value;
-			}
-	
-	
-	
-			if(uf && uf.properties) {
-				
-				// implied name rule
-				/*
-					img.h-x[alt]
-					abbr.h-x[title] 
-					.h-x>img:only-node[alt] 
-					.h-x>abbr:only-node[title] 
-					.h-x>:only-node>img:only-node[alt]
-					.h-x>:only-node>abbr:only-node[title] 
-				*/
-	
-				if(!uf.properties.name) {
-					// img.h-x[alt] or abbr.h-x[title]
-					value = getNameAttr(dom, node);
-					
-					if(!value) {
-						descendant = m.domUtils.isSingleDescendant(dom, node, ['img', 'area', 'abbr']);
-						if(descendant && this.hasHClass(dom, descendant) === false){
-							value = getNameAttr(dom, descendant);
-						}
-						if(node.children.length > 0){
-							child = m.domUtils.isSingleDescendant(dom, node);
-							if(child){
-								descendant = this.
-	
-								domUtils.isSingleDescendant(dom, child, ['img', 'area', 'abbr']);
-								if(descendant && this.hasHClass(dom, descendant) === false){
-									value = getNameAttr(dom, descendant);
-								}
-							}
-						}
-					}
-					var textFormat = this.options.textFormat;
-					if(this.options.textFormat === 'impliednametrimmed'){
-						textFormat = 'whitespacetrimmed';
-					}
-					if(!value) {
-						uf.properties.name = [m.text.parse(dom, node, textFormat)];
-					}else{
-						uf.properties.name = [m.text.parseText(dom, value, textFormat)];
-					}
-				}
-				
-				
-				// once implied name rule is applied
-				if(uf.properties.name) {	
-					// intersection of implied name and implied value rules
-					if(uf.value && parentClasses.root.length > 0 && parentClasses.properties.length === 1){
-						uf = context.impliedValueRule(uf, parentClasses.properties[0], 'p-name', uf.properties.name[0]);
-					}
-				}
-	
-	
-				// implied photo rule
-				/*
-					img.h-x[src] 
-					object.h-x[data] 
-					.h-x>img[src]:only-of-type
-					.h-x>object[data]:only-of-type 
-					.h-x>:only-child>img[src]:only-of-type 
-					.h-x>:only-child>object[data]:only-of-type 
-				*/
-				if(!uf.properties.photo) {
-					value = getPhotoAttr(dom, node);
-					if(!value) {
-						descendant = m.domUtils.isOnlySingleDescendantOfType(dom, node, ['img', 'object']);
-						if(descendant && this.hasHClass(dom, descendant) === false){
-							value = getPhotoAttr(dom, descendant);
-						}
-	
-						// single child that has a single descendant that is a img or object i.e. .h-x>:only-child>img[src]:only-of-type
-						if(node.children.length > 0){
-							child = m.domUtils.isSingleDescendant(dom, node);
-							if(child && this.hasHClass(dom, child) === false){
-								descendant = m.domUtils.isOnlySingleDescendantOfType(dom, child, ['img', 'object']);
-								if(descendant && this.hasHClass(dom, descendant) === false){
-									value = getPhotoAttr(dom, descendant);
-								}
-							}
-						}
-					}
-					if(value) {
-						// relative to absolute URL
-						if(value && value !== '' && this.options.baseUrl !== '' && value.indexOf(':') === -1) {
-							value = m.domUtils.resolveUrl(dom, value, this.options.baseUrl);
-						}
-						uf.properties.photo = [m.utils.trim(value)];
-					}
-				}
-				
-				
-				// implied url rule
-				/*
-				
-				a.h-x[href] 
-				area.h-x[href] 
-				
-				The :only-of-type CSS pseudo-class represents any element that has no siblings of the given type.
-				The pseudo-class, :not(X), matches an element that is not represented by the argument. X must not contain another negation selector.
-	
-				.h-x>a[href]:only-of-type:not[.h-*] 
-				.h-x>area[href]:only-of-type:not[.h-*] 
-				
-				*/
-				if(!uf.properties.url) {
-					value = getURLAttr(dom, node);
-					if(!value) {
-						descendant = m.domUtils.isOnlySingleDescendantOfType(dom, node, ['a', 'area']);
-						if(descendant && this.hasHClass(dom, descendant) === false){
-							value = getURLAttr(dom, descendant);
-						}
-						if(node.children.length > 0){
-							child = m.domUtils.isSingleDescendant(dom, node);
-							if(child && this.hasHClass(dom, child) === false){
-								descendant = m.domUtils.isOnlySingleDescendantOfType(dom, child, ['a', 'area']);
-								if(descendant && this.hasHClass(dom, descendant) === false){
-									value = getURLAttr(dom, descendant);
-								}
-							}
-						}
-	
-					}
-					if(value) {
-						// relative to absolute URL
-						if(value && value !== '' && this.options.baseUrl !== '' && value.indexOf(':') === -1) {
-							value = m.domUtils.resolveUrl(dom, value, this.options.baseUrl);
-						}
-						uf.properties.url = [m.utils.trim(value)];
-					}
-				}
-			
-				// once implied name rule is applied
-				if(uf.properties.url) {
-					// intersection of implied url and implied value rules
-					if(parentClasses && parentClasses.root.length === 1 && parentClasses.properties.length === 1){
-						uf = context.impliedValueRule(uf, parentClasses.properties[0], 'u-url', uf.properties.url[0]);
-					}
-				}
-			
-			}
-	
-			// implied date rule - temp fix
-			// only apply to first date and time match
-			if(uf.times.length > 0 && uf.dates.length > 0) {
-				newDate = m.dates.dateTimeUnion(uf.dates[0][1], uf.times[0][1], this.options.dateFormat);
-				uf.properties[this.removePropPrefix(uf.times[0][0])][0] = newDate.toString(this.options.dateFormat);
-			}
-			delete uf.times;
-			delete uf.dates;
-			
-			if(uf.altValue !== null){
-				uf.value = uf.altValue.value;
-			}
-			delete uf.altValue;
-	
-		},
-		
-		
-		// changes the value property based on rules about parent property prefix
-		impliedValueRule: function(uf, parentPropertyName, propertyName, value){
-			if(uf.value){
-				// first p-name of the h-* child
-				if(m.utils.startWith(parentPropertyName,'p-') && propertyName === 'p-name'){
-					uf.altValue = {name: propertyName, value: value};
-				}
-				// if it's an e-* property element
-				if(m.utils.startWith(parentPropertyName,'e-')){
-					uf.altValue = {name: propertyName, value: value};
-				}
-				//f it's a u-* property element
-				if(m.utils.startWith(parentPropertyName,'u-')){
-					uf.altValue = {name: propertyName, value: value};
-				}
-			}
-			return uf;
-		},
 	
 		
 		// find child properties of microformat
@@ -614,7 +400,9 @@ var Modules = (function (m) {
 					
 					// modifies value with "implied value rule"
 					if(parentClasses && parentClasses.root.length === 1 && parentClasses.properties.length === 1){
-						out = context.impliedValueRule(out, parentClasses.properties[0], classes.properties[0], value);
+						if(context.impliedValueRule){
+							out = context.impliedValueRule(out, parentClasses.properties[0], classes.properties[0], value);
+						}
 					}
 	
 					// add the microformat as an array of properties
@@ -636,7 +424,9 @@ var Modules = (function (m) {
 						context.walkChildren(dom, child, rootItem, rootItem.type, itemRootID, classes);
 						x++;
 					}
-					context.impliedRules(dom, child, rootItem, classes);
+					if(this.impliedRules){
+						context.impliedRules(dom, child, rootItem, classes);
+					}
 	
 				}
 	
@@ -652,7 +442,9 @@ var Modules = (function (m) {
 						
 						// modifies value with "implied value rule"
 						if(parentClasses && parentClasses.root.length === 1 && parentClasses.properties.length === 1){
-							out = context.impliedValueRule(out, parentClasses.properties[0], classes.properties[x], value);
+							if(context.impliedValueRule){
+								out = context.impliedValueRule(out, parentClasses.properties[0], classes.properties[x], value);
+							}
 						}
 	
 						// if the value is not empty 
@@ -708,7 +500,10 @@ var Modules = (function (m) {
 							context.walkChildren(dom, child, rootItem, rootItem.type, itemRootID, classes);
 							x++;
 						}
-						context.impliedRules(dom, child, rootItem, classes);
+						if(context.impliedRules){
+							context.impliedRules(dom, child, rootItem, classes);
+						}
+						
 					}
 				}
 	
@@ -717,7 +512,6 @@ var Modules = (function (m) {
 			}
 	
 		},
-	
 	
 	
 		// gets the value of a property
@@ -1614,54 +1408,346 @@ if (typeof exports !== 'undefined') {
 
 
 
+/*!
+	Parser implied
+	All the functions that deal with microformats implied rules
+	Copyright (C) 2010 - 2015 Glenn Jones. All Rights Reserved.
+	MIT License: https://raw.github.com/glennjones/microformat-shiv/master/license.txt
+	
+	Dependencies  dates.js, domutils.js, html.js, isodate,js, text.js utilities.js
+*/
+
+
+Modules = (function (m) {
+	
+	// check parser module is loaded
+	if(m.Parser){
+	
+		/**
+		 * applies "implied rules" microformat output structure ie name, photo, url and date 
+		 *
+		 * @param  {DOM Document} doc
+		 * @param  {DOM Node} node
+		 * @param  {Object} uf (microformat output structure)
+		 * @param  {Object} parentClasses (classes structure)
+		 */
+		 m.Parser.prototype.impliedRules = function(dom, node, uf, parentClasses) {
+			var context = this,
+				value,
+				newDate;
+	
+	
+			if(uf && uf.properties) {
+				
+				// implied name rule
+				/*
+					img.h-x[alt]
+					abbr.h-x[title] 
+					.h-x>img:only-node[alt] 
+					.h-x>abbr:only-node[title] 
+					.h-x>:only-node>img:only-node[alt]
+					.h-x>:only-node>abbr:only-node[title] 
+				*/
+				if(!uf.properties.name) {
+					value = this.getImpliedProperty(dom, node, ['img', 'area', 'abbr'], this.getNameAttr);
+					var textFormat = this.options.textFormat;
+					if(this.options.textFormat === 'impliednametrimmed'){
+						textFormat = 'whitespacetrimmed';
+					}
+					if(!value) {
+						uf.properties.name = [m.text.parse(dom, node, textFormat)];
+					}else{
+						uf.properties.name = [m.text.parseText(dom, value, textFormat)];
+					}
+				}
+				
+				
+				// intersection of implied name and implied value rules
+				if(uf.properties.name) {	
+					if(uf.value && parentClasses.root.length > 0 && parentClasses.properties.length === 1){
+						uf = context.impliedValueRule(uf, parentClasses.properties[0], 'p-name', uf.properties.name[0]);
+					}
+				}
+	
+	
+				// implied photo rule
+				/*
+					img.h-x[src] 
+					object.h-x[data] 
+					.h-x>img[src]:only-of-type
+					.h-x>object[data]:only-of-type 
+					.h-x>:only-child>img[src]:only-of-type 
+					.h-x>:only-child>object[data]:only-of-type 
+				*/
+				if(!uf.properties.photo) {
+					value = this.getImpliedProperty(dom, node, ['img', 'object'], this.getPhotoAttr);
+					if(value) {
+						// relative to absolute URL
+						if(value && value !== '' && this.options.baseUrl !== '' && value.indexOf(':') === -1) {
+							value = m.domUtils.resolveUrl(dom, value, this.options.baseUrl);
+						}
+						uf.properties.photo = [m.utils.trim(value)];
+					}
+				}
+				
+				
+				// implied url rule
+				/*
+				a.h-x[href] 
+				area.h-x[href] 
+				.h-x>a[href]:only-of-type:not[.h-*] 
+				.h-x>area[href]:only-of-type:not[.h-*] 
+				*/
+				if(!uf.properties.url) {
+					value = this.getImpliedProperty(dom, node, ['a', 'area'], this.getURLAttr);
+					if(value) {
+						// relative to absolute URL
+						if(value && value !== '' && this.options.baseUrl !== '' && value.indexOf(':') === -1) {
+							value = m.domUtils.resolveUrl(dom, value, this.options.baseUrl);
+						}
+						uf.properties.url = [m.utils.trim(value)];
+					}
+				}
+			
+				// intersection of implied url and implied value rules
+				if(uf.properties.url) {
+					if(parentClasses && parentClasses.root.length === 1 && parentClasses.properties.length === 1){
+						uf = context.impliedValueRule(uf, parentClasses.properties[0], 'u-url', uf.properties.url[0]);
+					}
+				}
+			
+			}
+	
+			// implied date rule
+			// only applied to first date and time match
+			if(uf.times.length > 0 && uf.dates.length > 0) {
+				newDate = m.dates.dateTimeUnion(uf.dates[0][1], uf.times[0][1], this.options.dateFormat);
+				uf.properties[this.removePropPrefix(uf.times[0][0])][0] = newDate.toString(this.options.dateFormat);
+			}
+			delete uf.times;
+			delete uf.dates;
+			
+			if(uf.altValue !== null){
+				uf.value = uf.altValue.value;
+			}
+			delete uf.altValue;
+	
+		};
+		
+			
+			
+		/**
+		 * get an implied property value from predefinded tag/attriubte combinations
+		 *
+		 * @param  {DOM Document} doc
+		 * @param  {DOM Node} node
+		 * @param  {String} tagList (Array of tags from which an implied value can be pull)
+		 * @param  {String} getAttrFunction (Function which can extract implied value)
+		 * @return {String || null}
+		 */
+		m.Parser.prototype.getImpliedProperty = function(dom, node, tagList, getAttrFunction) {
+			var value = getAttrFunction(dom, node),
+				descendant,
+				child;
+					
+			if(!value) {
+				descendant = m.domUtils.isSingleDescendant(dom, node, tagList);
+				if(descendant && this.hasHClass(dom, descendant) === false){
+					value = getAttrFunction(dom, descendant);
+				}
+				if(node.children.length > 0){
+					child = m.domUtils.isSingleDescendant(dom, node);
+					if(child){
+						descendant = this.
+		
+						domUtils.isSingleDescendant(dom, child, tagList);
+						if(descendant && this.hasHClass(dom, descendant) === false){
+							value = getAttrFunction(dom, descendant);
+						}
+					}
+				}
+			}
+					
+			return value;
+		}
+			
+			
+		/**
+		 * get an implied name value
+		 *
+		 * @param  {DOM Document} doc
+		 * @param  {DOM Node} node
+		 * @return {String || null}
+		 */		
+		m.Parser.prototype.getNameAttr = function(dom, node) {
+			var value = m.domUtils.getAttrValFromTagList(dom, node, ['img','area'], 'alt');
+			if(!value) {
+				value = m.domUtils.getAttrValFromTagList(dom, node, ['abbr'], 'title');
+			}
+			return value;
+		};
+	
+	
+		/**
+		 * get an implied photo value
+		 *
+		 * @param  {DOM Document} doc
+		 * @param  {DOM Node} node
+		 * @return {String || null}
+		 */	
+		m.Parser.prototype.getPhotoAttr = function(dom, node) {
+			var value = m.domUtils.getAttrValFromTagList(dom, node, ['img'], 'src');
+			if(!value && m.domUtils.hasAttributeValue(dom, node, 'class', 'include') === false) {
+				value = m.domUtils.getAttrValFromTagList(dom, node, ['object'], 'data');
+			}
+			return value;
+		};
+			
+			
+		/**
+		 * get an implied photo value
+		 *
+		 * @param  {DOM Document} doc
+		 * @param  {DOM Node} node
+		 * @return {String || null}
+		 */		
+		m.Parser.prototype.getURLAttr = function(dom, node) {
+			var value = null;
+			if(m.domUtils.hasAttributeValue(dom, node, 'class', 'include') === false){
+				value = m.domUtils.getAttrValFromTagList(dom, node, ['a'], 'href');
+				if(!value) {
+					value = m.domUtils.getAttrValFromTagList(dom, node, ['area'], 'href');
+				}
+				
+			}
+			return value;
+		};
+			
+		
+		/**
+		 * changes the value property based on rules about parent property prefix
+		 *
+		 * @param  {Object} uf
+		 * @param  {String} parentPropertyName
+		 * @param  {String} propertyName
+		 * @param  {String} value
+		 * @return {Object}
+		 */	
+		m.Parser.prototype.impliedValueRule = function(uf, parentPropertyName, propertyName, value){
+			if(uf.value){
+				// first p-name of the h-* child
+				if(m.utils.startWith(parentPropertyName,'p-') && propertyName === 'p-name'){
+					uf.altValue = {name: propertyName, value: value};
+				}
+				// if it's an e-* property element
+				if(m.utils.startWith(parentPropertyName,'e-')){
+					uf.altValue = {name: propertyName, value: value};
+				}
+				//f it's a u-* property element
+				if(m.utils.startWith(parentPropertyName,'u-')){
+					uf.altValue = {name: propertyName, value: value};
+				}
+			}
+			return uf;
+		};
+	
+	}
+
+    return m;
+
+} (Modules || {}));
 /*
    Utilities
    Copyright (C) 2010 - 2013 Glenn Jones. All Rights Reserved.
    MIT License: https://raw.github.com/glennjones/microformat-shiv/master/license.txt
 */
 
-Modules = (function (m) {
+Modules = (function (modules) {
     
-    m.utils = {
+    modules.utils = {
         
-        // is the object a string
+        /**
+         * is the object a string
+         *
+         * @param  {Object} obj
+         * @return {Boolean}
+         */
         isString: function( obj ) {
             return typeof( obj ) === 'string';
         },
         
-        // is the object a number
+        /**
+         * is the object a number
+         *
+         * @param  {Object} obj
+         * @return {Boolean}
+         */
         isNumber: function( obj ) {
             return !isNaN(parseFloat( obj )) && isFinite( obj );
         },
-    
-    
-        // does a string start with the test
-        startWith: function( str, test ) {
-            return(str.indexOf(test) === 0);
+        
+        
+        /**
+         * is the object a array
+         *
+         * @param  {Object} obj
+         * @return {Boolean}
+         */
+        isArray: function( obj ) {
+            return obj && !( obj.propertyIsEnumerable( 'length' ) ) && typeof obj === 'object' && typeof obj.length === 'number';
         },
     
     
-        // remove spaces at front and back of string
-        trim: function( str ) {
-            if(str && this.isString(str)){
-                return str.replace(/^\s+|\s+$/g, '');
+        /**
+         * does a text start with the string
+         *
+         * @param  {String} text
+         * @param  {String} test
+         * @return {Boolean}
+         */
+        startWith: function( text, test ) {
+            return(text.indexOf(test) === 0);
+        },
+    
+        
+        /**
+         * removes spaces at front and back of text
+         *
+         * @param  {String} text
+         * @return {String}
+         */
+        trim: function( text ) {
+            if(text && this.isString(text)){
+                return text.replace(/^\s+|\s+$/g, '');
             }else{
                 return '';
             }
         },
         
         
-        // replaces a character in a string and return the new string
-        replaceCharAt: function( str, index, character ) {
-            if(str && str.length > index){
-               return str.substr(0, index) + character + str.substr(index+character.length); 
+        /**
+         * replaces a character in text
+         *
+         * @param  {String} text
+         * @param  {Int} index
+         * @param  {String} character
+         * @return {String}
+         */
+        replaceCharAt: function( text, index, character ) {
+            if(text && text.length > index){
+               return text.substr(0, index) + character + text.substr(index+character.length); 
             }else{
-                return str;
+                return text;
             }
         },
         
         
-        // removes whitespace, tabs and returns from start and end of text
+        /**
+         * removes whitespace, tabs and returns from start and end of text
+         *
+         * @param  {String} text
+         * @return {String}
+         */
         trimWhitespace: function( text ){
             if(text && text.length){
                 var i = text.length,
@@ -1691,25 +1777,34 @@ Modules = (function (m) {
         },
     
     
-        // is a string only contain white space chars
-        isOnlyWhiteSpace: function( str ){
-            return !(/[^\t\n\r ]/.test( str ));
+        /**
+         * does text only contain whitespace characters
+         *
+         * @param  {String} text
+         * @return {Boolean}
+         */
+        isOnlyWhiteSpace: function( text ){
+            return !(/[^\t\n\r ]/.test( text ));
+        },
+        
+        
+        /**
+         * removes whitespace from a text (leaves a single space)
+         *
+         * @param  {String} text
+         * @return {Sring}
+         */
+        removeWhiteSpace: function( text ){
+            return text.replace(/[\t\n\r ]+/g, ' ');
         },
     
     
-        // removes white space from a string
-        removeWhiteSpace: function( str ){
-            return str.replace(/[\t\n\r ]+/g, ' ');
-        },
-    
-    
-        // is the object a array
-        isArray: function( obj ) {
-            return obj && !( obj.propertyIsEnumerable( 'length' ) ) && typeof obj === 'object' && typeof obj.length === 'number';
-        },
-    
-    
-        // simple function to find out if a object has any properties. 
+        /**
+         * does an object have any of its own properties
+         *
+         * @param  {Object} obj
+         * @return {Boolean}
+         */ 
         hasProperties: function( obj ) {
             var key;
             for(key in obj) {
@@ -1722,6 +1817,14 @@ Modules = (function (m) {
         
         
         // sort objects in an array by given property
+        
+        /**
+         * a sort function - to sort objects in an array by a given property
+         *
+         * @param  {String} property
+         * @param  {Boolean} reverse
+         * @return {Int}
+         */ 
         sortObjects: function(property, reverse) {
             reverse = (reverse) ? -1 : 1;
             return function (a, b) {
@@ -1739,7 +1842,7 @@ Modules = (function (m) {
         
     };
     
-    return m;
+    return modules;
 
 } (Modules || {}));
 
@@ -1850,55 +1953,95 @@ Modules = (function (m) {
     }
 }(DOMParser));
 /*
-   DOM utilities
+   dom utilities
+   the main purpose of this module is abstract DOM functions so that different types of light weight DOM can be used in node.js
    Copyright (C) 2010 - 2015 Glenn Jones. All Rights Reserved.
    MIT License: https://raw.github.com/glennjones/microformat-shiv/master/license.txt 
    
-   Dependencies  utilities.js, domparser.js
+   Dependencies  utilities.js, docparser.js
 */
 
 
-Modules = (function (m) {
+Modules = (function (modules) {
     
-    m.domUtils = {
+    modules.domUtils = {
 	
-	
-		innerHTML: function(dom, node){
+	    /**
+         * abstracts DOM innerHTML
+         *
+         * @param  {DOM Document} doc
+		 * @param  {DOM Node} node
+         * @return {String}
+         */
+		innerHTML: function(doc, node){
 			return node.innerHTML;
 		},
 	
-	
-		// returns whether attribute exists
-		hasAttribute: function(dom, node, attributeName) {
-			if(node.attributes){
-				return (node.attributes[attributeName]) ? true : false;
+
+		/**
+         * abstracts DOM hasAttribute
+         *
+         * @param  {DOM Document} doc
+		 * @param  {DOM Node} node
+		 * @param  {String} attributeName
+         * @return {Boolean}
+         */
+		hasAttribute: function(doc, node, attributeName) {
+			if(node.hasAttribute){
+				return node.hasAttribute(attributeName)
 			}
-			return false;
 		},
 		
 	
-		// returns the string value of an attribute
-		getAttribute: function(dom, node, attributeName) {
+		/**
+         * abstracts DOM getAttribute
+         *
+         * @param  {DOM Document} doc
+		 * @param  {DOM Node} node
+		 * @param  {String} attributeName
+         * @return {String || null}
+         */
+		getAttribute: function(doc, node, attributeName) {
 			if(node.getAttribute){
 				return node.getAttribute(attributeName);
 			}
-			return '';
 		},
 		
 		
-		// set the attribute value
-		setAttribute: function(dom, node, name, value){
-			node.setAttribute(name, value);
+		/**
+         * abstracts DOM setAttribute
+         *
+         * @param  {DOM Document} doc
+		 * @param  {DOM Node} node
+		 * @param  {String} attributeName
+		 * @param  {String} attributeValue
+         */
+		setAttribute: function(doc, node, attributeName, attributeValue){
+			node.setAttribute(attributeName, attributeValue);
 		},
 	
-		// removes an attribute
-		removeAttribute: function(dom, node, attributeName) {
+	
+		/**
+         * abstracts DOM removeAttribute
+         *
+         * @param  {DOM Document} doc
+		 * @param  {DOM Node} node
+		 * @param  {String} attributeName
+         */
+		removeAttribute: function(doc, node, attributeName) {
 			node.removeAttribute(attributeName);
 		},
 	
 	
-		// returns the an array of string value of an attribute
-		getAttributeList: function(dom, node, attributeName) {
+		/**
+         * get value of an Node attribute as an Array
+         *
+         * @param  {DOM Document} doc
+		 * @param  {DOM Node} node
+		 * @param  {String} attributeName
+		 * @return {Array}
+         */
+		getAttributeList: function(doc, node, attributeName) {
 			var out = [],
 				attList;
 	
@@ -1914,32 +2057,55 @@ Modules = (function (m) {
 		},
 	
 	
-		// returns whether an attribute has an item of the given value
-		hasAttributeValue: function(dom, node, attributeName, value) {
-			var attList = this.getAttributeList(dom, node, attributeName);
+		/**
+         * does an attribute contain a value
+         *
+         * @param  {DOM Document} doc
+		 * @param  {DOM Node} node
+		 * @param  {String} attributeName
+		 * @param  {String} value
+		 * @return {Boolean}
+         */
+		hasAttributeValue: function(doc, node, attributeName, value) {
+			var attList = this.getAttributeList(doc, node, attributeName);
 			return (attList.indexOf(value) > -1);
 		},
 	
 	
-		// return an array of elements that match an attribute
-		getNodesByAttribute: function(dom, node, name) {
-			var selector = '[' + name + ']';
+		/**
+         * gets all child nodes with a given attribute
+         *
+         * @param  {DOM Document} doc
+		 * @param  {DOM Node} node
+		 * @param  {String} attributeName
+		 * @return {NodeList}
+         */
+		getNodesByAttribute: function(doc, node, attributeName) {
+			var selector = '[' + attributeName + ']';
 			return node.querySelectorAll(selector);
 		},
 	
 	
-		// return an arry of elements that match an attribute/value
-		getNodesByAttributeValue: function(dom, rootNode, name, value) {
+		// gets all child nodes with a given attribute containing a given value
+		/**
+         * does an attribute contain a value
+         *
+         * @param  {DOM Document} doc
+		 * @param  {DOM Node} node
+		 * @param  {String} attributeName
+		 * @return {NodeList}
+         */
+		getNodesByAttributeValue: function(doc, rootNode, name, value) {
 			var arr = [],
 				x = 0,
 				i,
 				out = [];
 	
-			arr = this.getNodesByAttribute(dom, rootNode, name);
+			arr = this.getNodesByAttribute(doc, rootNode, name);
 			if(arr) {
 				i = arr.length;
 				while(x < i) {
-					if(this.hasAttributeValue(dom, arr[x], name, value)) {
+					if(this.hasAttributeValue(doc, arr[x], name, value)) {
 						out.push(arr[x]);
 					}
 					x++;
@@ -1949,25 +2115,40 @@ Modules = (function (m) {
 		},
 	
 	
-	
-		// returns the attribute value only if the node tagName is in the tagNames list
-		getAttrValFromTagList: function(dom, node, tagNames, attributeName) {
+		/**
+         * gets attribute value from controlled list of tags
+         *
+         * @param  {DOM Document} doc
+		 * @param  {DOM Node} node
+		 * @param  {Array} tagNames
+		 * @param  {String} attributeName
+		 * @return {String || null}
+         */
+		getAttrValFromTagList: function(doc, node, tagNames, attributeName) {
 			var i = tagNames.length;
 	
 			while(i--) {
 				if(node.tagName.toLowerCase() === tagNames[i]) {
-					var attr = this.getAttribute(dom, node, attributeName);
-					if(attr && attr !== '') {
-						return attr;
+					var attrValue = this.getAttribute(doc, node, attributeName);
+					if(attrValue && attrValue !== '') {
+						return attrValue;
 					}
 				}
 			}
 			return null;
 		},
 	
-	
-		// return a node if it is the only descendant AND of a type ie CSS :only-node
-		isSingleDescendant: function(dom, rootNode, tagNames){
+
+		
+	   /**
+         * is a node the only descendant of a type i.e. CSS :only-of-type 
+         *
+         * @param  {DOM Document} doc
+		 * @param  {DOM Node} rootNode
+		 * @param  {Array} tagNames
+		 * @return {DOM Node || null}
+         */
+		isSingleDescendant: function(doc, rootNode, tagNames){
 			var count = 0,
 				out = null,
 				child,
@@ -1980,7 +2161,7 @@ Modules = (function (m) {
 				child = rootNode.children[x];
 				if(child.tagName) {
 					// can filter or not by tagNames array
-					if(tagNames && this.hasTagName(child, tagNames)){
+					if(tagNames && this.hasTagName(doc, child, tagNames)){
 						out = child;
 					}
 					// count all tag/element nodes
@@ -1997,8 +2178,15 @@ Modules = (function (m) {
 	
 	
 	
-		// return a node if it is the only descendant of a type ie CSS :only-of-type 
-		isOnlySingleDescendantOfType: function(dom, rootNode, tagNames) {
+   		/**
+         * is a node the only descendant of a type i.e. CSS :only-of-type 
+         *
+         * @param  {DOM Document} doc
+		 * @param  {DOM Node} rootNode
+		 * @param  {Array} tagNames
+		 * @return {DOM Node || null}
+         */
+		isOnlySingleDescendantOfType: function(doc, rootNode, tagNames) {
 			var i = rootNode.children.length,
 				count = 0,
 				child,
@@ -2007,7 +2195,7 @@ Modules = (function (m) {
 			while(i--) {
 				child = rootNode.children[i];
 				if(child.nodeType === 1) {
-					if(this.hasTagName(child, tagNames)){
+					if(this.hasTagName(doc, child, tagNames)){
 						out = child;
 						count++;
 					}
@@ -2021,7 +2209,15 @@ Modules = (function (m) {
 		},
 	
 	
-		hasTagName: function(node, tagNames){
+   	   /**
+         * is a node one of a list of tags
+         *
+         * @param  {DOM Document} doc
+		 * @param  {DOM Node} rootNode
+		 * @param  {Array} tagNames
+		 * @return {Boolean}
+         */	
+		hasTagName: function(doc, node, tagNames){
 			var i = tagNames.length;
 			while(i--) {
 				if(node.tagName.toLowerCase() === tagNames[i]) {
@@ -2032,41 +2228,77 @@ Modules = (function (m) {
 		},
 	
 	
-		// append a child node
-		appendChild: function(dom, node, childNode){
-			node.appendChild(childNode);
+	   /**
+         * abstracts DOM appendChild 
+         *
+         * @param  {DOM Document} doc
+		 * @param  {DOM Node} node
+		 * @param  {DOM Node} childNode
+         * @return {DOM Node}
+         */
+		appendChild: function(doc, node, childNode){
+			return node.appendChild(childNode);
 		},
 	
 	
-		// removes child node
-		removeChild: function(dom, node){
-			if (node.parentNode) {
-				node.parentNode.removeChild(node);
+	   /**
+         * abstracts DOM removeChild 
+         *
+         * @param  {DOM Document} doc
+		 * @param  {DOM Node} node
+		 * @param  {DOM Node} childNode
+         * @return {DOM Node}
+         */
+		removeChild: function(doc, childNode){
+			if (childNode.parentNode) {
+				return childNode.parentNode.removeChild(childNode);
 			}
 		},
 	
 	
-		// simple dom node cloning function 
-		clone: function(dom, node) {
+		/**
+         * abstracts DOM cloneNode
+         *
+         * @param  {DOM Document} doc
+		 * @param  {DOM Node} node
+         * @return {DOM Node}
+         */
+		clone: function(doc, node) {
 			var newNode = node.cloneNode(true);
 			newNode.removeAttribute('id');
 			return newNode;
 		},
-	
-	
-		// where possible resolves url to absolute version ie test.png to http://example.com/test.png
-		resolveUrl: function(dom, url, baseUrl) {
-			// its not empty or null and we have no protocal separator
-			if(url && url !== '' && url.indexOf(':') === -1){
-				var dp = new DOMParser();
-				var doc = dp.parseFromString('<html><head><base href="' + baseUrl+ '"><head><body><a href="' + url+ '"></a></body></html>', 'text/html');
-				return doc.getElementsByTagName('a')[0].href;
+		
+		
+		/**
+         * resolves url to absolute version using baseUrl
+         *
+         * @param  {DOM Document} doc
+		 * @param  {String} url
+		 * @param  {String} baseUrl
+         * @return {String}
+         */
+		resolveUrl: function(doc, url, baseUrl) {
+			if(modules.utils.isString(url)){
+				if( url !== '' && url.indexOf(':') === -1 && modules.utils.isString(baseUrl) ){
+					var dp = new DOMParser();
+					var newDoc = dp.parseFromString('<html><head><base href="' + baseUrl+ '"><head><body><a href="' + url+ '"></a></body></html>', 'text/html');
+					return newDoc.getElementsByTagName('a')[0].href;
+				}else{
+					return url;
+				}	
+			}else{
+				return '';
 			}
-			return url;
 		},
 		
 		
-		// get the text from a node in the dom
+		/**
+         * gets the text of a node
+         *
+		 * @param  {DOM Node} node
+         * @return {String}
+         */
 	    getElementText: function( node ){
 	        if(node && node.data){
 	            return node.data;
@@ -2076,7 +2308,12 @@ Modules = (function (m) {
 	    },
 	    
 	    
-	    // gets the attributes of a node - ordered as they are used in the node
+		/**
+         * gets the attributes of a node - ordered by sequence in html
+         *
+		 * @param  {DOM Node} node
+         * @return {Array}
+         */
 	    getOrderedAttributes: function( node ){
 	        var nodeStr = node.outerHTML,
 	            attrs = [];
@@ -2087,41 +2324,51 @@ Modules = (function (m) {
 	                
 	            attrs.push( attr );
 	        }
-	        return attrs.sort( m.utils.sortObjects( 'indexNum' ) );
+	        return attrs.sort( modules.utils.sortObjects( 'indexNum' ) );
 	    },
 	    
 		
-	    // use dom to resolve any entity encoding issues
-	    decodeEntities: function( dom, str ){
-	        return dom.createTextNode( str ).nodeValue;
+		/**
+         * decodes html entities in given text
+         *
+		 * @param  {DOM Node} node
+		 * @param  String} text
+         * @return {String}
+         */
+	    decodeEntities: function( doc, text ){
+	        return doc.createTextNode( text ).nodeValue;
 	    },
 	
-		/*
-		resolveUrliFrame: function(dom, url, baseUrl){
-			var iframe = dom.createElement('iframe');
-			iframe.innerHTML('<html><head><base href="' + baseUrl+ '"><head><body><a href="' + url + '"></a></body></html>');
-			return iframe.document.getElementsByTagName('a')[0].href;
-		}
-		*/
+
 	};
 
-    return m;
+    return modules;
 
 } (Modules || {}));
 
 
 /*!
     ISO Date Parser
-    Parses and builds ISO dates to the  W3C, HTML5 or RFC3339 profiles
+    Parses and builds ISO dates to the W3C, HTML5 or RFC3339 profiles
+    Also allow for profile detection and only output to same level of specificity as input
     Copyright (C) 2010 - 2015 Glenn Jones. All Rights Reserved.
     MIT License: https://raw.github.com/glennjones/microformat-shiv/master/license.txt
  */
  
  
  
-Modules = (function (m) {
+Modules = (function (modules) {
     
-    m.ISODate = function ( dateString, format ) {
+    
+    /**
+     * constructor
+     * parses text to find just the date element of a ISO date/time string i.e. 2008-05-01
+     *
+     * @param  {String} dateString
+	 * @param  {String} format
+     * @return {String}
+     */ 
+    modules.ISODate = function ( dateString, format ) {
         this.clear();
     
         this.format = (format)? format : 'auto'; // auto or W3C or RFC3339 or HTML5
@@ -2134,10 +2381,13 @@ Modules = (function (m) {
     };
     
 
-    m.ISODate.prototype = {
+    modules.ISODate.prototype = {
         
         
-        // clear all state
+        /**
+         * clear all state
+         *
+         */ 
         clear: function(){
             this.clearDate();
             this.clearTime();
@@ -2145,7 +2395,11 @@ Modules = (function (m) {
             this.setAutoProfileState();
         },
         
-        // clear date state
+        
+        /**
+         * clear date state
+         *
+         */ 
         clearDate: function(){
             this.dY = -1;
             this.dM = -1;
@@ -2153,7 +2407,11 @@ Modules = (function (m) {
             this.dDDD = -1;
         },
         
-        // clear time state
+        
+        /**
+         * clear time state
+         *
+         */ 
         clearTime: function(){
             this.tH = -1;
             this.tM = -1;
@@ -2161,7 +2419,11 @@ Modules = (function (m) {
             this.tD = -1;
         },
         
-        // clear timezone state
+        
+        /**
+         * clear timezone state
+         *
+         */ 
         clearTimeZone: function(){
             this.tzH = -1;
             this.tzM = -1;
@@ -2169,7 +2431,11 @@ Modules = (function (m) {
             this.z = false;
         },
         
-        // resets the auto profile state
+        
+        /**
+         * resets the auto profile state
+         *
+         */ 
         setAutoProfileState: function(){
             this.autoProfile = {
                sep: 'T',
@@ -2180,9 +2446,14 @@ Modules = (function (m) {
             };
         },
         
-       
-    
-        // parses a full iso date/time string i.e. 2008-05-01T15:45:19Z
+      
+        /**
+         * parses text to find ISO date/time string i.e. 2008-05-01T15:45:19Z
+         *
+         * @param  {String} dateString
+		 * @param  {String} format
+         * @return {String}
+         */ 
         parse: function( dateString, format ) {
             this.clear();
             
@@ -2265,8 +2536,14 @@ Modules = (function (m) {
             return this.toString( format );
         },
     
-    
-        // parses just the date element of a iso date/time string i.e. 2008-05-01
+        
+        /**
+         * parses text to find just the date element of a ISO date/time string i.e. 2008-05-01
+         *
+         * @param  {String} dateString
+		 * @param  {String} format
+         * @return {String}
+         */ 
         parseDate: function( dateString, format ) {
             this.clearDate();
             
@@ -2305,7 +2582,13 @@ Modules = (function (m) {
         },
     
     
-        // parses just the time element of a iso date/time string i.e. 13:30:45
+        /**
+         * parses text to find just the time element of a iso date/time string i.e. 13:30:45
+         *
+         * @param  {String} timeString
+		 * @param  {String} format
+         * @return {String}
+         */ 
         parseTime: function( timeString, format ) {
             this.clearTime();
             var parts = [];
@@ -2332,8 +2615,14 @@ Modules = (function (m) {
             return this.toTimeString(format);
         },
     
-    
-        // parses just the time element of a iso date/time string i.e. +08:00
+        
+        /**
+         * parses text to find just the time element of a iso date/time string i.e. +08:00
+         *
+         * @param  {String} timeString
+		 * @param  {String} format
+         * @return {String}
+         */ 
         parseTimeZone: function( timeString, format ) {
             this.clearTimeZone();
             var parts = [];
@@ -2368,10 +2657,12 @@ Modules = (function (m) {
         },
         
         
-     
-    
-    
-        // returns iso date/time string in in W3C Note, RFC 3339, HTML5, Microformat profile or auto
+        /**
+         * returns ISO date/time string in W3C Note, RFC 3339, HTML5, or auto profile
+         *
+		 * @param  {String} format
+         * @return {String}
+         */ 
         toString: function( format ) {
             var output = '';
     
@@ -2402,7 +2693,13 @@ Modules = (function (m) {
         },
     
     
-        // returns just the time string element of a iso date/time
+        /**
+         * returns just the time string element of a ISO date/time
+         * in W3C Note, RFC 3339, HTML5, or auto profile
+         *
+		 * @param  {String} format
+         * @return {String}
+         */ 
         toTimeString: function( format ) {
             var out = '';
     
@@ -2444,7 +2741,10 @@ Modules = (function (m) {
         },
     
     
-        // congifures the separators for a given profile
+        /**
+         * set the current profile to W3C Note, RFC 3339, HTML5, or auto profile
+         *
+         */ 
         setFormatSep: function() {
             switch( this.format.toLowerCase() ) {
                 case 'rfc3339':
@@ -2479,36 +2779,55 @@ Modules = (function (m) {
         },
     
     
+        /**
+         * does current data contain a full date ie 2015-03-23
+         *
+         * @return {Boolean}
+         */ 
         hasFullDate: function() {
             return(this.dY !== -1 && this.dM !== -1 && this.dD !== -1);
         },
     
     
+        /**
+         * does current data contain a minimum date which is just year number ie 2015
+         *
+         * @return {Boolean}
+         */ 
         hasDate: function() {
             return(this.dY !== -1);
         },
     
     
+        /**
+         * does current data contain a minimum time which is just hour number ie 13
+         *
+         * @return {Boolean}
+         */     
         hasTime: function() {
             return(this.tH !== -1);
         },
     
-    
+        /**
+         * does current data contain a minimum timezone ie -1 || +1 || z
+         *
+         * @return {Boolean}
+         */    
         hasTimeZone: function() {
             return(this.tzH !== -1);
         }
     
     };
     
-    m.ISODate.prototype.constructor = m.ISODate;
+    modules.ISODate.prototype.constructor = modules.ISODate;
 
-    return m;
+    return modules;
 
 } (Modules || {}));
 
 /*!
     Date
-    Helper functions for microformat english date parsing, and date fragment concat
+    Helper functions for english date parsing and text fragment concatenation into dates
     Copyright (C) 2010 - 2015 Glenn Jones. All Rights Reserved.
     MIT License: https://raw.github.com/glennjones/microformat-shiv/master/license.txt
     
@@ -2516,46 +2835,56 @@ Modules = (function (m) {
 */
 
 
-Modules = (function (m) {
+Modules = (function (modules) {
     
-    m.dates = {
+    modules.dates = {
 
         
-        // does string contain am
         /**
- * Clamp coordinates between the
- * allowed min/max values.
- *
- * @param  {Object} pos {x,y}
- * @return {Object} {x,y}
- */
-        
-        
-        hasAM: function(time) {
-            time = time.toLowerCase();
-            return(time.indexOf('am') > -1 || time.indexOf('a.m.') > -1);
+         * does text contain am
+         *
+         * @param  {String} text
+         * @return {Boolean}
+         */
+        hasAM: function( text ) {
+            text = text.toLowerCase();
+            return(text.indexOf('am') > -1 || text.indexOf('a.m.') > -1);
         },
     
     
-        // does string contain pm
-        hasPM: function(time) {
-            time = time.toLowerCase();
-            return(time.indexOf('pm') > -1 || time.indexOf('p.m.') > -1);
+        /**
+         * does text contain pm
+         *
+         * @param  {String} text
+         * @return {Boolean}
+         */
+        hasPM: function( text ) {
+            text = text.toLowerCase();
+            return(text.indexOf('pm') > -1 || text.indexOf('p.m.') > -1);
         },
     
     
-        // remove am and pm from a string and return it
-        removeAMPM: function(str) {
-            return str.replace('pm', '').replace('p.m.', '').replace('am', '').replace('a.m.', '');
+        /**
+         * remove am and pm from a text and return it
+         *
+         * @param  {String} text
+         * @return {String}
+         */
+        removeAMPM: function( text ) {
+            return text.replace('pm', '').replace('p.m.', '').replace('am', '').replace('a.m.', '');
         },
     
        
-    
-        // very simple test of weather ISO date string is a duration  i.e.  PY17M or PW12
-        isDuration: function(str) {
-            if(m.utils.isString(str)){
-                str = str.toLowerCase();
-                if(m.utils.startWith(str, 'p') ){
+       /**
+         * simple test of weather ISO date string is a duration  i.e.  PY17M or PW12
+         *
+         * @param  {String} text
+         * @return {Boolean}
+         */
+        isDuration: function( text ) {
+            if(modules.utils.isString( text )){
+                text = text.toLowerCase();
+                if(modules.utils.startWith(text, 'p') ){
                     return true;
                 }
             }
@@ -2563,29 +2892,34 @@ Modules = (function (m) {
         },
     
     
-        // is str a time or timezone
-        // ie HH-MM-SS or z+-HH-MM-SS 08:43 | 15:23:00:0567 | 10:34pm | 10:34 p.m. | +01:00:00 | -02:00 | z15:00 | 0843 
-        isTime: function(str) {
-            if(m.utils.isString(str)){
-                str = str.toLowerCase();
-                str = m.utils.trim( str );
+       /**
+         * is text a time or timezone
+         * i.e. HH-MM-SS or z+-HH-MM-SS 08:43 | 15:23:00:0567 | 10:34pm | 10:34 p.m. | +01:00:00 | -02:00 | z15:00 | 0843
+         *
+         * @param  {String} text
+         * @return {Boolean}
+         */ 
+        isTime: function( text ) {
+            if(modules.utils.isString(text)){
+                text = text.toLowerCase();
+                text = modules.utils.trim( text );
                 // start with timezone char
-                if( str.match(':') && ( m.utils.startWith(str, 'z') || m.utils.startWith(str, '-')  || m.utils.startWith(str, '+') )) {
+                if( text.match(':') && ( modules.utils.startWith(text, 'z') || modules.utils.startWith(text, '-')  || modules.utils.startWith(text, '+') )) {
                     return true;
                 }
                 // has ante meridiem or post meridiem
-                if( str.match(/^[0-9]/) && 
-                    ( this.hasAM(str) || this.hasPM(str) )) {
+                if( text.match(/^[0-9]/) && 
+                    ( this.hasAM(text) || this.hasPM(text) )) {
                     return true;
                 }
                 // contains time delimiter but not datetime delimiter
-                if( str.match(':') && !str.match(/t|\s/) ) {
+                if( text.match(':') && !text.match(/t|\s/) ) {
                     return true;
                 }
                 
                 // if its a number of 2, 4 or 6 chars
-                if(m.utils.isNumber(str)){
-                    if(str.length === 2 || str.length === 4 || str.length === 6){
+                if(modules.utils.isNumber(text)){
+                    if(text.length === 2 || text.length === 4 || text.length === 6){
                         return true;
                     }
                 }
@@ -2593,31 +2927,35 @@ Modules = (function (m) {
             return false;
         },
     
-    
-    
-        // parses a time string and turns it into a 24hr time string
-        // 5:34am = 05:34:00 and 1:52:04p.m. = 13:52:04
-        parseAmPmTime: function(time) {
-            var out = time,
+
+        /**
+         * parses a time from text and return 24hr time string
+         * i.e. 5:34am = 05:34:00 and 1:52:04p.m. = 13:52:04
+         *
+         * @param  {String} text
+         * @return {String}
+         */ 
+        parseAmPmTime: function( text ) {
+            var out = text,
                 times = [];
     
-            // if the string has a time : or am or pm
-            if(m.utils.isString(out)) {
-                time = time.toLowerCase();
-                time = time.replace(/[ ]+/g, '');
+            // if the string has a text : or am or pm
+            if(modules.utils.isString(out)) {
+                text = text.toLowerCase();
+                text = text.replace(/[ ]+/g, '');
     
-                if(time.match(':') || this.hasAM(time) || this.hasPM(time)) {
+                if(text.match(':') || this.hasAM(text) || this.hasPM(text)) {
     
-                    if(time.match(':')) {
-                        times = time.split(':');
+                    if(text.match(':')) {
+                        times = text.split(':');
                     } else {
-                        // single number time ie 5pm
-                        times[0] = time;
+                        // single number text ie 5pm
+                        times[0] = text;
                         times[0] = this.removeAMPM(times[0]);
                     }
                     
                     // change pm hours to 24 hour number
-                    if(this.hasPM(time)) {
+                    if(this.hasPM(text)) {
                         if(times[0] < 12) {
                             times[0] = parseInt(times[0], 10) + 12;
                         }
@@ -2628,22 +2966,29 @@ Modules = (function (m) {
                         times[0] = '0' + times[0];
                     }
                     
-                    // rejoin time elements together
+                    // rejoin text elements together
                     if(times[0]) {
-                        time = times.join(':');
+                        text = times.join(':');
                     }
                 }
             }
             
             // remove am/pm strings
-            return this.removeAMPM(time);
+            return this.removeAMPM(text);
         },
     
     
-        // overlays a different time on a given data to return the union of the two
+       /**
+         * overlays a time on a given data to return the union of the two
+         *
+         * @param  {String} date
+         * @param  {String} time
+         * @param  {String} format ( Modules.ISODate profile format )
+         * @return {Object} Modules.ISODate
+         */ 
         dateTimeUnion: function(date, time, format) {
-            var isodate = new m.ISODate(date, format),
-                isotime = new m.ISODate();
+            var isodate = new modules.ISODate(date, format),
+                isotime = new modules.ISODate();
     
             isotime.parseTime(this.parseAmPmTime(time));
             if(isodate.hasFullDate() && isotime.hasTime()) {
@@ -2656,21 +3001,27 @@ Modules = (function (m) {
                 if(isodate.hasFullDate()){
                     return isodate;
                 }
-                return new m.ISODate();
+                return new modules.ISODate();
             }
         },
     
     
-        // passed an array of date/time string fragments it creates an iso datetime
-        // used for microformat value and value-title rules
+       /**
+         * concatenate a array of date and time text fragments to create an ISODate object
+         * used for microformat value and value-title rules
+         *
+         * @param  {Array} arr ( Array of Strings )
+         * @param  {String} format ( Modules.ISODate profile format )
+         * @return {Object} Modules.ISODate
+         */ 
         concatFragments: function (arr, format) {
-            var out = new m.ISODate(),
+            var out = new modules.ISODate(),
                 i = 0,
                 value = '';
             
             // if the fragment already contains a full date just return it once its converted to profile
             if(arr[0].toUpperCase().match('T')) {
-                return new m.ISODate(arr[0], format);
+                return new modules.ISODate(arr[0], format);
             }else{
                 for(i = 0; i < arr.length; i++) {
                 value = arr[i];
@@ -2681,7 +3032,7 @@ Modules = (function (m) {
                 }
                 
                 // time pattern
-                if( (value.indexOf(':') > -1 || m.utils.isNumber( this.parseAmPmTime(value) )) && out.hasTime() === false ) {
+                if( (value.indexOf(':') > -1 || modules.utils.isNumber( this.parseAmPmTime(value) )) && out.hasTime() === false ) {
                     // split time And timezone
                     var items = this.splitTimeAndZone(value);
                     value = items[0];
@@ -2710,16 +3061,21 @@ Modules = (function (m) {
         },
         
         
-        // parses time string by spliting time and timezone, return an array
-        splitTimeAndZone: function ( time ){
-           var out = [time],
+       /**
+         * parses text by spliting it into an array time and timezone strings
+         *
+         * @param  {String} text
+         * @return {Array} Modules.ISODate
+         */ 
+        splitTimeAndZone: function ( text ){
+           var out = [text],
                chars = ['-','+','z','Z'],
                i = chars.length;
                
             while (i--) {
-              if(time.indexOf(chars[i]) > -1){
-                  out[0] = time.slice( 0, time.indexOf(chars[i]) );
-                  out.push( time.slice( time.indexOf(chars[i]) ) );
+              if(text.indexOf(chars[i]) > -1){
+                  out[0] = text.slice( 0, text.indexOf(chars[i]) );
+                  out.push( text.slice( text.indexOf(chars[i]) ) );
                   break;
                }
             }
@@ -2729,7 +3085,7 @@ Modules = (function (m) {
     };
 
 
-    return m;
+    return modules;
 
 } (Modules || {}));
 
@@ -2744,34 +3100,36 @@ Modules = (function (m) {
     MIT License: https://raw.github.com/glennjones/microformat-shiv/master/license.txt
     
     Dependencies  utilities.js, domutils.js
-
-    The text parser works like textContent but with five additional parsing rules 
-    * It excluded the content from tag in the "excludeTags" list ie noframes script etc
-    * It adds a single space behind the text string of any node considered block level
-    * It removes all line return/feeds and tabs
-    * It turns all whitespace into single spaces
-    * It trims the final output
 */
 
 
-Modules = (function (m) {
+Modules = (function (modules) {
     
     
-    m.text = {
+    modules.text = {
         
-        // normalised or whitespace or whitespacetrimmed - used as default 
+        // normalised or whitespace or whitespacetrimmed
         textFormat: 'whitespacetrimmed', 
         
+        // block level tags, used to add line returns
         blockLevelTags: ['h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'p', 'hr', 'pre', 'table',
             'address', 'article', 'aside', 'blockquote', 'caption', 'col', 'colgroup', 'dd', 'div', 
             'dt', 'dir', 'fieldset', 'figcaption', 'figure', 'footer', 'form',  'header', 'hgroup', 'hr', 
             'li', 'map', 'menu', 'nav', 'optgroup', 'option', 'section', 'tbody', 'testarea', 
             'tfoot', 'th', 'thead', 'tr', 'td', 'ul', 'ol', 'dl', 'details'],
 
+        // tags which have code metadata 
         excludeTags: ['noframe', 'noscript', 'script', 'style', 'frames', 'frameset'],
  
     
-        // gets the text from dom node 
+        /**
+         * parses the text from DOM Node 
+         *
+         * @param  {DOM Document} doc
+		 * @param  {DOM Node} node
+         * @param  {String} textFormat
+         * @return {String}
+         */
         parse: function(dom, node, textFormat){
             var out;
             this.textFormat = (textFormat)? textFormat : this.textFormat;
@@ -2788,7 +3146,14 @@ Modules = (function (m) {
         },
         
         
-        // get text from html string  
+        /**
+         * parses the text from html string 
+         *
+         * @param  {DOM Document} doc
+		 * @param  {String} text
+         * @param  {String} textFormat
+         * @return {String}
+         */  
         parseText: function( dom, text, textFormat ){
            var node = document.createElement('div');
            node.innerHTML = text;
@@ -2796,7 +3161,14 @@ Modules = (function (m) {
         },
         
         
-        // whitespace or whitespacetrimmed
+        /**
+         * parses the text from html string - only for whitespace or whitespacetrimmed formats
+         *
+         * @param  {DOM Document} doc
+		 * @param  {String} text
+         * @param  {String} textFormat
+         * @return {String}
+         */  
         textContent: function( dom, text, textFormat ){
            this.textFormat = (textFormat)? textFormat : this.textFormat;
            if(text){
@@ -2805,28 +3177,39 @@ Modules = (function (m) {
                 
               out = text.replace(regex, '');   
               if(this.textFormat === 'whitespacetrimmed') {    
-                 out = m.utils.trimWhitespace( out );
+                 out = modules.utils.trimWhitespace( out );
               }
               
               //return entities.decode( out, 2 );
-              return m.domUtils.decodeEntities( dom, out );
+              return modules.domUtils.decodeEntities( dom, out );
            }else{
               return ''; 
            }
         },
         
         
-        // normalise text 
+        /**
+         * normalises whitespace in given text 
+         *
+         * @param  {DOM Document} doc
+		 * @param  {String} text
+         * @return {String}
+         */ 
         normalise: function( dom, text ){
             text = text.replace( /&nbsp;/g, ' ') ;    // exchanges html entity for space into space char
-            text = m.utils.removeWhiteSpace( text );     // removes linefeeds, tabs and addtional spaces
-            text = m.domUtils.decodeEntities( dom, text );  // decode HTML entities
+            text = modules.utils.removeWhiteSpace( text );     // removes linefeeds, tabs and addtional spaces
+            text = modules.domUtils.decodeEntities( dom, text );  // decode HTML entities
             text = text.replace( '–', '-' );          // correct dash decoding
-            return m.utils.trim( text );
+            return modules.utils.trim( text );
         },
         
-    
-        // extracts the text nodes in the dom tree
+     
+        /**
+         * walks DOM tree parsing the text from DOM Nodes
+         *
+	     * @param  {DOM Node} node
+         * @return {String}
+         */ 
         walkTreeForText: function( node ) {
             var out = '',
                 j = 0;
@@ -2837,7 +3220,7 @@ Modules = (function (m) {
     
             // if node is a text node get its text
             if(node.nodeType && node.nodeType === 3){
-                out += m.domUtils.getElementText( node ); 
+                out += modules.domUtils.getElementText( node ); 
             }
     
             // get the text of the child nodes
@@ -2860,7 +3243,7 @@ Modules = (function (m) {
         
     };
    
-    return m;
+    return modules;
 
 } (Modules || {}));
 /*
@@ -2877,15 +3260,22 @@ Modules = (function (m) {
 */
 
 
-Modules = (function (m) {
+Modules = (function (modules) {
     
-    m.html = {
+    modules.html = {
         
-        voidElt: ['area', 'base', 'br', 'col', 'hr', 'img', 'input', 'link', 'meta', 'param', 'command', 'keygen', 'source'],
+        // elements which are self closing
+        selfClosingElt: ['area', 'base', 'br', 'col', 'hr', 'img', 'input', 'link', 'meta', 'param', 'command', 'keygen', 'source'],
     
 
-        // gets the text from dom node 
-        parse: function(dom, node ){
+        /**
+         * parse the html string from DOM Node
+         *
+         * @param  {DOM Document} doc
+		 * @param  {DOM Node} node
+         * @return {String}
+         */ 
+        parse: function( dom, node ){
             var out = '',
                 j = 0;
     
@@ -2902,32 +3292,37 @@ Modules = (function (m) {
             return out;
         },
     
-    
-    
-        // extracts the text nodes in the tree
+  
+        /**
+         * walks DOM tree parsing the html string from DOM Nodes
+         *
+         * @param  {DOM Document} doc
+		 * @param  {DOM Node} node
+         * @return {String}
+         */ 
         walkTreeForHtml: function( dom, node ) {
             var out = '',
                 j = 0;
     
             // if node is a text node get its text
             if(node.nodeType && node.nodeType === 3){
-                out += m.domUtils.getElementText( node ); 
+                out += modules.domUtils.getElementText( node ); 
             }
     
         
             // exclude text which has been added with uf include pattern  - 
-            if(node.nodeType && node.nodeType === 1 && m.domUtils.hasAttribute(dom, node, 'data-include') === false){
+            if(node.nodeType && node.nodeType === 1 && modules.domUtils.hasAttribute(dom, node, 'data-include') === false){
     
                 // begin tag
                 out += '<' + node.tagName.toLowerCase();  
     
                 // add attributes
-                var attrs = m.domUtils.getOrderedAttributes(node);
+                var attrs = modules.domUtils.getOrderedAttributes(node);
                 for (j = 0; j < attrs.length; j++) {
                     out += ' ' + attrs[j].name +  '=' + '"' + attrs[j].value + '"';
                 }
     
-                if(this.voidElt.indexOf(node.tagName.toLowerCase()) === -1){
+                if(this.selfClosingElt.indexOf(node.tagName.toLowerCase()) === -1){
                     out += '>';
                 }
     
@@ -2943,7 +3338,7 @@ Modules = (function (m) {
                 }
     
                 // end tag
-                if(this.voidElt.indexOf(node.tagName.toLowerCase()) > -1){
+                if(this.selfClosingElt.indexOf(node.tagName.toLowerCase()) > -1){
                     out += ' />'; 
                 }else{
                     out += '</' + node.tagName.toLowerCase() + '>'; 
@@ -2957,14 +3352,14 @@ Modules = (function (m) {
     };
     
 
-    return m;
+    return modules;
 
 } (Modules || {}));
 
 
 /*
    microformat-shiv - v0.3.4
-   Built: 2015-06-28 05:06 - http://microformat-shiv.com
+   Built: 2015-06-29 10:06 - http://microformat-shiv.com
    Copyright (c) 2015 Glenn Jones
    Licensed MIT 
 */

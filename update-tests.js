@@ -178,6 +178,7 @@ function buildTest( testData, testStructure, version, repo ){
 	
 	out += '<!--  loads Modules to help with debugging ie windows.Modules -->\r\n';
     out += '<script data-cover src="../lib/parser.js"></script>\r\n';
+	out += '<script data-cover src="../lib/parser-implied.js"></script>\r\n';
     out += '<script data-cover src="../lib/utilities.js"></script>\r\n';
     out += '<script data-cover src="../lib/domparser.js"></script>\r\n';
     out += '<script data-cover src="../lib/domutils.js"></script>\r\n';

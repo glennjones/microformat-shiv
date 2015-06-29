@@ -24,7 +24,8 @@ module.exports = function( grunt ) {
 				files:{
 					'<%= pkg.name %>.js': [
 						'umd/umd-start.js', 
-						'lib/parser.js', 
+						'lib/parser.js',
+						'lib/parser-implied.js', 
 						'lib/utilities.js', 
 						'lib/domparser.js',
 						'lib/domutils.js',
