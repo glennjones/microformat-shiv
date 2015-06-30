@@ -11,17 +11,23 @@
 
 
 var path			= require('path'),
+	request 		= require('request'),
 	fs 				= require('fs-extra'),
 	download 		= require('download-github-repo');
 
 
-var repo = 'microformats/tests',  // glennjones/tests
+var repo = 'glennjones/tests',  // glennjones/tests or microformats/tests
 	tempDir = path.resolve(__dirname,'temp-tests'),
 	testDir = 'standards-tests',
 	testDirResolve = path.resolve(__dirname,'test', testDir),
 	clientTestPagePath = path.resolve(__dirname,'test/mocha-tests-client.html'),
 	serverTestPagePath = path.resolve(__dirname,'test/mocha-tests-server.html'),
-	testJSPath = path.resolve(__dirname,'test/javascript/data.js');
+	testJSPath = path.resolve(__dirname,'test/javascript/data.js'),
+	livingStandardPath = path.resolve(__dirname,'lib/living-standard.js');
+
+
+// write living standard date
+writeLivingStandard( repo, livingStandardPath )
 
 
 download(repo, tempDir, function(err, data){
@@ -230,7 +236,7 @@ function buildTest( testData, testStructure, version, repo ){
  }
 
 
-// 
+ 
 function shortenFilePath( filepath ){
 	return 'mf-' + filepath.replace('microformats-mixed','mixed').replace('microformats-v1','v1').replace('microformats-v2','v2');
 }
@@ -249,8 +255,6 @@ function clearDirectory( callback ){
 }
 
 
-
-
 // write a file
 function writeFile(path, content){
 	fs.writeFile(path, content, 'utf8', function(err) {
@@ -260,4 +264,38 @@ function writeFile(path, content){
 			console.log('The file: ' + path + ' was saved');
 		}
 	}); 
+}
+
+
+function getLastCommitDate( repo, callback ){
+	
+	var options = {
+	  url: 'https://api.github.com/repos/' + repo + '/commits?per_page=1',
+	  headers: {
+	    'User-Agent': 'request'
+	  }
+	};
+	
+	request(options, function (error, response, body) {
+	  if (!error && response.statusCode == 200) {
+		var date = null,
+			json = JSON.parse(body);
+			if(json && json.length && json[0].commit && json[0].commit.author ){
+				date = json[0].commit.author.date;
+			}
+	    callback(null, date);
+	  }else{
+		  console.log(error, response, body);
+		  callback('fail to get last commit date', null); 
+	  }
+	});
+}
+
+
+
+function writeLivingStandard( repo, livingStandardPath ){
+	getLastCommitDate( repo, function( err, date ){
+		var out = '	modules.livingStandard = \'' + date + '\';';
+		writeFile(livingStandardPath, out);
+	});
 }

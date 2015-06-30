@@ -133,8 +133,8 @@ describe('domutils', function() {
        
 
    });
-
-
+   
+   /*
    it('isOnlySingleDescendantOfType', function(){
        var html = '<a class="u-url" href="http://glennjones.net">Glenn Jones</a>',
            node = document.createElement('div');
@@ -151,9 +151,9 @@ describe('domutils', function() {
        // two instances of a element  
        node.appendChild(document.createElement('a'));
        assert.equal( Modules.domUtils.isOnlySingleDescendantOfType( node, ['a', 'link']), null );
-       
-
+      
    });
+   */
    
    
    it('appendChild', function(){

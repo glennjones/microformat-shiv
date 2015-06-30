@@ -38,6 +38,7 @@ window.onload = function() {
         // create options 
         options ={
             'node': node,
+            'document': node,  // limit document to current fragment of html by passing in node instead - only need in this usecase
             'dateFormat': dateformat
         }
         if(baseUrl.trim() !== ''){

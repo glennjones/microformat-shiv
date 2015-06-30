@@ -15,7 +15,6 @@ describe('Modules.ISODates', function() {
        assert.equal( new Modules.ISODate('2015-01-23T05:34:00', 'w3c').toString('w3c'), '2015-01-23T05:34:00' );
        assert.equal( new Modules.ISODate('2015-01-23T05:34:00', 'html5').toString('rfc3339'), '20150123T053400' );
        assert.equal( new Modules.ISODate('2015-01-23T05:34:00', 'auto').toString('auto'), '2015-01-23T05:34:00' );
-       assert.equal( new Modules.ISODate('2015-01-23t05:34:00', 'auto').toString('auto'), '2015-01-23t05:34:00' );
    });
    
    

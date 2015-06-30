@@ -1,4 +1,5 @@
 
+
 module.exports = function( grunt ) {
 	grunt.initConfig({
 		pkg: grunt.file.readJSON('package.json'),
@@ -6,15 +7,34 @@ module.exports = function( grunt ) {
 			banner: '/*\n   <%= pkg.title || pkg.name %> - v<%= pkg.version %>\n' +
 			'   Built: <%= grunt.template.today("yyyy-mm-dd hh:mm") %> - ' + '<%= pkg.homepage %>\n' +
 			'   Copyright (c) <%= grunt.template.today("yyyy") %> <%= pkg.author %>\n' +
-			'   Licensed <%= pkg.license %> \n*/\n\n\n' 
+			'   Licensed <%= pkg.license %> \n*/\n\n\n',
+			version: '	modules.version = \'<%= pkg.version %>\';'
 		},
+		buildfile: {
+			version: {
+				dest: 'lib/version.js',
+				content: '<%= meta.version %>'
+				
+			}
+		},
+		example: {
+		    'compiled.js': ['lib/*.js'],
+		 },
 		concat: {
 			dist: {
 				options: {
 					banner: '<%= meta.banner %>',
 					process: function(src, filename) {
 					  console.log(filename);
-			          src = src.replace(/(^|\n)[ \t]*('use strict'|"use strict");?\s*/g, '');
+					  if(filename.indexOf('umd') === -1){
+						  src = src.replace(/(^|\n)[ \t]*('use strict'|"use strict");?\s*/g, '');
+						  src = src.replace('var Modules = (function (modules) {','');
+						  src = src.replace('return modules;','');
+						  src = src.replace('} (Modules || {}));',''); 
+						  if(src.indexOf('*/') > -1){
+						  	src = '\n	' + src.substr(src.indexOf('*/')+2).trim() + '\n';
+						  }
+					  }
 					  if(filename.indexOf('parser.js') === -1){
 					  	src = src.replace('var Modules', 'Modules');
 					  }
@@ -24,6 +44,8 @@ module.exports = function( grunt ) {
 				files:{
 					'<%= pkg.name %>.js': [
 						'umd/umd-start.js', 
+						'lib/version.js',
+						'lib/living-standard.js',
 						'lib/parser.js',
 						'lib/parser-implied.js', 
 						'lib/parser-includes.js', 
@@ -36,7 +58,7 @@ module.exports = function( grunt ) {
 						'lib/text.js',
 						'lib/html.js',
 						'lib/maps.js',
-						'umd/umd-end.js',
+						'umd/umd-end.js'
 					]
 				}
 			},
@@ -44,7 +66,17 @@ module.exports = function( grunt ) {
 				options: {
 					banner: '<%= meta.banner %>',
 					process: function(src, filename) {
-			          src = src.replace(/(^|\n)[ \t]*('use strict'|"use strict");?\s*/g, '');
+					  if(filename.indexOf('umd') === -1){
+						  src = src.replace(/(^|\n)[ \t]*('use strict'|"use strict");?\s*/g, '');
+						  src = src.replace('var Modules = (function (modules) {','');
+						  src = src.replace('return modules;','');
+						  src = src.replace('} (Modules || {}));',''); 
+						  
+						  src = src.replace('modules.maps = (modules.maps)? modules.maps : {};',''); 
+						  if(src.indexOf('*/') > -1){
+						  	src = '\n	' + src.substr(src.indexOf('*/')+2).trim() + '\n';
+						  }
+					  }
 					  if(filename.indexOf('h-adr.js') === -1){
 					  	src = src.replace('var Modules', 'Modules');
 					  }
@@ -105,7 +137,7 @@ module.exports = function( grunt ) {
 				node: true,
 				quotmark: 'single',
 				moz: true,
-				predef: [ 'define' ]
+				predef: [ 'define', 'modules' ]
 			},
 			globals: {}
 		},
@@ -117,7 +149,7 @@ module.exports = function( grunt ) {
 		},
 		watch: {
 			files: ['lib/**/*.js','umd/**/*.js','Gruntfile.js'],
-			tasks: ['concat:map', 'concat:dist', 'copy', 'uglify']
+			tasks: ['buildfile', 'concat:map', 'concat:dist', 'copy', 'uglify']
 		}
 	});
 
@@ -129,14 +161,21 @@ module.exports = function( grunt ) {
 	grunt.loadNpmTasks('grunt-contrib-uglify');
   	grunt.loadNpmTasks('grunt-jsmin-sourcemap');
 	grunt.loadNpmTasks('grunt-mocha-phantomjs');
-	grunt.loadNpmTasks('grunt-umd');
 
+
+	// very simple files creator
+	grunt.task.registerMultiTask('buildfile', function() {
+	    grunt.file.write(this.data.dest, this.data.content, {encoding: 'utf8'});
+		grunt.log.writeln('File ' + this.data.dest +  'created');
+	});
 
 	// Default task.
-	grunt.registerTask( 'default', ['concat:map', 'concat:dist', 'copy', 'uglify']);
+	grunt.registerTask( 'default', ['buildfile', 'concat:map', 'concat:dist', 'copy', 'uglify']);
 	grunt.registerTask( 'test', ['mocha_phantomjs:all']);
 	grunt.registerTask( 'umd', ['umd:default']);
-
+	
+	
+	
 
 
 };

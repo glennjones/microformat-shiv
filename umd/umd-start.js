@@ -8,3 +8,5 @@
   }
 }(this, function () {
     
+    var modules = {};
+    

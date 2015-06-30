@@ -42,15 +42,21 @@ function buildTest( test ){
 	jsonElt.innerHTML = htmlEscape( test.json );	
 	
 	// parse html
-	var div,
+    var doc,
+        node,
         options;
+        
+    // createHTMLDocument is not well support below ie9
+	doc = document.implementation.createHTMLDocument("New Document");
+	node =  document.createElement('div');
+	node.innerHTML = test.html;
+	doc.body.appendChild(node);    
     
-    div = document.createElement('div');
-	div.innerHTML = test.html;
     options ={
-        'node': div,
+        'document': doc,
+        'node': node,
         'baseUrl': 'http://example.com'
-    }
+    };
     var mfJSON = Microformats.get( options );
 	parserElt.innerHTML = htmlEscape( js_beautify( JSON.stringify(mfJSON) ) );
     
@@ -81,16 +87,21 @@ function buildTest( test ){
 
 
 function passTest( test ){
-    var div,
+    var doc,
+        node,
         options;
+        
+    // createHTMLDocument is not well support below ie9
+	doc = document.implementation.createHTMLDocument("New Document");
+	node =  document.createElement('div');
+	node.innerHTML = test.html;
+	doc.body.appendChild(node);    
     
-    // parse html   
-    div = document.createElement('div');
-	div.innerHTML = test.html;
     options ={
-        'node': div,
+        'document': doc,
+        'node': node,
         'baseUrl': 'http://example.com'
-    }
+    };
     var mfJSON = Microformats.get( options );
     
     // diff json

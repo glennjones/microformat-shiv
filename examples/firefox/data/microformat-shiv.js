@@ -1,6 +1,6 @@
 /*
    microformat-shiv - v0.3.4
-   Built: 2015-06-29 04:06 - http://microformat-shiv.com
+   Built: 2015-06-30 07:06 - http://microformat-shiv.com
    Copyright (c) 2015 Glenn Jones
    Licensed MIT 
 */
@@ -16,22 +16,19 @@
   }
 }(this, function () {
     
-/*!
-	Parser
-	Copyright (C) 2010 - 2015 Glenn Jones. All Rights Reserved.
-	MIT License: https://raw.github.com/glennjones/microformat-shiv/master/license.txt
-	
-	Dependencies  dates.js, domutils.js, html.js, isodate,js, text.js utilities.js
-*/
-
-
-var Modules = (function (m) {
+    var modules = {};
     
-	
-    m.Parser = function () {
-	    //this.version = '0.4.0';
-		this.rootNode = null,
-		this.document = null,
+
+	modules.version = '0.3.4';
+	modules.livingStandard = '2015-06-30T12:45:50Z';
+
+	/**
+     * constructor
+     *
+     */
+    modules.Parser = function () {
+		this.rootNode = null;
+		this.document = null;
 		this.rootPrefix = 'h-';
 		this.propertyPrefixes = ['p-', 'dt-', 'u-', 'e-'];
 		this.options = {
@@ -40,15 +37,15 @@ var Modules = (function (m) {
 			'textFormat': 'whitespacetrimmed',
 			'dateFormat': 'auto'
 		};
-		
-		// create objects in case modules don't load
-		m.maps = (m.maps)? m.maps : {};
-		m.rels = (m.rels)? m.rels : {};
 	};
 	
 	
+	// create objects in case v1 maps modules don't load
+	modules.maps = (modules.maps)? modules.maps : {};
+	modules.rels = (modules.rels)? modules.rels : {};
 	
-	m.Parser.prototype = {
+	
+	modules.Parser.prototype = {
 		
 		
 		/**
@@ -76,24 +73,28 @@ var Modules = (function (m) {
 			}else{
 				this.rootNode = rootNode;
 				
-				// load from options or get from ownerDocument
+				// set document from options or get from ownerDocument
+				// used for DOM function calls like createElement;
 				if(options.document){
 					this.document = options.document;
 				}else{
-					this.document = m.domUtils.ownerDocument(rootNode);
+					this.document = modules.domUtils.ownerDocument(rootNode);
 				}
 				
+				if(!options.baseUrl && this.document && this.document.location){
+    				options.baseUrl = this.document.location.href;
+    			}
 	
 				// add includes
 				if(this.addIncludes){
-					this.addIncludes(rootNode);
+					this.addIncludes( rootNode );
 				}
 				
 				
 				// find base tag to set baseUrl
 	 			baseTag = rootNode.querySelector('base');
 				if(baseTag) {
-					href = m.domUtils.getAttribute(baseTag, 'href');
+					href = modules.domUtils.getAttribute(baseTag, 'href');
 					if(href){
 						this.options.baseUrl = href;
 					}
@@ -188,17 +189,17 @@ var Modules = (function (m) {
 			items = this.findRootNodes(rootNode);	
 			i = items.length;
 			while(i--) {
-				classItems = m.domUtils.getAttributeList(items[i], 'class');
+				classItems = modules.domUtils.getAttributeList(items[i], 'class');
 				x = classItems.length;
 				while(x--) {
 					// find v2 names
-					if(m.utils.startWith( classItems[x], 'h-' )){
+					if(modules.utils.startWith( classItems[x], 'h-' )){
 						append(classItems[x], 1);
 					}
 					// find v1 names
-					for(var key in m.maps) {
+					for(var key in modules.maps) {
 						// has v1 root but not also a v2 root so we dont double count
-						if(m.maps[key].root === classItems[x] && classItems.indexOf(key) === -1) {
+						if(modules.maps[key].root === classItems[x] && classItems.indexOf(key) === -1) {
 							append(key, 1);
 						}
 					}
@@ -219,7 +220,7 @@ var Modules = (function (m) {
 		shouldInclude: function(uf, filters) {
 			var i;
 	
-			if(m.utils.isArray(filters) && filters.length > 0) {
+			if(modules.utils.isArray(filters) && filters.length > 0) {
 				i = filters.length;
 				while(i--) {
 					if(uf.type[0] === filters[i]) {
@@ -261,7 +262,7 @@ var Modules = (function (m) {
 						z = 0;
 						while(z < y) {
 							// make sure its a valid structure 
-							if(ufs[z] && m.utils.hasProperties(ufs[z].properties)) {
+							if(ufs[z] && modules.utils.hasProperties(ufs[z].properties)) {
 								out.push(ufs[z]);
 							}
 							z++;
@@ -294,9 +295,9 @@ var Modules = (function (m) {
 	
 	
 			// build any array of v1 root names    
-			for(key in m.maps) {
-				if (m.maps.hasOwnProperty(key)) {
-					classList.push(m.maps[key].root);
+			for(key in modules.maps) {
+				if (modules.maps.hasOwnProperty(key)) {
+					classList.push(modules.maps[key].root);
 				}
 			}
 	
@@ -304,15 +305,15 @@ var Modules = (function (m) {
 			fromChildren = (fromChildren) ? fromChildren : false;
 			if(fromChildren) {
 				//var nodes;
-				//if(m.utils.isArray(rootNode.children)){
+				//if(modules.utils.isArray(rootNode.children)){
 				//	nodes = rootNode.children;
 				//}else{
 				//	nodes = rootNode.children();
 				//}
-				//arr = m.domUtils.getNodesByAttribute(nodes, 'class');
-				arr = m.domUtils.getNodesByAttribute(rootNode, 'class');
+				//arr = modules.domUtils.getNodesByAttribute(nodes, 'class');
+				arr = modules.domUtils.getNodesByAttribute(rootNode, 'class');
 			} else {
-				arr = m.domUtils.getNodesByAttribute(rootNode, 'class');
+				arr = modules.domUtils.getNodesByAttribute(rootNode, 'class');
 			}
 	
 	
@@ -321,7 +322,7 @@ var Modules = (function (m) {
 			i = arr.length;
 			while(x < i) {
 	
-				items = m.domUtils.getAttributeList(arr[x], 'class');
+				items = modules.domUtils.getAttributeList(arr[x], 'class');
 	
 				// loop classes on an element
 				y = items.length;
@@ -333,7 +334,7 @@ var Modules = (function (m) {
 					}
 	
 					// match v2 root name prefix
-					if(m.utils.startWith(items[y], 'h-')) {
+					if(modules.utils.startWith(items[y], 'h-')) {
 						out.push(arr[x]);
 						break;
 					}
@@ -447,7 +448,7 @@ var Modules = (function (m) {
 					// create object with type, property and value
 					rootItem = context.createUfObject(
 						classes.root, 
-						m.text.parse(this.document, child, context.options.textFormat)
+						modules.text.parse(this.document, child, context.options.textFormat)
 					);
 					
 					// modifies value with "implied value rule"
@@ -531,7 +532,7 @@ var Modules = (function (m) {
 					// create object with type, property and value
 					rootItem = context.createUfObject(
 						classes.root, 
-						m.text.parse(this.document, child, context.options.textFormat)
+						modules.text.parse(this.document, child, context.options.textFormat)
 					);
 
 					// add the microformat as an array of properties
@@ -577,19 +578,19 @@ var Modules = (function (m) {
 		getValue: function(node, className, uf) {
 			var value = '';
 	
-			if(m.utils.startWith(className, 'p-')) {
+			if(modules.utils.startWith(className, 'p-')) {
 				value = this.getPValue(node, true);
 			}
 	
-			if(m.utils.startWith(className, 'e-')) {
+			if(modules.utils.startWith(className, 'e-')) {
 				value = this.getEValue(node);
 			}
 	
-			if(m.utils.startWith(className, 'u-')) {
+			if(modules.utils.startWith(className, 'u-')) {
 				value = this.getUValue(node, true);
 			}
 	
-			if(m.utils.startWith(className, 'dt-')) {
+			if(modules.utils.startWith(className, 'dt-')) {
 				value = this.getDTValue(node, className, uf, true);
 			}
 			return value;
@@ -614,11 +615,11 @@ var Modules = (function (m) {
 			}
 	
 			if(!out) {
-				out = m.domUtils.getAttrValFromTagList(node, ['abbr'], 'title');
+				out = modules.domUtils.getAttrValFromTagList(node, ['abbr'], 'title');
 			}
 	
 			if(!out) {
-				out = m.domUtils.getAttrValFromTagList(node, ['data'], 'value');
+				out = modules.domUtils.getAttrValFromTagList(node, ['data'], 'value');
 			}
 	
 			if(node.name === 'br' || node.name === 'hr') {
@@ -626,11 +627,11 @@ var Modules = (function (m) {
 			}
 	
 			if(!out) {
-				out = m.domUtils.getAttrValFromTagList(node, ['img', 'area'], 'alt');
+				out = modules.domUtils.getAttrValFromTagList(node, ['img', 'area'], 'alt');
 			}
 	
 			if(!out) {
-				out = m.text.parse(this.document, node, this.options.textFormat);
+				out = modules.text.parse(this.document, node, this.options.textFormat);
 			}
 	
 			return(out) ? out : '';
@@ -653,16 +654,16 @@ var Modules = (function (m) {
 					nodes,
 					attr;
 	
-				nodes = m.domUtils.getNodesByAttribute(node, attrName);
+				nodes = modules.domUtils.getNodesByAttribute(node, attrName);
 				i = nodes.length;
 				while (i--) {
 					try{
 						// the url parser can blow up if the format is not right
-						attr = m.domUtils.getAttribute(nodes[i], attrName);
+						attr = modules.domUtils.getAttribute(nodes[i], attrName);
 						if(attr && attr !== '' && baseUrl !== '' && attr.indexOf(':') === -1) {
 							//attr = urlParser.resolve(baseUrl, attr);
-							attr = m.domUtils.resolveUrl(attr, baseUrl);
-							m.domUtils.setAttribute(nodes[i], attrName, attr);
+							attr = modules.domUtils.resolveUrl(attr, baseUrl);
+							modules.domUtils.setAttribute(nodes[i], attrName, attr);
 						}	
 					}catch(err){
 						// do nothing convert only the urls we can leave the rest as they where
@@ -673,8 +674,8 @@ var Modules = (function (m) {
 			expandUrls(node, 'src', this.options.baseUrl);
 			expandUrls(node, 'href', this.options.baseUrl);
 	
-			out.value = m.text.parse(this.document, node, this.options.textFormat);
-			out.html = m.html.parse(node);
+			out.value = modules.text.parse(this.document, node, this.options.textFormat);
+			out.html = modules.html.parse(node);
 	
 			return out;
 		},
@@ -699,32 +700,32 @@ var Modules = (function (m) {
 			}
 	
 			if(!out) {
-				out = m.domUtils.getAttrValFromTagList(node, ['a', 'area'], 'href');
+				out = modules.domUtils.getAttrValFromTagList(node, ['a', 'area'], 'href');
 			}
 	
 			if(!out) {
-				out = m.domUtils.getAttrValFromTagList(node, ['img'], 'src');
+				out = modules.domUtils.getAttrValFromTagList(node, ['img'], 'src');
 			}
 	
 			if(!out) {
-				out = m.domUtils.getAttrValFromTagList(node, ['object'], 'data');
+				out = modules.domUtils.getAttrValFromTagList(node, ['object'], 'data');
 			}
 	
 			// if we have no protocal separator, turn relative url to absolute ones
 			if(out && out !== '' && out.indexOf(':') === -1) {
-				out = m.domUtils.resolveUrl(out, this.options.baseUrl);
+				out = modules.domUtils.resolveUrl(out, this.options.baseUrl);
 			}
 	
 			if(!out) {
-				out = m.domUtils.getAttrValFromTagList(node, ['abbr'], 'title');
+				out = modules.domUtils.getAttrValFromTagList(node, ['abbr'], 'title');
 			}
 	
 			if(!out) {
-				out = m.domUtils.getAttrValFromTagList(node, ['data'], 'value');
+				out = modules.domUtils.getAttrValFromTagList(node, ['data'], 'value');
 			}
 	
 			if(!out) {
-				out = m.text.parse(this.document, node, this.options.textFormat);
+				out = modules.text.parse(this.document, node, this.options.textFormat);
 			}
 	
 			return(out) ? out : '';
@@ -752,37 +753,37 @@ var Modules = (function (m) {
 			}
 	
 			if(!out) {
-				out = m.domUtils.getAttrValFromTagList(node, ['time', 'ins', 'del'], 'datetime');
+				out = modules.domUtils.getAttrValFromTagList(node, ['time', 'ins', 'del'], 'datetime');
 			}
 	
 			if(!out) {
-				out = m.domUtils.getAttrValFromTagList(node, ['abbr'], 'title');
+				out = modules.domUtils.getAttrValFromTagList(node, ['abbr'], 'title');
 			}
 	
 			if(!out) {
-				out = m.domUtils.getAttrValFromTagList(node, ['data'], 'value');
+				out = modules.domUtils.getAttrValFromTagList(node, ['data'], 'value');
 			}
 	
 			if(!out) {
-				out = m.text.parse(this.document, node, this.options.textFormat);
+				out = modules.text.parse(this.document, node, this.options.textFormat);
 			}
 	
 			if(out) {
-				if(m.dates.isDuration(out)) {
+				if(modules.dates.isDuration(out)) {
 					// just duration
 					return out;
-				} else if(m.dates.isTime(out)) {
+				} else if(modules.dates.isTime(out)) {
 					// just time or time+timezone
 					if(uf) {
-						uf.times.push([className, m.dates.parseAmPmTime(out, this.options.dateFormat)]);
+						uf.times.push([className, modules.dates.parseAmPmTime(out, this.options.dateFormat)]);
 					}
-					return m.dates.parseAmPmTime(out, this.options.dateFormat);
+					return modules.dates.parseAmPmTime(out, this.options.dateFormat);
 				} else {
 					// returns a date - uf profile 
 					if(uf) {
-						uf.dates.push([className, new m.ISODate(out).toString( this.options.dateFormat )]);
+						uf.dates.push([className, new modules.ISODate(out).toString( this.options.dateFormat )]);
 					}
-					return new m.ISODate(out).toString( this.options.dateFormat );
+					return new modules.ISODate(out).toString( this.options.dateFormat );
 				}
 			} else {
 				return '';
@@ -800,11 +801,11 @@ var Modules = (function (m) {
 		appendRootID: function(node, id, propertyName) {
 			if(this.hasRootID(node, id, propertyName) === false){
 				var rootids = [];
-				if(m.domUtils.hasAttribute(node,'rootids')){
-					rootids = m.domUtils.getAttributeList(node,'rootids');
+				if(modules.domUtils.hasAttribute(node,'rootids')){
+					rootids = modules.domUtils.getAttributeList(node,'rootids');
 				}
 				rootids.push('id' + id + '-' + propertyName);
-				m.domUtils.setAttribute(node, 'rootids', rootids.join(' '));
+				modules.domUtils.setAttribute(node, 'rootids', rootids.join(' '));
 			}
 		},
 	
@@ -819,10 +820,10 @@ var Modules = (function (m) {
          */
 		hasRootID: function(node, id, propertyName) {
 			var rootids = [];
-			if(!m.domUtils.hasAttribute(node,'rootids')){
+			if(!modules.domUtils.hasAttribute(node,'rootids')){
 				return false;
 			} else {
-				rootids = m.domUtils.getAttributeList(node, 'rootids');
+				rootids = modules.domUtils.getAttributeList(node, 'rootids');
 				return (rootids.indexOf('id' + id + '-' + propertyName) > -1);
 			}
 		},
@@ -848,7 +849,7 @@ var Modules = (function (m) {
 			while(x < i) {
 				child = node.children[x];
 				var value = null;
-				if(m.domUtils.hasAttributeValue(child, 'class', 'value')) {
+				if(modules.domUtils.hasAttributeValue(child, 'class', 'value')) {
 					switch(propertyType) {
 					case 'p':
 						value = context.getPValue(child, false);
@@ -861,20 +862,20 @@ var Modules = (function (m) {
 						break;
 					}
 					if(value) {
-						out.push(m.utils.trim(value));
+						out.push(modules.utils.trim(value));
 					}
 				}
 				x++;
 			}
 			if(out.length > 0) {
 				if(propertyType === 'p') {
-					return m.text.parseText( this.document, out.join(' '), this.options.textFormat);
+					return modules.text.parseText( this.document, out.join(' '), this.options.textFormat);
 				}
 				if(propertyType === 'u') {
 					return out.join('');
 				}
 				if(propertyType === 'dt') {
-					return m.dates.concatFragments(out).toString(this.options.dateFormat);
+					return modules.dates.concatFragments(out,this.options.dateFormat).toString(this.options.dateFormat);
 				}
 			} else {
 				return null;
@@ -884,7 +885,7 @@ var Modules = (function (m) {
 		
 		/**
          * returns a single string of the 'title' attr from all 
-		 * the child nodes with the class 'value-title'
+		 * the child nodes with the class 'value-title' 
          *
          * @param  {DOM Node} node
 		 * @return {String}
@@ -895,12 +896,12 @@ var Modules = (function (m) {
 				i,
 				x;
 	
-			items = m.domUtils.getNodesByAttributeValue(node, 'class', 'value-title');
+			items = modules.domUtils.getNodesByAttributeValue(node, 'class', 'value-title');
 			x = 0;
 			i = items.length;		
 			while(x < i) {
-				if(m.domUtils.hasAttribute(items[x], 'title')) {
-					out.push(m.domUtils.getAttribute(items[x], 'title'));
+				if(modules.domUtils.hasAttribute(items[x], 'title')) {
+					out.push(modules.domUtils.getAttribute(items[x], 'title'));
 				}
 				x++;
 			}
@@ -953,24 +954,24 @@ var Modules = (function (m) {
 				ufName;
 	
 	
-			classNames = m.domUtils.getAttribute(node, 'class');
+			classNames = modules.domUtils.getAttribute(node, 'class');
 			if(classNames) {
 				items = classNames.split(' ');
 				x = 0;
 				i = items.length;
 				while(x < i) {
 	
-					item = m.utils.trim(items[x]);
+					item = modules.utils.trim(items[x]);
 	
 					// test for root prefix - v2
-					if(m.utils.startWith(item, context.rootPrefix)) {
+					if(modules.utils.startWith(item, context.rootPrefix)) {
 						out.root.push(item);
 					}
 	
 					// test for property prefix - v2
 					z = context.propertyPrefixes.length;
 					while(z--) {
-						if(m.utils.startWith(item, context.propertyPrefixes[z])) {
+						if(modules.utils.startWith(item, context.propertyPrefixes[z])) {
 							out.properties.push(item);
 						}
 					}
@@ -978,14 +979,14 @@ var Modules = (function (m) {
 
 
 					// test for mapped root classnames v1
-					for(key in m.maps) {
-						if(m.maps.hasOwnProperty(key)) {
+					for(key in modules.maps) {
+						if(modules.maps.hasOwnProperty(key)) {
 							// only add a root once
-							if(m.maps[key].root === item && out.root.indexOf(key) === -1) {
+							if(modules.maps[key].root === item && out.root.indexOf(key) === -1) {
 								// if root map has subTree set to true
 								// test to see if we should create a property or root
-								if(m.maps[key].subTree && context.isSubTreeRoot(node, m.maps[key], items) === false) {
-									out.properties.push('p-' + m.maps[key].root);
+								if(modules.maps[key].subTree && context.isSubTreeRoot(node, modules.maps[key], items) === false) {
+									out.properties.push('p-' + modules.maps[key].root);
 								} else {
 									out.root.push(key);
 								}
@@ -1065,9 +1066,9 @@ var Modules = (function (m) {
          */
 		getMapping: function(name) {
 			var key;
-			for(key in m.maps) {
-				if(m.maps[key].root === name || key === name) {
-					return m.maps[key];
+			for(key in modules.maps) {
+				if(modules.maps[key].root === name || key === name) {
+					return modules.maps[key];
 				}
 			}
 			return null;
@@ -1082,8 +1083,8 @@ var Modules = (function (m) {
          */
 		getV2RootName: function(name) {
 			var key;
-			for(key in m.maps) {
-				if(m.maps[key].root === name) {
+			for(key in modules.maps) {
+				if(modules.maps[key].root === name) {
 					return key;
 				}
 			}
@@ -1112,10 +1113,10 @@ var Modules = (function (m) {
 			x = 0;
 			i = classList.length;	
 			while(x < i) {
-				var item = m.utils.trim(classList[x]);
-				for(var key in m.maps) {
-					if(m.maps.hasOwnProperty(key)) {
-						if(m.maps[key].root === item && m.maps[key].root !== map.root) {
+				var item = modules.utils.trim(classList[x]);
+				for(var key in modules.maps) {
+					if(modules.maps.hasOwnProperty(key)) {
+						if(modules.maps[key].root === item && modules.maps[key].root !== map.root) {
 							hasSecondRoot = true;
 							break;
 						}
@@ -1127,7 +1128,7 @@ var Modules = (function (m) {
 			// walk the sub tree for properties that match this subTree
 			this.walkChildren(node, out, map.name, null, null);
 	
-			if(m.utils.hasProperties(out.properties) && hasSecondRoot === false) {
+			if(modules.utils.hasProperties(out.properties) && hasSecondRoot === false) {
 				return true;
 			} else {
 				return false;
@@ -1146,11 +1147,11 @@ var Modules = (function (m) {
 			var out = {};
 	
 			// is more than just whitespace
-			if(value && m.utils.isOnlyWhiteSpace(value) === false) {
+			if(value && modules.utils.isOnlyWhiteSpace(value) === false) {
 				out.value = value;
 			}
 			// add type ie ["h-card", "h-org"]
-			if(m.utils.isArray(names)) {
+			if(modules.utils.isArray(names)) {
 				out.type = names;
 			} else {
 				out.type = [names];
@@ -1175,7 +1176,7 @@ var Modules = (function (m) {
 			i = this.propertyPrefixes.length;
 			while(i--) {
 				var prefix = this.propertyPrefixes[i];
-				if(m.utils.startWith(text, prefix)) {
+				if(modules.utils.startWith(text, prefix)) {
 					text = text.substr(prefix.length);
 				}
 			}
@@ -1193,7 +1194,7 @@ var Modules = (function (m) {
          */
 		expandURLs: function(node, baseUrl){
 
-			node = m.domUtils.clone(node);
+			node = modules.domUtils.clone(node);
 	
 			function expand( nodeList, attrName ){
 				if(nodeList && nodeList.length){
@@ -1202,14 +1203,14 @@ var Modules = (function (m) {
 						// this gives the orginal text
 					    var href =  nodeList[i].getAttribute(attrName);
 					    if(href.toLowerCase().indexOf('http') !== 0){
-					    	nodeList[i].setAttribute(attrName, m.domUtils.resolveUrl(href, baseUrl));
+					    	nodeList[i].setAttribute(attrName, modules.domUtils.resolveUrl(href, baseUrl));
 					    }
 					}
 				}
 			}
 			
-			expand( m.domUtils.getNodesByAttribute(node, 'href'), 'href' );
-			expand( m.domUtils.getNodesByAttribute(node, 'src'), 'src' );
+			expand( modules.domUtils.getNodesByAttribute(node, 'href'), 'href' );
+			expand( modules.domUtils.getNodesByAttribute(node, 'src'), 'src' );
 			
 			return node;
 		},
@@ -1240,10 +1241,10 @@ var Modules = (function (m) {
 			var arr,
 				i;
 				
-			arr = m.domUtils.getNodesByAttribute(rootNode, 'rootids');
+			arr = modules.domUtils.getNodesByAttribute(rootNode, 'rootids');
 			i = arr.length;
 			while(i--) {
-				m.domUtils.removeAttribute(arr[i],'rootids');
+				modules.domUtils.removeAttribute(arr[i],'rootids');
 			}
 		},
 		
@@ -1264,25 +1265,11 @@ var Modules = (function (m) {
 	};
 	
 	
-   m.Parser.prototype.constructor = m.Parser;
-
-    return m;
-
-} (Modules || {}));
-/*!
-	Parser implied
-	All the functions that deal with microformats implied rules
-	Copyright (C) 2010 - 2015 Glenn Jones. All Rights Reserved.
-	MIT License: https://raw.github.com/glennjones/microformat-shiv/master/license.txt
-	
-	Dependencies  dates.js, domutils.js, html.js, isodate,js, text.js utilities.js
-*/
+    modules.Parser.prototype.constructor = modules.Parser;
 
 
-Modules = (function (m) {
-	
 	// check parser module is loaded
-	if(m.Parser){
+	if(modules.Parser){
 	
 		/**
 		 * applies "implied rules" microformat output structure ie name, photo, url and date 
@@ -1291,7 +1278,7 @@ Modules = (function (m) {
 		 * @param  {Object} uf (microformat output structure)
 		 * @param  {Object} parentClasses (classes structure)
 		 */
-		 m.Parser.prototype.impliedRules = function(node, uf, parentClasses) {
+		 modules.Parser.prototype.impliedRules = function(node, uf, parentClasses) {
 			var context = this,
 				value,
 				newDate;
@@ -1315,9 +1302,9 @@ Modules = (function (m) {
 						textFormat = 'whitespacetrimmed';
 					}
 					if(!value) {
-						uf.properties.name = [m.text.parse(this.document, node, textFormat)];
+						uf.properties.name = [modules.text.parse(this.document, node, textFormat)];
 					}else{
-						uf.properties.name = [m.text.parseText(this.document, value, textFormat)];
+						uf.properties.name = [modules.text.parseText(this.document, value, textFormat)];
 					}
 				}
 				
@@ -1344,9 +1331,9 @@ Modules = (function (m) {
 					if(value) {
 						// relative to absolute URL
 						if(value && value !== '' && this.options.baseUrl !== '' && value.indexOf(':') === -1) {
-							value = m.domUtils.resolveUrl(value, this.options.baseUrl);
+							value = modules.domUtils.resolveUrl(value, this.options.baseUrl);
 						}
-						uf.properties.photo = [m.utils.trim(value)];
+						uf.properties.photo = [modules.utils.trim(value)];
 					}
 				}
 				
@@ -1363,9 +1350,9 @@ Modules = (function (m) {
 					if(value) {
 						// relative to absolute URL
 						if(value && value !== '' && this.options.baseUrl !== '' && value.indexOf(':') === -1) {
-							value = m.domUtils.resolveUrl(value, this.options.baseUrl);
+							value = modules.domUtils.resolveUrl(value, this.options.baseUrl);
 						}
-						uf.properties.url = [m.utils.trim(value)];
+						uf.properties.url = [modules.utils.trim(value)];
 					}
 				}
 			
@@ -1381,7 +1368,7 @@ Modules = (function (m) {
 			// implied date rule
 			// only applied to first date and time match
 			if(uf.times.length > 0 && uf.dates.length > 0) {
-				newDate = m.dates.dateTimeUnion(uf.dates[0][1], uf.times[0][1], this.options.dateFormat);
+				newDate = modules.dates.dateTimeUnion(uf.dates[0][1], uf.times[0][1], this.options.dateFormat);
 				uf.properties[this.removePropPrefix(uf.times[0][0])][0] = newDate.toString(this.options.dateFormat);
 			}
 			delete uf.times;
@@ -1404,22 +1391,20 @@ Modules = (function (m) {
 		 * @param  {String} getAttrFunction (Function which can extract implied value)
 		 * @return {String || null}
 		 */
-		m.Parser.prototype.getImpliedProperty = function(node, tagList, getAttrFunction) {
+		modules.Parser.prototype.getImpliedProperty = function(node, tagList, getAttrFunction) {
 			var value = getAttrFunction(node),
 				descendant,
 				child;
 					
 			if(!value) {
-				descendant = m.domUtils.isSingleDescendant( node, tagList);
+				descendant = modules.domUtils.isSingleDescendant( node, tagList);
 				if(descendant && this.hasHClass(descendant) === false){
 					value = getAttrFunction(descendant);
 				}
 				if(node.children.length > 0){
-					child = m.domUtils.isSingleDescendant(node);
+					child = modules.domUtils.isSingleDescendant(node, tagList);
 					if(child){
-						descendant = this.
-		
-						domUtils.isSingleDescendant(child, tagList);
+						descendant = modules.domUtils.isSingleDescendant(child, tagList);
 						if(descendant && this.hasHClass(descendant) === false){
 							value = getAttrFunction(descendant);
 						}
@@ -1428,7 +1413,7 @@ Modules = (function (m) {
 			}
 					
 			return value;
-		}
+		};
 			
 			
 		/**
@@ -1437,10 +1422,10 @@ Modules = (function (m) {
 		 * @param  {DOM Node} node
 		 * @return {String || null}
 		 */		
-		m.Parser.prototype.getNameAttr = function(node) {
-			var value = m.domUtils.getAttrValFromTagList(node, ['img','area'], 'alt');
+		modules.Parser.prototype.getNameAttr = function(node) {
+			var value = modules.domUtils.getAttrValFromTagList(node, ['img','area'], 'alt');
 			if(!value) {
-				value = m.domUtils.getAttrValFromTagList(node, ['abbr'], 'title');
+				value = modules.domUtils.getAttrValFromTagList(node, ['abbr'], 'title');
 			}
 			return value;
 		};
@@ -1452,10 +1437,10 @@ Modules = (function (m) {
 		 * @param  {DOM Node} node
 		 * @return {String || null}
 		 */	
-		m.Parser.prototype.getPhotoAttr = function(node) {
-			var value = m.domUtils.getAttrValFromTagList(node, ['img'], 'src');
-			if(!value && m.domUtils.hasAttributeValue(node, 'class', 'include') === false) {
-				value = m.domUtils.getAttrValFromTagList(node, ['object'], 'data');
+		modules.Parser.prototype.getPhotoAttr = function(node) {
+			var value = modules.domUtils.getAttrValFromTagList(node, ['img'], 'src');
+			if(!value && modules.domUtils.hasAttributeValue(node, 'class', 'include') === false) {
+				value = modules.domUtils.getAttrValFromTagList(node, ['object'], 'data');
 			}
 			return value;
 		};
@@ -1467,12 +1452,12 @@ Modules = (function (m) {
 		 * @param  {DOM Node} node
 		 * @return {String || null}
 		 */		
-		m.Parser.prototype.getURLAttr = function(node) {
+		modules.Parser.prototype.getURLAttr = function(node) {
 			var value = null;
-			if(m.domUtils.hasAttributeValue(node, 'class', 'include') === false){
-				value = m.domUtils.getAttrValFromTagList(node, ['a'], 'href');
+			if(modules.domUtils.hasAttributeValue(node, 'class', 'include') === false){
+				value = modules.domUtils.getAttrValFromTagList(node, ['a'], 'href');
 				if(!value) {
-					value = m.domUtils.getAttrValFromTagList(node, ['area'], 'href');
+					value = modules.domUtils.getAttrValFromTagList(node, ['area'], 'href');
 				}
 				
 			}
@@ -1489,18 +1474,18 @@ Modules = (function (m) {
 		 * @param  {String} value
 		 * @return {Object}
 		 */	
-		m.Parser.prototype.impliedValueRule = function(uf, parentPropertyName, propertyName, value){
+		modules.Parser.prototype.impliedValueRule = function(uf, parentPropertyName, propertyName, value){
 			if(uf.value){
 				// first p-name of the h-* child
-				if(m.utils.startWith(parentPropertyName,'p-') && propertyName === 'p-name'){
+				if(modules.utils.startWith(parentPropertyName,'p-') && propertyName === 'p-name'){
 					uf.altValue = {name: propertyName, value: value};
 				}
 				// if it's an e-* property element
-				if(m.utils.startWith(parentPropertyName,'e-')){
+				if(modules.utils.startWith(parentPropertyName,'e-')){
 					uf.altValue = {name: propertyName, value: value};
 				}
 				//f it's a u-* property element
-				if(m.utils.startWith(parentPropertyName,'u-')){
+				if(modules.utils.startWith(parentPropertyName,'u-')){
 					uf.altValue = {name: propertyName, value: value};
 				}
 			}
@@ -1509,23 +1494,9 @@ Modules = (function (m) {
 	
 	}
 
-    return m;
 
-} (Modules || {}));
-/*!
-	Parser includes
-	All the functions that deal with microformats v1 includes rules
-	Copyright (C) 2010 - 2015 Glenn Jones. All Rights Reserved.
-	MIT License: https://raw.github.com/glennjones/microformat-shiv/master/license.txt
-	
-	Dependencies  dates.js, domutils.js, html.js, isodate,js, text.js utilities.js
-*/
-
-
-Modules = (function (m) {
-	
 	// check parser module is loaded
-	if(m.Parser){
+	if(modules.Parser){
 	
 		
 		/**
@@ -1533,7 +1504,7 @@ Modules = (function (m) {
 		 *
 		 * @param  {DOM node} rootNode
 		 */	
-		m.Parser.prototype.addIncludes = function(rootNode) {
+		modules.Parser.prototype.addIncludes = function(rootNode) {
 			this.addAttributeIncludes(rootNode, 'itemref');
 			this.addAttributeIncludes(rootNode, 'headers');
 			this.addClassIncludes(rootNode);
@@ -1546,7 +1517,7 @@ Modules = (function (m) {
 		 * @param  {DOM node} rootNode
 		 * @param  {String} attributeName
 		 */
-		m.Parser.prototype.addAttributeIncludes = function(rootNode, attributeName) {
+		modules.Parser.prototype.addAttributeIncludes = function(rootNode, attributeName) {
 			var arr,
 				idList,
 				i,
@@ -1554,11 +1525,11 @@ Modules = (function (m) {
 				z,
 				y;
 	
-			arr = m.domUtils.getNodesByAttribute(rootNode, attributeName);
+			arr = modules.domUtils.getNodesByAttribute(rootNode, attributeName);
 			x = 0;
 			i = arr.length;
 			while(x < i) {
-				idList = m.domUtils.getAttributeList(arr[x], attributeName);
+				idList = modules.domUtils.getAttributeList(arr[x], attributeName);
 				if(idList) {
 					z = 0;
 					y = idList.length;
@@ -1577,18 +1548,18 @@ Modules = (function (m) {
 		 *
 		 * @param  {DOM node} rootNode
 		 */
-		m.Parser.prototype.addClassIncludes = function(rootNode) {
+		modules.Parser.prototype.addClassIncludes = function(rootNode) {
 			var id,
 				arr,
 				x = 0,
 				i;
 	
-			arr = m.domUtils.getNodesByAttributeValue(rootNode, 'class', 'include');
+			arr = modules.domUtils.getNodesByAttributeValue(rootNode, 'class', 'include');
 			i = arr.length;
 			while(x < i) {
-				id = m.domUtils.getAttrValFromTagList(arr[x], ['a'], 'href');
+				id = modules.domUtils.getAttrValFromTagList(arr[x], ['a'], 'href');
 				if(!id) {
-					id = m.domUtils.getAttrValFromTagList(arr[x], ['object'], 'data');
+					id = modules.domUtils.getAttrValFromTagList(arr[x], ['object'], 'data');
 				}
 				this.apppendInclude(arr[x], id);
 				x++;
@@ -1602,19 +1573,19 @@ Modules = (function (m) {
 		 * @param  {DOM node} rootNode
 		 * @param  {Stringe} id
 		 */
-		m.Parser.prototype.apppendInclude = function(node, id){
+		modules.Parser.prototype.apppendInclude = function(node, id){
 			var include,
 				clone;
 	
-			id = m.utils.trim(id.replace('#', ''));
-			include = m.domUtils.getElementById(this.document, id);
+			id = modules.utils.trim(id.replace('#', ''));
+			include = modules.domUtils.getElementById(this.document, id);
 			if(include === null){
 				include = this.options.node.querySelector('#' + id);
 			}
 			if(include) {
-				clone = m.domUtils.clone(include);
+				clone = modules.domUtils.clone(include);
 				this.markIncludeChildren(clone);
-				m.domUtils.appendChild(node, clone);
+				modules.domUtils.appendChild(node, clone);
 			}
 		};
 	
@@ -1624,7 +1595,7 @@ Modules = (function (m) {
 		 *
 		 * @param  {DOM node} rootNode
 		 */ 
-		m.Parser.prototype.markIncludeChildren = function(rootNode) {
+		modules.Parser.prototype.markIncludeChildren = function(rootNode) {
 			var arr,
 				x,
 				i;
@@ -1633,10 +1604,10 @@ Modules = (function (m) {
 			arr = this.findRootNodes(rootNode);
 			x = 0;
 			i = arr.length;
-			m.domUtils.setAttribute(rootNode, 'data-include', 'true');
-			m.domUtils.setAttribute(rootNode, 'style', 'display:none');
+			modules.domUtils.setAttribute(rootNode, 'data-include', 'true');
+			modules.domUtils.setAttribute(rootNode, 'style', 'display:none');
 			while(x < i) {
-				m.domUtils.setAttribute(arr[x], 'data-include', 'true');
+				modules.domUtils.setAttribute(arr[x], 'data-include', 'true');
 				x++;
 			}
 		};
@@ -1647,38 +1618,24 @@ Modules = (function (m) {
 		 *
 		 * @param  {DOM node} rootNode
 		 */ 
-		m.Parser.prototype.removeIncludes = function(rootNode){
+		modules.Parser.prototype.removeIncludes = function(rootNode){
 			var arr,
 				i;
 	
 			// remove all the items that where added as includes
-			arr = m.domUtils.getNodesByAttribute(rootNode, 'data-include');
+			arr = modules.domUtils.getNodesByAttribute(rootNode, 'data-include');
 			i = arr.length;
 			while(i--) {
-				m.domUtils.removeChild(rootNode,arr[i]);
+				modules.domUtils.removeChild(rootNode,arr[i]);
 			}
 		};
 	
 		
 	}
 
-    return m;
 
-} (Modules || {}));
-/*!
-	Parser rels
-	All the functions that deal with microformats v2 rel structures
-	Copyright (C) 2010 - 2015 Glenn Jones. All Rights Reserved.
-	MIT License: https://raw.github.com/glennjones/microformat-shiv/master/license.txt
-	
-	Dependencies  dates.js, domutils.js, html.js, isodate,js, text.js utilities.js
-*/
-
-
-Modules = (function (m) {
-	
 	// check parser module is loaded
-	if(m.Parser){
+	if(modules.Parser){
 	
 		/**
 		 * finds rel=* structures
@@ -1687,7 +1644,7 @@ Modules = (function (m) {
 		 * @param  {Boolean} fromChildren
 		 * @return {Object}
 		 */
-		m.Parser.prototype.findRels = function(rootNode, fromChildren) {
+		modules.Parser.prototype.findRels = function(rootNode, fromChildren) {
 			var out = {
 					'items': [],
 					'rels': {},
@@ -1707,15 +1664,15 @@ Modules = (function (m) {
 			// get all elements that have a rel attribute
 			fromChildren = (fromChildren) ? fromChildren : false; 
 			if(fromChildren) {
-				arr = m.domUtils.getNodesByAttribute(rootNode.children, 'rel');
+				arr = modules.domUtils.getNodesByAttribute(rootNode.children, 'rel');
 			} else {
-				arr = m.domUtils.getNodesByAttribute(rootNode, 'rel');
+				arr = modules.domUtils.getNodesByAttribute(rootNode, 'rel');
 			}
 	
 			x = 0;
 			i = arr.length;
 			while(x < i) {
-				relList = m.domUtils.getAttribute(arr[x], 'rel');
+				relList = modules.domUtils.getAttribute(arr[x], 'rel');
 	
 				if(relList) {
 					items = relList.split(' ');
@@ -1725,12 +1682,12 @@ Modules = (function (m) {
 					z = 0;
 					y = items.length;
 					while(z < y) {
-						item = m.utils.trim(items[z]);
+						item = modules.utils.trim(items[z]);
 	
 						// get rel value
-						value = m.domUtils.getAttrValFromTagList(arr[x], ['a', 'area'], 'href');
+						value = modules.domUtils.getAttrValFromTagList(arr[x], ['a', 'area'], 'href');
 						if(!value) {
-							value = m.domUtils.getAttrValFromTagList(arr[x], ['link'], 'href');
+							value = modules.domUtils.getAttrValFromTagList(arr[x], ['link'], 'href');
 						}
 	
 						// create the key
@@ -1740,7 +1697,7 @@ Modules = (function (m) {
 	
 						if(typeof this.options.baseUrl === 'string' && typeof value === 'string') {
 					
-							var resolved = m.domUtils.resolveUrl(value, this.options.baseUrl);
+							var resolved = modules.domUtils.resolveUrl(value, this.options.baseUrl);
 							// do not add duplicate rels - based on resolved URLs
 							if(out.rels[item].indexOf(resolved) === -1){
 								out.rels[item].push( resolved );
@@ -1751,10 +1708,10 @@ Modules = (function (m) {
 					
 					
 					var url = null;
-					if(m.domUtils.hasAttribute(arr[x], 'href')){
-						url = m.domUtils.getAttribute(arr[x], 'href');
+					if(modules.domUtils.hasAttribute(arr[x], 'href')){
+						url = modules.domUtils.getAttribute(arr[x], 'href');
 						if(url){
-							url = m.domUtils.resolveUrl(url, this.options.baseUrl );
+							url = modules.domUtils.resolveUrl(url, this.options.baseUrl );
 						}
 					}
 	
@@ -1775,9 +1732,9 @@ Modules = (function (m) {
 						}
 	
 						if(items.length > 1){
-							if(m.domUtils.hasAttribute(arr[x], 'rel')){
+							if(modules.domUtils.hasAttribute(arr[x], 'rel')){
 								var clonedRelList = relList;
-								obj.rel = m.utils.trim( clonedRelList.toLowerCase().replace('alternate','') );
+								obj.rel = modules.utils.trim( clonedRelList.toLowerCase().replace('alternate','') );
 							}
 						}
 						// create the key
@@ -1803,22 +1760,22 @@ Modules = (function (m) {
 		 * @param  {DOM node} node
 		 * @return {Object}
 		 */
-		m.Parser.prototype.getRelProperties = function(node){
+		modules.Parser.prototype.getRelProperties = function(node){
 			var obj = {};
 			
-			if(m.domUtils.hasAttribute(node, 'media')){
-				obj.media = m.domUtils.getAttribute(node, 'media');
+			if(modules.domUtils.hasAttribute(node, 'media')){
+				obj.media = modules.domUtils.getAttribute(node, 'media');
 			}
-			if(m.domUtils.hasAttribute(node, 'type')){
-				obj.type = m.domUtils.getAttribute(node, 'type');
+			if(modules.domUtils.hasAttribute(node, 'type')){
+				obj.type = modules.domUtils.getAttribute(node, 'type');
 			}
-			if(m.domUtils.hasAttribute(node, 'hreflang')){
-				obj.hreflang = m.domUtils.getAttribute(node, 'hreflang');
+			if(modules.domUtils.hasAttribute(node, 'hreflang')){
+				obj.hreflang = modules.domUtils.getAttribute(node, 'hreflang');
 			}
-			if(m.domUtils.hasAttribute(node, 'title')){
-				obj.title = m.domUtils.getAttribute(node, 'title');
+			if(modules.domUtils.hasAttribute(node, 'title')){
+				obj.title = modules.domUtils.getAttribute(node, 'title');
 			}
-			if(m.utils.trim(this.getPValue(node, false)) !== ''){
+			if(modules.utils.trim(this.getPValue(node, false)) !== ''){
 				obj.text = this.getPValue(node, false);
 			}	
 			
@@ -1833,7 +1790,7 @@ Modules = (function (m) {
 		 * @param  {String} ufName
 		 * @return {String || undefined}
 		 */
-		m.Parser.prototype.findRelImpied = function(node, ufName) {
+		modules.Parser.prototype.findRelImpied = function(node, ufName) {
 			var out,
 				map,
 				i;
@@ -1847,10 +1804,10 @@ Modules = (function (m) {
 							relCount = 0;
 		
 						// if property as an alt rel=* mapping run test
-						if(prop.relAlt && m.domUtils.hasAttribute(node, 'rel')) {
+						if(prop.relAlt && modules.domUtils.hasAttribute(node, 'rel')) {
 							i = prop.relAlt.length;
 							while(i--) {
-								if(m.domUtils.hasAttributeValue(node, 'rel', prop.relAlt[i])) {
+								if(modules.domUtils.hasAttributeValue(node, 'rel', prop.relAlt[i])) {
 									relCount++;
 								}
 							}
@@ -1867,18 +1824,8 @@ Modules = (function (m) {
 		
 	}
 
-    return m;
 
-} (Modules || {}));
-/*
-   Utilities
-   Copyright (C) 2010 - 2013 Glenn Jones. All Rights Reserved.
-   MIT License: https://raw.github.com/glennjones/microformat-shiv/master/license.txt
-*/
-
-Modules = (function (modules) {
-    
-    modules.utils = {
+	modules.utils = {
         
         /**
          * is the object a string
@@ -2055,27 +2002,9 @@ Modules = (function (modules) {
         }
         
     };
-    
-    return modules;
-
-} (Modules || {}));
 
 
-
-
-
-
-
-
-/*
-    DOMParser HTML extension
-    By Eli Grey, http://eligrey.com
-    http://stackoverflow.com/questions/8227612/how-to-create-document-objects-with-javascript
-    Public domain.
-*/
-
-
-(function(DOMParser) {
+	(function(DOMParser) {
 
     var DOMParser_proto;
     var real_parseFromString;
@@ -2166,19 +2095,9 @@ Modules = (function (modules) {
         };
     }
 }(DOMParser));
-/*
-   dom utilities
-   the main purpose of this module is abstract DOM functions so that different types of light weight DOM's such as 'cherrio' can be used in node.js
-   Copyright (C) 2010 - 2015 Glenn Jones. All Rights Reserved.
-   MIT License: https://raw.github.com/glennjones/microformat-shiv/master/license.txt 
-   
-   Dependencies  utilities.js, domparser.js
-*/
 
 
-Modules = (function (modules) {
-    
-    modules.domUtils = {
+	modules.domUtils = {
 		
 		
 		 /**
@@ -2223,7 +2142,7 @@ Modules = (function (modules) {
          */
 		hasAttribute: function(node, attributeName) {
 			if(node.hasAttribute){
-				return node.hasAttribute(attributeName)
+				return node.hasAttribute(attributeName);
 			}
 		},
 		
@@ -2268,12 +2187,13 @@ Modules = (function (modules) {
 		/**
          * abstracts DOM getElementById
          *
-		 * @param  {DOM Node} node
+		 * @param  {DOM Node || DOM Document} node
 		 * @param  {String} id
 		 * @return {DOM Node} 
          */
-		getElementById: function(node, id) {
-			node.getElementById(id);
+		getElementById: function(docNode, id) {
+			//return node.getElementById(id);
+			return docNode.querySelector( '#' + id );
 		},
 	
 	
@@ -2387,29 +2307,24 @@ Modules = (function (modules) {
 		 * @return {DOM Node || null}
          */
 		isSingleDescendant: function(rootNode, tagNames){
-			var count = 0,
-				out = null,
+			var i = rootNode.children.length,
+				count = 0,
 				child,
-				x,
-				y;
+				out = null;
 	
-			x = 0;
-			y = rootNode.children.length;
-			while(x < y) {
-				child = rootNode.children[x];
-				if(child.tagName) {
-					// can filter or not by tagNames array
-					if(tagNames && this.hasTagName(child, tagNames)){
+			while(i--) {
+				child = rootNode.children[i];
+				if(child.nodeType === 1) {
+					if(this.hasTagName(child, tagNames)){
 						out = child;
 					}
-					// count all tag/element nodes
-					count ++;
+					// count all elements
+					count++;
 				}
-				x++;
 			}
-			if(count === 1 && out) {
+			if(count === 1 && out){
 				return out;
-			} else {
+			}else{
 				return null;
 			}
 		},
@@ -2423,7 +2338,8 @@ Modules = (function (modules) {
 		 * @param  {Array} tagNames
 		 * @return {DOM Node || null}
          */
-		isOnlySingleDescendantOfType: function(rootNode, tagNames) {
+		 /*
+		 isOnlySingleDescendantOfType: function(rootNode, tagNames) {
 			var i = rootNode.children.length,
 				count = 0,
 				child,
@@ -2443,7 +2359,8 @@ Modules = (function (modules) {
 			}else{
 				return null;
 			}
-		},
+		}, 
+		*/
 	
 	
    	   /**
@@ -2576,25 +2493,8 @@ Modules = (function (modules) {
 
 	};
 
-    return modules;
 
-} (Modules || {}));
-
-
-/*!
-    ISO Date Parser
-    Parses and builds ISO dates to the W3C, HTML5 or RFC3339 profiles
-    Also allow for profile detection and only output to same level of specificity as input
-    Copyright (C) 2010 - 2015 Glenn Jones. All Rights Reserved.
-    MIT License: https://raw.github.com/glennjones/microformat-shiv/master/license.txt
- */
- 
- 
- 
-Modules = (function (modules) {
-    
-    
-    /**
+	/**
      * constructor
      * parses text to find just the date element of a ISO date/time string i.e. 2008-05-01
      *
@@ -3055,23 +2955,8 @@ Modules = (function (modules) {
     
     modules.ISODate.prototype.constructor = modules.ISODate;
 
-    return modules;
 
-} (Modules || {}));
-
-/*!
-    Date
-    Helper functions for english date parsing and text fragment concatenation into dates
-    Copyright (C) 2010 - 2015 Glenn Jones. All Rights Reserved.
-    MIT License: https://raw.github.com/glennjones/microformat-shiv/master/license.txt
-    
-    Dependencies  utilities.js
-*/
-
-
-Modules = (function (modules) {
-    
-    modules.dates = {
+	modules.dates = {
 
         
         /**
@@ -3175,7 +3060,7 @@ Modules = (function (modules) {
     
             // if the string has a text : or am or pm
             if(modules.utils.isString(out)) {
-                text = text.toLowerCase();
+                //text = text.toLowerCase();
                 text = text.replace(/[ ]+/g, '');
     
                 if(text.match(':') || this.hasAM(text) || this.hasPM(text)) {
@@ -3224,7 +3109,7 @@ Modules = (function (modules) {
             var isodate = new modules.ISODate(date, format),
                 isotime = new modules.ISODate();
     
-            isotime.parseTime(this.parseAmPmTime(time));
+            isotime.parseTime(this.parseAmPmTime(time), format);
             if(isodate.hasFullDate() && isotime.hasTime()) {
                 isodate.tH = isotime.tH;
                 isodate.tM = isotime.tM;
@@ -3277,7 +3162,7 @@ Modules = (function (modules) {
                     
                     // parse any timezone that ws appended to time
                     if(items.length > 1){
-                         out.parseTimeZone(items[1]);
+                         out.parseTimeZone(items[1], format);
                     }
                 }
                 
@@ -3319,28 +3204,7 @@ Modules = (function (modules) {
     };
 
 
-    return modules;
-
-} (Modules || {}));
-
-
-
-
-
-/*
-    InnerText Parser 
-    extracts plain text from DOM nodes
-    Copyright (C) 2010 - 2015 Glenn Jones. All Rights Reserved.
-    MIT License: https://raw.github.com/glennjones/microformat-shiv/master/license.txt
-    
-    Dependencies  utilities.js, domutils.js
-*/
-
-
-Modules = (function (modules) {
-    
-    
-    modules.text = {
+	modules.text = {
         
         // normalised or whitespace or whitespacetrimmed
         textFormat: 'whitespacetrimmed', 
@@ -3473,27 +3337,9 @@ Modules = (function (modules) {
         }
         
     };
-   
-    return modules;
-
-} (Modules || {}));
-/*
-    HTML Parser 
-    Extracts HTML from DOM nodes
-    Copyright (C) 2010 - 2015 Glenn Jones. All Rights Reserved.
-    MIT License: https://raw.github.com/glennjones/microformat-node/master/license.txt
-    
-    Dependencies  utilities.js, domutils.js
-
-    Used to create a HTML string from DOM, rather than .outerHTML or .html().
-    Was created to get around issue of not been able to remove nodes with 'data-include' attr
-
-*/
 
 
-Modules = (function (modules) {
-    
-    modules.html = {
+	modules.html = {
         
         // elements which are self closing
         selfClosingElt: ['area', 'base', 'br', 'col', 'hr', 'img', 'input', 'link', 'meta', 'param', 'command', 'keygen', 'source'],
@@ -3580,31 +3426,9 @@ Modules = (function (modules) {
     
     
     };
-    
-
-    return modules;
-
-} (Modules || {}));
 
 
-/*
-   microformat-shiv - v0.3.4
-   Built: 2015-06-29 04:06 - http://microformat-shiv.com
-   Copyright (c) 2015 Glenn Jones
-   Licensed MIT 
-*/
-
-
-/*
-    Copyright (C) 2010 - 2015 Glenn Jones. All Rights Reserved.
-    MIT License: https://raw.github.com/glennjones/microformat-shiv/master/license.txt  
-*/
-
-Modules  = (function (m) {
-    
-	m.maps = (m.maps)? m.maps : {};
-
-    m.maps['h-adr'] = {
+	modules.maps['h-adr'] = {
 		root: 'adr',
 		name: 'h-adr',
 		properties: {
@@ -3618,22 +3442,8 @@ Modules  = (function (m) {
 		}
   	};
 
-    return m;
 
-} (Modules  || {}));
-
-
-
-
-/*
-    Copyright (C) 2010 - 2015 Glenn Jones. All Rights Reserved.
-    MIT License: https://raw.github.com/glennjones/microformat-shiv/master/license.txt  
-*/
-Modules  = (function (m) {
-    
-	m.maps = (m.maps)? m.maps : {};
-
-    m.maps['h-card'] =  {
+	modules.maps['h-card'] =  {
 		root: 'vcard',
 		name: 'h-card',
 		properties: {
@@ -3701,21 +3511,8 @@ Modules  = (function (m) {
 		}
 	};
 
-    return m;
 
-} (Modules  || {}));
-	
-
-/*
-    Copyright (C) 2010 - 2015 Glenn Jones. All Rights Reserved.
-    MIT License: https://raw.github.com/glennjones/microformat-shiv/master/license.txt  
-*/
-
-Modules  = (function (m) {
-    
-	m.maps = (m.maps)? m.maps : {};
-
-    m.maps['h-entry'] = {
+	modules.maps['h-entry'] = {
 		root: 'hentry',
 		name: 'h-entry',
 		properties: {
@@ -3754,21 +3551,8 @@ Modules  = (function (m) {
 		}
 	};
 
-    return m;
 
-} (Modules  || {}));
-
-
-/*
-    Copyright (C) 2010 - 2015 Glenn Jones. All Rights Reserved.
-    MIT License: https://raw.github.com/glennjones/microformat-shiv/master/license.txt  
-*/
-
-Modules  = (function (m) {
-    
-	m.maps = (m.maps)? m.maps : {};
-
-    m.maps['h-event'] = {  
+	modules.maps['h-event'] = {  
 		root: 'vevent',
 		name: 'h-event',
 		properties: {
@@ -3819,21 +3603,8 @@ Modules  = (function (m) {
 		}
 	};
 
-    return m;
 
-} (Modules  || {}));
-
-
-/*
-    Copyright (C) 2010 - 2015 Glenn Jones. All Rights Reserved.
-    MIT License: https://raw.github.com/glennjones/microformat-shiv/master/license.txt  
-*/
-
-Modules = (function (m) {
-    
-	m.maps = (m.maps)? m.maps : {};
-
-    m.maps['h-geo'] = {
+	modules.maps['h-geo'] = {
 		root: 'geo',
 		name: 'h-geo',
 		properties: {
@@ -3842,21 +3613,8 @@ Modules = (function (m) {
 		}
 	};
 
-    return m;
 
-} (Modules || {}));
-
-
-/*
-    Copyright (C) 2010 - 2015 Glenn Jones. All Rights Reserved.
-    MIT License: https://raw.github.com/glennjones/microformat-shiv/master/license.txt  
-*/
-
-Modules = (function (m) {
-    
-	m.maps = (m.maps)? m.maps : {};
-
-    m.maps['h-item'] = {
+	modules.maps['h-item'] = {
 		root: 'item',
 		name: 'h-item',
 		subTree: false,
@@ -3873,21 +3631,8 @@ Modules = (function (m) {
 		}
 	};
 
-    return m;
 
-} (Modules || {}));
-	
-
-/*
-    Copyright (C) 2010 - 2015 Glenn Jones. All Rights Reserved.
-    MIT License: https://raw.github.com/glennjones/microformat-shiv/master/license.txt  
-*/
-
-Modules = (function (m) {
-    
-	m.maps = (m.maps)? m.maps : {};
-
-    m.maps['h-listing'] = {
+	modules.maps['h-listing'] = {
       root: 'hlisting',
       name: 'h-listing',
       properties: {
@@ -3916,20 +3661,8 @@ Modules = (function (m) {
       }
     };
 
-    return m;
 
-} (Modules || {}));
-
-/*
-    Copyright (C) 2010 - 2015 Glenn Jones. All Rights Reserved.
-    MIT License: https://raw.github.com/glennjones/microformat-shiv/master/license.txt  
-*/
-
-Modules = (function (m) {
-    
-	m.maps = (m.maps)? m.maps : {};
-
-    m.maps['h-news'] = {
+	modules.maps['h-news'] = {
       root: 'hnews',
       name: 'h-news',
       properties: {
@@ -3957,22 +3690,8 @@ Modules = (function (m) {
       }
     };
 
-    return m;
 
-} (Modules || {}));
-
-
-
-/*
-    Copyright (C) 2010 - 2015 Glenn Jones. All Rights Reserved.
-    MIT License: https://raw.github.com/glennjones/microformat-shiv/master/license.txt  
-*/
-
-Modules = (function (m) {
-    
-	m.maps = (m.maps)? m.maps : {};
-
-    m.maps['h-org'] = {
+	modules.maps['h-org'] = {
         root: 'h-x-org',  // drop this from v1 as it causes issue with fn org hcard pattern
         name: 'h-org',
         properties: {
@@ -3981,22 +3700,8 @@ Modules = (function (m) {
         }
     };
 
-    return m;
 
-} (Modules || {}));
-
-
-
-/*
-    Copyright (C) 2010 - 2015 Glenn Jones. All Rights Reserved.
-    MIT License: https://raw.github.com/glennjones/microformat-shiv/master/license.txt  
-*/
-
-Modules = (function (m) {
-    
-	m.maps = (m.maps)? m.maps : {};
-
-    m.maps['h-product'] = {
+	modules.maps['h-product'] = {
       root: 'hproduct',
       name: 'h-product',
       properties: {
@@ -4032,21 +3737,8 @@ Modules = (function (m) {
       }
     };
 
-    return m;
 
-} (Modules || {}));
-
-
-/*
-    Copyright (C) 2010 - 2015 Glenn Jones. All Rights Reserved.
-    MIT License: https://raw.github.com/glennjones/microformat-shiv/master/license.txt  
-*/
-
-Modules = (function (m) {
-    
-	m.maps = (m.maps)? m.maps : {};
-
-    m.maps['h-recipe'] = {
+	modules.maps['h-recipe'] = {
       root: 'hrecipe',
       name: 'h-recipe',
       properties: {
@@ -4078,22 +3770,8 @@ Modules = (function (m) {
       }
     };
 
-    return m;
 
-} (Modules || {}));
-
-
-
-/*
-    Copyright (C) 2010 - 2015 Glenn Jones. All Rights Reserved.
-    MIT License: https://raw.github.com/glennjones/microformat-shiv/master/license.txt  
-*/
-
-Modules = (function (m) {
-    
-	m.maps = (m.maps)? m.maps : {};
-
-    m.maps['h-resume'] = {
+	modules.maps['h-resume'] = {
 		root: 'hresume',
 		name: 'h-resume',
 		properties: {
@@ -4114,21 +3792,8 @@ Modules = (function (m) {
 		}
 	};
 
-    return m;
 
-} (Modules || {}));
-
-
-/*
-    Copyright (C) 2010 - 2015 Glenn Jones. All Rights Reserved.
-    MIT License: https://raw.github.com/glennjones/microformat-shiv/master/license.txt  
-*/
-
-Modules = (function (m) {
-    
-	m.maps = (m.maps)? m.maps : {};
-
-    m.maps['h-review-aggregate'] = {
+	modules.maps['h-review-aggregate'] = {
         root: 'hreview-aggregate',
         name: 'h-review-aggregate',
         properties: {
@@ -4156,22 +3821,8 @@ Modules = (function (m) {
         }
     };
 
-    return m;
 
-} (Modules || {}));
-
-
-
-/*
-    Copyright (C) 2010 - 2015 Glenn Jones. All Rights Reserved.
-    MIT License: https://raw.github.com/glennjones/microformat-shiv/master/license.txt  
-*/
-
-Modules = (function (m) {
-    
-	m.maps = (m.maps)? m.maps : {};
-
-    m.maps['h-review'] = {
+	modules.maps['h-review'] = {
         root: 'hreview',
         name: 'h-review',
         properties: {
@@ -4205,19 +3856,8 @@ Modules = (function (m) {
         }
     };
 
-    return m;
 
-} (Modules || {}));
-
-
-/*
-    Copyright (C) 2010 - 2015 Glenn Jones. All Rights Reserved.
-    MIT License: https://raw.github.com/glennjones/microformat-shiv/master/license.txt  
-*/
-
-Modules = (function (m) {
-    
-    m.rels = {
+	modules.rels = {
 		// xfn
 		'friend': [ 'yes','external'], 
 		'acquaintance': [ 'yes','external'],  
@@ -4253,12 +3893,6 @@ Modules = (function (m) {
 		'principles': [ 'no','external']
 	
 	};
-	
-	    return m;
-
-} (Modules || {}));
-
-
 
 
 
@@ -4268,20 +3902,10 @@ Modules = (function (m) {
     
 	// creates an instance of parser before firing get
     Microformats.get = function(options){
-    	var parser,
-			dom,
-    		node;
-    
-    	dom = (options && options.document)? options.document : document;
-    	node = (options && options.node)? options.node : dom;
-    
-    	options = (options)? options : {};
-    	if(!options.baseUrl && dom && dom.location){
-    		options.baseUrl = dom.location.href;
-    	}
-    
-		parser = new Modules.Parser();
-    	return parser.get(node, options);
+    	var parser;
+        
+		parser = new modules.Parser();
+    	return parser.get(options.node, options);
     };
 
     return Microformats;

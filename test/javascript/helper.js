@@ -17,23 +17,23 @@ helper.parseHTML = function( htmlFragment, baseUrl, umd){
 		umd == false;
 	}
 
+	// createHTMLDocument is not well support below ie9
 	doc = document.implementation.createHTMLDocument("New Document");
-	node =  document.createElement('div')
+	node =  document.createElement('div');
 	node.innerHTML = htmlFragment;
 	doc.body.appendChild(node);
 
 	options = {
-		'baseUrl': baseUrl,
+		'node': node,
 		'document': doc,
-		'node': node
+		'baseUrl': baseUrl,
 	};
 
 	// either Modules or Microformats (umd) object
     if(umd === false){
         var parser = new Modules.Parser();
-        return parser.get(document, node, options);
+        return parser.get(doc, node, options);
     }else if(window.Microformats){
-        options.document = document;
         return Microformats.get(options);
     }
 
