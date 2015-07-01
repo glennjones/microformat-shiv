@@ -161,9 +161,21 @@ function buildTest( testData, testStructure, version, repo ){
 	
 	out += "describe('" + testStructure[1]  + "', function() {\r\n";
     out += "   var htmlFragment = " + JSON.stringify(testData.html) + ";\r\n";
-   	out += "   var found = helper.parseHTML(htmlFragment,'http://example.com/');\r\n";
+   	//out += "   var found = helper.parseHTML(htmlFragment,'http://example.com/');\r\n";
    	out += "   var expected = " + JSON.stringify(JSON.parse(testData.json)) + ";\r\n\r\n";
 	out += "   it('" + testStructure[2].replace('.json','')  + "', function(){\r\n";   
+	out += "       var doc, node, options, parser, found;\r\n";
+    out += "       doc = document.implementation.createHTMLDocument('New Document');\r\n";
+    out += "       node =  document.createElement('div');\r\n";
+    out += "       node.innerHTML = htmlFragment;\r\n";
+    out += "       doc.body.appendChild(node);\r\n";    
+    out += "       options ={\r\n";
+    out += "       		'document': doc,\r\n";
+    out += "       		'node': node,\r\n";
+    out += "       		'baseUrl': 'http://example.com'\r\n";
+    out += "       };\r\n";
+    out += "       parser = new Modules.Parser();\r\n";
+    out += "       found = parser.get( options );\r\n";
 	out += "       assert.deepEqual(found, expected);\r\n";   
 	out += "   });\r\n";
 	out += "});\r\n";
@@ -188,13 +200,30 @@ function buildTest( testData, testStructure, version, repo ){
 	out += '<script data-cover src="../lib/parser-includes.js"></script>\r\n';
 	out += '<script data-cover src="../lib/parser-rels.js"></script>\r\n';
     out += '<script data-cover src="../lib/utilities.js"></script>\r\n';
-    out += '<script data-cover src="../lib/domparser.js"></script>\r\n';
+    out += '<script src="../lib/domparser.js"></script>\r\n';
     out += '<script data-cover src="../lib/domutils.js"></script>\r\n';
     out += '<script data-cover src="../lib/isodate.js"></script>\r\n';
     out += '<script data-cover src="../lib/dates.js"></script>\r\n';
     out += '<script data-cover src="../lib/text.js"></script>\r\n';
     out += '<script data-cover src="../lib/html.js"></script>\r\n';
     out += '<script data-cover src="../lib/maps.js"></script>\r\n\r\n';
+	
+    out += '<script data-cover src="../lib/maps/h-adr.js"></script>\r\n';
+    out += '<script data-cover src="../lib/maps/h-card.js"></script>\r\n';
+    out += '<script data-cover src="../lib/maps/h-entry.js"></script>\r\n';
+    out += '<script data-cover src="../lib/maps/h-event.js"></script>\r\n';
+    out += '<script data-cover src="../lib/maps/h-geo.js"></script>\r\n';
+    out += '<script data-cover src="../lib/maps/h-item.js"></script>\r\n';
+    out += '<script data-cover src="../lib/maps/h-listing.js"></script>\r\n';
+    out += '<script data-cover src="../lib/maps/h-news.js"></script>\r\n';
+    out += '<script data-cover src="../lib/maps/h-org.js"></script>\r\n';
+    out += '<script data-cover src="../lib/maps/h-product.js"></script>\r\n';
+    out += '<script data-cover src="../lib/maps/h-recipe.js"></script>\r\n';
+    out += '<script data-cover src="../lib/maps/h-resume.js"></script>\r\n';
+    out += '<script data-cover src="../lib/maps/h-review-aggregate.js"></script>\r\n';
+    out += '<script data-cover src="../lib/maps/h-review.js"></script>\r\n';
+    out += '<script data-cover src="../lib/maps/rel.js"></script>\r\n\r\n';
+	
 	
 	out += '<!-- loads Microformats the full umd version ie windows.Microformat -->\r\n';
 	out += '<script src="microformat-shiv.js"></script>\r\n\r\n';
@@ -214,8 +243,10 @@ function buildTest( testData, testStructure, version, repo ){
 	out += '<script src="unit-tests/html-test.js"></script>\r\n';
 	out += '<script src="unit-tests/text-test.js"></script>\r\n';
 	out += '<script src="unit-tests/utilities-test.js"></script>\r\n';
-	out += '<script src="unit-tests/parser-test.js"></script>\r\n\r\n';
-
+	out += '<script src="unit-tests/parser-get-test.js"></script>\r\n';
+	out += '<script src="unit-tests/parser-count-test.js"></script>\r\n\r\n';
+	
+	
 	
 	// do not load blank for server test page it will be injected 
 	if(client === true){

@@ -1,7 +1,7 @@
 /*
 Microformats Test Suite - Downloaded from github repo: glennjones/tests version v0.1.18 
 Mocha integration test from: microformats-v2/rel/duplicate-rels
-The test was built on Tue Jun 30 2015 19:18:29 GMT+0100 (BST)
+The test was built on Wed Jul 01 2015 12:00:56 GMT+0100 (BST)
 */
 
 assert = chai.assert;
@@ -9,10 +9,21 @@ assert = chai.assert;
 
 describe('rel', function() {
    var htmlFragment = "<a href=\"http://ma.tt/2015/05/beethoven-mozart-bach/\" \n    title=\"Permalink to Beethoven, Mozart, Bach\" rel=\"bookmark\">\n<time class=\"entry-date\" datetime=\"2015-05-31T22:42:00+00:00\">May 31, 2015</time></a></span>\n<a href=\"http://ma.tt/category/asides/\" rel=\"category tag\">Asides</a>\n<span class=\"author vcard\">\n<a class=\"url fn n\" href=\"http://ma.tt/author/saxmatt/\" \n    title=\"View all posts by Matt\" rel=\"author\">Matt</a></span>\n<span class=\"date\"><a href=\"http://ma.tt/2015/06/jefferson-on-idleness/\" title=\"Permalink to Jefferson on Idleness\" rel=\"bookmark\"><time class=\"entry-date\" datetime=\"2015-06-02T21:26:00+00:00\">June 2, 2015</time></a></span>\n<span class=\"categories-links\"><a href=\"http://ma.tt/category/asides/\" rel=\"category tag\">Asides</a></span>\n<span class=\"author vcard\"><a class=\"url fn n\" href=\"http://ma.tt/author/saxmatt/\" title=\"View all posts by Matt\" rel=\"author\">Matt</a></span>\n";
-   var found = helper.parseHTML(htmlFragment,'http://example.com/');
    var expected = {"rels":{"bookmark":["http://ma.tt/2015/05/beethoven-mozart-bach/","http://ma.tt/2015/06/jefferson-on-idleness/"],"category":["http://ma.tt/category/asides/"],"tag":["http://ma.tt/category/asides/"],"author":["http://ma.tt/author/saxmatt/"]},"items":[{"type":["h-card"],"properties":{"url":["http://ma.tt/author/saxmatt/"],"name":["Matt"]}},{"type":["h-card"],"properties":{"url":["http://ma.tt/author/saxmatt/"],"name":["Matt"]}}],"rel-urls":{"http://ma.tt/category/asides/":{"rels":["category","tag"],"text":"Asides"},"http://ma.tt/author/saxmatt/":{"rels":["author"],"text":"Matt","title":"View all posts by Matt"},"http://ma.tt/2015/05/beethoven-mozart-bach/":{"rels":["bookmark"],"text":"May 31, 2015","title":"Permalink to Beethoven, Mozart, Bach"},"http://ma.tt/2015/06/jefferson-on-idleness/":{"rels":["bookmark"],"text":"June 2, 2015","title":"Permalink to Jefferson on Idleness"}}};
 
    it('duplicate-rels', function(){
+       var doc, node, options, parser, found;
+       doc = document.implementation.createHTMLDocument('New Document');
+       node =  document.createElement('div');
+       node.innerHTML = htmlFragment;
+       doc.body.appendChild(node);
+       options ={
+       		'document': doc,
+       		'node': node,
+       		'baseUrl': 'http://example.com'
+       };
+       parser = new Modules.Parser();
+       found = parser.get( options );
        assert.deepEqual(found, expected);
    });
 });

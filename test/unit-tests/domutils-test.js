@@ -8,6 +8,14 @@ assert = chai.assert;
 describe('domutils', function() {
     
     
+ 
+    
+   it('ownerDocument', function(){
+       var node = document.createElement('div'); 
+       assert.equal( Modules.domUtils.ownerDocument( node ).nodeType,  9);
+   });
+    
+    
    it('innerHTML', function(){
        var html = '<a href="http://glennjones.net">Glenn Jones</a>',
            node = document.createElement('div');
@@ -190,6 +198,10 @@ describe('domutils', function() {
        assert.equal( Modules.domUtils.resolveUrl( '../index.html', 'http://example.org/docs/' ), 'http://example.org/index.html' );
        assert.equal( Modules.domUtils.resolveUrl( '/', 'http://example.org/' ), 'http://example.org/' );
        assert.equal( Modules.domUtils.resolveUrl( 'http://glennjones.net/', 'http://example.org/' ), 'http://glennjones.net/' );
+       
+       assert.equal( Modules.domUtils.resolveUrl( undefined, 'http://example.org/' ), '' );
+       assert.equal( Modules.domUtils.resolveUrl( undefined, undefined ), '' );
+       assert.equal( Modules.domUtils.resolveUrl( 'http://glennjones.net/', undefined ), 'http://glennjones.net/' );
    });
    
    

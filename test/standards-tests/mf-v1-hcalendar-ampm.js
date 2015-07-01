@@ -1,7 +1,7 @@
 /*
 Microformats Test Suite - Downloaded from github repo: glennjones/tests version v0.1.18 
 Mocha integration test from: microformats-v1/hcalendar/ampm
-The test was built on Tue Jun 30 2015 19:18:29 GMT+0100 (BST)
+The test was built on Wed Jul 01 2015 12:00:56 GMT+0100 (BST)
 */
 
 assert = chai.assert;
@@ -9,10 +9,21 @@ assert = chai.assert;
 
 describe('hcalendar', function() {
    var htmlFragment = "<div class=\"vevent\">\n    <span class=\"summary\">The 4th Microformat party</span> will be on \n    <ul>\n        <li class=\"dtstart\">\n            <time class=\"value\" datetime=\"2009-06-26\">26 July</time>, from\n            <span class=\"value\">07:00:00pm \n        </span></li>\n        <li class=\"dtstart\">\n            <time class=\"value\" datetime=\"2009-06-26\">26 July</time>, from\n            <span class=\"value\">07:00:00am \n        </span></li>\n        <li class=\"dtstart\">\n            <time class=\"value\" datetime=\"2009-06-26\">26 July</time>, from\n            <span class=\"value\">07:00pm \n        </span></li>\n        <li class=\"dtstart\">\n            <time class=\"value\" datetime=\"2009-06-26\">26 July</time>, from\n            <span class=\"value\">07pm \n        </span></li>\n        <li class=\"dtstart\">\n            <time class=\"value\" datetime=\"2009-06-26\">26 July</time>, from\n            <span class=\"value\">7pm \n        </span></li>\n        <li class=\"dtstart\">\n            <time class=\"value\" datetime=\"2009-06-26\">26 July</time>, from\n            <span class=\"value\">7:00pm \n        </span></li>\n        <li class=\"dtstart\">\n            <time class=\"value\" datetime=\"2009-06-26\">26 July</time>, from\n            <span class=\"value\">07:00p.m. \n        </span></li>\n        <li class=\"dtstart\">\n            <time class=\"value\" datetime=\"2009-06-26\">26 July</time>, from\n            <span class=\"value\">07:00PM \n        </span></li>\n        <li class=\"dtstart\">\n            <time class=\"value\" datetime=\"2009-06-26\">26 July</time>, from\n            <span class=\"value\">7:00am \n        </span></li>\n    </ul>\n</div>";
-   var found = helper.parseHTML(htmlFragment,'http://example.com/');
    var expected = {"items":[{"type":["h-event"],"properties":{"name":["The 4th Microformat party"],"start":["2009-06-26T19:00:00","2009-06-26T07:00:00","2009-06-26T19:00","2009-06-26T19","2009-06-26T19","2009-06-26T19:00","2009-06-26T19:00","2009-06-26T19:00","2009-06-26T07:00"]}}],"rels":{},"rel-urls":{}};
 
    it('ampm', function(){
+       var doc, node, options, parser, found;
+       doc = document.implementation.createHTMLDocument('New Document');
+       node =  document.createElement('div');
+       node.innerHTML = htmlFragment;
+       doc.body.appendChild(node);
+       options ={
+       		'document': doc,
+       		'node': node,
+       		'baseUrl': 'http://example.com'
+       };
+       parser = new Modules.Parser();
+       found = parser.get( options );
        assert.deepEqual(found, expected);
    });
 });

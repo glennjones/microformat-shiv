@@ -1,6 +1,6 @@
 /*
    microformat-shiv - v0.3.4
-   Built: 2015-06-30 07:06 - http://microformat-shiv.com
+   Built: 2015-07-01 03:07 - http://microformat-shiv.com
    Copyright (c) 2015 Glenn Jones
    Licensed MIT 
 */
@@ -23,20 +23,12 @@
 	modules.livingStandard = '2015-06-30T12:45:50Z';
 
 	/**
-     * constructor
-     *
-     */
-    modules.Parser = function () {
-		this.rootNode = null;
-		this.document = null;
+	 * constructor
+	 *
+	 */
+	modules.Parser = function () {
 		this.rootPrefix = 'h-';
 		this.propertyPrefixes = ['p-', 'dt-', 'u-', 'e-'];
-		this.options = {
-			'baseUrl': '',
-			'filters': [],
-			'textFormat': 'whitespacetrimmed',
-			'dateFormat': 'auto'
-		};
 	};
 	
 	
@@ -47,52 +39,74 @@
 	
 	modules.Parser.prototype = {
 		
+		init: function(){
+			this.rootNode = null;
+			this.document = null;
+			this.options = {
+				'baseUrl': '',
+				'filters': [],
+				'textFormat': 'whitespacetrimmed',
+				'dateFormat': 'auto'
+			};
+			this.rootID = 0;
+			this.errors = [];
+		},
+		
 		
 		/**
-         * internal parse function 
-         *
-         * @param  {Object} options
-         * @return {Object}
-         */
-		get: function(rootNode, options) {
-			var errors = null,
-				out = {},
+		 * internal parse function 
+		 *
+		 * @param  {Object} options
+		 * @return {Object}
+		 */
+		get: function(options) {
+			var out = {},
 				data = [],
 				rels,
 				baseTag,
 				href;
 	
+			this.init();
 			this.mergeOptions(options);
-			this.rootID = 0;
-			this.rootNode = null;
-			this.document = null;
 	
-			if(!rootNode){
-				errors = [{'error': 'No node given to parser microformats from'}];
-				return {'errors': errors, 'data': {}};
+			if(!options.node){
+				this.errors.push('No options.node to parser microformats from');
 			}else{
-				this.rootNode = rootNode;
+				this.rootNode = options.node;
 				
-				// set document from options or get from ownerDocument
-				// used for DOM function calls like createElement;
+				// set this.document from options or discover it
+				// used for DOM function like calls to createElement;
 				if(options.document){
-					this.document = options.document;
+					if(options.document.nodeType === 9){
+						this.document = options.document;
+					}else{
+						this.errors.push('The options.document object does not have the right nodeType');
+						return this.formatError();
+					}
 				}else{
-					this.document = modules.domUtils.ownerDocument(rootNode);
+					// passed rootNode can be either DOM Node or Document
+					if(this.rootNode.nodeType === 9){
+						this.document = this.rootNode;
+					}else{
+						// if its DOM Node get parent DOM Document
+						this.document = modules.domUtils.ownerDocument(this.rootNode);
+					}
 				}
 				
+				
 				if(!options.baseUrl && this.document && this.document.location){
-    				options.baseUrl = this.document.location.href;
-    			}
+					options.baseUrl = this.document.location.href;
+				}
+	
 	
 				// add includes
 				if(this.addIncludes){
-					this.addIncludes( rootNode );
+					this.addIncludes( this.document );
 				}
 				
 				
 				// find base tag to set baseUrl
-	 			baseTag = rootNode.querySelector('base');
+				baseTag = this.rootNode.querySelector('base');
 				if(baseTag) {
 					href = modules.domUtils.getAttribute(baseTag, 'href');
 					if(href){
@@ -102,20 +116,19 @@
 				
 				if(this.options.filters.length > 0){
 					// parse flat list of items
-					var struct = this.findFilterNodes(rootNode, this.options.filters);
+					var struct = this.findFilterNodes(this.rootNode, this.options.filters);
 					data = this.walkRoot(struct[0], struct[1]);
 				}else{
 					// parse whole document from root
-					data = this.walkRoot(rootNode);
+					data = this.walkRoot(this.rootNode);
 				}
-				//out = {'errors': errors, 'data': {'items': data}};
 	
 	
 				out.items = data;
 				
 				// find any rel
 				if(this.findRels){
-					rels = this.findRels(rootNode);
+					rels = this.findRels(this.rootNode);
 					out.rels = rels.rels;
 					out['rel-urls'] = rels['rel-urls'];
 					if(rels.alternate){
@@ -123,9 +136,40 @@
 					}
 				}
 				
+				this.clearUpDom(this.rootNode);
 			}
-			this.clearUpDom(this.rootNode);
+
+			if(this.errors.length > 0){
+				return this.formatError();
+			}
 			return out;
+		},
+		
+		
+		/**
+		 * formats errors for return to user
+		 *
+		 */
+		formatError: function(){
+			return {
+			    'items': [],
+			    'rels': {},
+			    'rel-urls': {},
+			    'errors': this.errors
+			};
+		},
+		
+		
+		
+		/**
+		 * add a new V1 mapping object to parser
+		 *
+		 * @param  {Object} map
+		 */
+		add: function( map ){
+			if(map && map.name){
+				modules.maps[name] = JSON.parser(JSON.stringify(map));	
+			}
 		},
 		
 		
@@ -166,17 +210,21 @@
 	
 	
 		/**
-         * get the count of microformats
-         *
-         * @param  {DOM Node} rootNode
-         * @return {Int}
-         */
-		count: function(rootNode) {
+		 * get the count of microformats
+		 *
+		 * @param  {DOM Node} rootNode
+		 * @return {Int}
+		 */
+		count: function( options ) {
 			var out = {},
 				items,
 				classItems,
 				x,
 				i;
+				
+			if(!options || !options.node){
+				return {'errors': ['No options.node to parser microformats from']};
+			}
 				
 			function append(name, count){
 				if(out[name]){
@@ -186,7 +234,7 @@
 				}
 			}		
 				
-			items = this.findRootNodes(rootNode);	
+			items = this.findRootNodes( options.node );	
 			i = items.length;
 			while(i--) {
 				classItems = modules.domUtils.getAttributeList(items[i], 'class');
@@ -208,15 +256,33 @@
 		
 			return out;
 		},
+		
+		
+		/**
+		 * does a node have a class that marks it as a microformats root
+		 *
+		 * @param  {DOM Node} node
+		 * @return {Boolean}
+		 */
+		isMicroformat: function( node ) {
+			var classes;
+				
+			if(!node){
+				return {'errors': ['No node to parser microformats from']};
+			}		
+			classes = this.getUfClassNames(node);
+			return (classes.roots.length > 0);
+		},		
+			
 	
 		
 		/**
-         * is the microformats type in the filter list
-         *
-         * @param  {Object} uf
+		 * is the microformats type in the filter list
+		 *
+		 * @param  {Object} uf
 		 * @param  {Array} filters
-         * @return {Boolean}
-         */
+		 * @return {Boolean}
+		 */
 		shouldInclude: function(uf, filters) {
 			var i;
 	
@@ -235,12 +301,12 @@
 	
 		
 		/**
-         * finds microformat within the tree microformat a parent uf - child has to have properties to count
-         *
-         * @param  {DOM Node} rootNode
+		 * finds microformat within the tree microformat a parent uf - child has to have properties to count
+		 *
+		 * @param  {DOM Node} rootNode
 		 * @param  {String} ufName
-         * @return {Array}
-         */
+		 * @return {Array}
+		 */
 		findChildItems: function(rootNode, ufName) {
 			var items, 
 				out = [],
@@ -277,12 +343,12 @@
 	
 	
 		/**
-         * finds  all microformat roots in a rootNode
-         *
-         * @param  {DOM Node} rootNode
+		 * finds  all microformat roots in a rootNode
+		 *
+		 * @param  {DOM Node} rootNode
 		 * @param  {Boolean} fromChildren
-         * @return {Array}
-         */
+		 * @return {Array}
+		 */
 		findRootNodes: function(rootNode, fromChildren) {
 			var arr = null,			
 				out = [], 
@@ -347,11 +413,11 @@
 		
 		
 		/**
-         * starts the tree walk to find microformats
-         *
-         * @param  {DOM Node} node
-         * @return {Array}
-         */
+		 * starts the tree walk to find microformats
+		 *
+		 * @param  {DOM Node} node
+		 * @return {Array}
+		 */
 		walkRoot: function(node){
 			var context = this,
 				classes,
@@ -383,11 +449,11 @@
 	
 	
 		/**
-         * starts the tree walking for a single microformat
-         *
-         * @param  {DOM Node} node
-         * @return {Array}
-         */
+		 * starts the tree walking for a single microformat
+		 *
+		 * @param  {DOM Node} node
+		 * @return {Array}
+		 */
 		walkTree: function(node) {
 			var classes,
 				out = [],
@@ -415,14 +481,14 @@
 	
 	
 		/**
-         * finds child properties of microformat
-         *
-         * @param  {DOM Node} node
+		 * finds child properties of microformat
+		 *
+		 * @param  {DOM Node} node
 		 * @param  {Object} out
 		 * @param  {String} ufName
 		 * @param  {Int} rootID
 		 * @param  {Object} parentClasses
-         */
+		 */
 		walkChildren: function(node, out, ufName, rootID, parentClasses) {
 			var context = this,
 				rootItem,
@@ -568,13 +634,13 @@
 	
 	
 		/**
-         * gets the value of a property from a node
-         *
-         * @param  {DOM Node} node
+		 * gets the value of a property from a node
+		 *
+		 * @param  {DOM Node} node
 		 * @param  {String} className
 		 * @param  {Object} uf
-         * @return {String || Object}
-         */
+		 * @return {String || Object}
+		 */
 		getValue: function(node, className, uf) {
 			var value = '';
 	
@@ -598,12 +664,12 @@
 	
 	
 		/**
-         * gets the value of node which contain 'p-' property
-         *
-         * @param  {DOM Node} node
+		 * gets the value of node which contain 'p-' property
+		 *
+		 * @param  {DOM Node} node
 		 * @param  {Boolean} valueParse
-         * @return {String}
-         */
+		 * @return {String}
+		 */
 		getPValue: function(node, valueParse) {
 			var out = '';
 			if(valueParse) {
@@ -639,11 +705,11 @@
 	
 	
 		/**
-         * gets the value of node which contain 'e-' property
-         *
-         * @param  {DOM Node} node
-         * @return {Object}
-         */
+		 * gets the value of node which contain 'e-' property
+		 *
+		 * @param  {DOM Node} node
+		 * @return {Object}
+		 */
 		getEValue: function(node) {
 					
 			var out = {value: '', html: ''};
@@ -682,12 +748,12 @@
 		
 		
 		/**
-         * gets the value of node which contain 'u-' property
-         *
-         * @param  {DOM Node} node
+		 * gets the value of node which contain 'u-' property
+		 *
+		 * @param  {DOM Node} node
 		 * @param  {Boolean} valueParse
-         * @return {String}
-         */
+		 * @return {String}
+		 */
 		getUValue: function(node, valueParse) {
 			// not sure this should be used for u property
 			var out = '';
@@ -733,14 +799,14 @@
 	
 
 		/**
-         * gets the value of node which contain 'dt-' property
-         *
-         * @param  {DOM Node} node
+		 * gets the value of node which contain 'dt-' property
+		 *
+		 * @param  {DOM Node} node
 		 * @param  {String} className
 		 * @param  {Object} uf
 		 * @param  {Boolean} valueParse
-         * @return {String}
-         */
+		 * @return {String}
+		 */
 		getDTValue: function(node, className, uf, valueParse) {
 			var out = '';
 	
@@ -792,12 +858,12 @@
 	
 	
 		/**
-         * appends a new rootid to a given node
-         *
-         * @param  {DOM Node} node
+		 * appends a new rootid to a given node
+		 *
+		 * @param  {DOM Node} node
 		 * @param  {String} id
 		 * @param  {String} propertyName
-         */
+		 */
 		appendRootID: function(node, id, propertyName) {
 			if(this.hasRootID(node, id, propertyName) === false){
 				var rootids = [];
@@ -811,13 +877,13 @@
 	
 	
 		/**
-         * does a given node already have a rootid
-         *
-         * @param  {DOM Node} node
+		 * does a given node already have a rootid
+		 *
+		 * @param  {DOM Node} node
 		 * @param  {String} id
 		 * @param  {String} propertyName
 		 * @return {Boolean}
-         */
+		 */
 		hasRootID: function(node, id, propertyName) {
 			var rootids = [];
 			if(!modules.domUtils.hasAttribute(node,'rootids')){
@@ -831,12 +897,12 @@
 	
 
 		/**
-         * gets the text of any child nodes with the class value
-         *
-         * @param  {DOM Node} node
+		 * gets the text of any child nodes with the class value
+		 *
+		 * @param  {DOM Node} node
 		 * @param  {String} propertyName
 		 * @return {String || null}
-         */
+		 */
 		getValueClass: function(node, propertyType) {
 			var context = this,
 				out = [],
@@ -884,12 +950,12 @@
 		
 		
 		/**
-         * returns a single string of the 'title' attr from all 
+		 * returns a single string of the 'title' attr from all 
 		 * the child nodes with the class 'value-title' 
-         *
-         * @param  {DOM Node} node
+		 *
+		 * @param  {DOM Node} node
 		 * @return {String}
-         */
+		 */
 		getValueTitle: function(node) {
 			var out = [],
 				items,
@@ -910,11 +976,11 @@
 		
 		
 	   /**
-         * finds out weather a node has h-* class v1 and v2 
-         *
-         * @param  {DOM Node} node
+		 * finds out weather a node has h-* class v1 and v2 
+		 *
+		 * @param  {DOM Node} node
 		 * @return {Boolean}
-         */
+		 */
 		hasHClass: function(node){
 			var classes = this.getUfClassNames(node);
 			if(classes.root && classes.root.length > 0){
@@ -926,12 +992,12 @@
 	
 	
 		/**
-         * get both root and property class names form a node
-         *
-         * @param  {DOM Node} node
+		 * get both root and property class names form a node
+		 *
+		 * @param  {DOM Node} node
 		 * @param  {Array} ufNameArr
 		 * @return {Object}
-         */
+		 */
 		getUfClassNames: function(node, ufNameArr) {
 			var context = this,
 				out = {
@@ -1059,11 +1125,11 @@
 
 		
 		/**
-         * given a V1 or V2 root name return mapping object
-         *
-         * @param  {String} name
+		 * given a V1 or V2 root name return mapping object
+		 *
+		 * @param  {String} name
 		 * @return {Object || null}
-         */
+		 */
 		getMapping: function(name) {
 			var key;
 			for(key in modules.maps) {
@@ -1076,11 +1142,11 @@
 	
 		
 		/**
-         * given a V1 root name returns a V2 root name ie vcard >>> h-card
-         *
-         * @param  {String} name
+		 * given a V1 root name returns a V2 root name ie vcard >>> h-card
+		 *
+		 * @param  {String} name
 		 * @return {String || null}
-         */
+		 */
 		getV2RootName: function(name) {
 			var key;
 			for(key in modules.maps) {
@@ -1093,13 +1159,13 @@
 	
 	
 		/**
-         * is subTree mapping should be a property or root
-         *
-         * @param  {DOM Node} node
+		 * is subTree mapping should be a property or root
+		 *
+		 * @param  {DOM Node} node
 		 * @param  {Object} map
 		 * @param  {Array} classList
 		 * @return {Boolean}
-         */
+		 */
 		isSubTreeRoot: function(node, map, classList) {
 			var out,
 				hasSecondRoot,
@@ -1137,12 +1203,12 @@
 	
 
 		/**
-         * creates a blank microformats object
-         *
-         * @param  {String} name
+		 * creates a blank microformats object
+		 *
+		 * @param  {String} name
 		 * @param  {String} value
 		 * @return {Object}
-         */
+		 */
 		createUfObject: function(names, value) {
 			var out = {};
 	
@@ -1165,11 +1231,11 @@
 	
 		
 		/**
-         * removes uf property prefixs from a text
-         *
-         * @param  {String} text
+		 * removes uf property prefixs from a text
+		 *
+		 * @param  {String} text
 		 * @return {String}
-         */
+		 */
 		removePropPrefix: function(text) {
 			var i;
 	
@@ -1186,12 +1252,12 @@
 	
 
 		/**
-         * expandes all relative URLs in DOM structures
-         *
-         * @param  {DOM Node} node
+		 * expandes all relative URLs in DOM structures
+		 *
+		 * @param  {DOM Node} node
 		 * @param  {String} baseUrl
 		 * @return {DOM Node}
-         */
+		 */
 		expandURLs: function(node, baseUrl){
 
 			node = modules.domUtils.clone(node);
@@ -1201,10 +1267,10 @@
 					var i = nodeList.length;
 					while (i--) {
 						// this gives the orginal text
-					    var href =  nodeList[i].getAttribute(attrName);
-					    if(href.toLowerCase().indexOf('http') !== 0){
-					    	nodeList[i].setAttribute(attrName, modules.domUtils.resolveUrl(href, baseUrl));
-					    }
+						var href =  nodeList[i].getAttribute(attrName);
+						if(href.toLowerCase().indexOf('http') !== 0){
+							nodeList[i].setAttribute(attrName, modules.domUtils.resolveUrl(href, baseUrl));
+						}
 					}
 				}
 			}
@@ -1218,10 +1284,10 @@
 	
 		
 		/**
-         * merges passed and default options -single level clone of properties
-         *
-         * @param  {Object} options
-         */
+		 * merges passed and default options -single level clone of properties
+		 *
+		 * @param  {Object} options
+		 */
 		mergeOptions: function(options) {
 			var key;
 			for(key in options) {
@@ -1233,10 +1299,10 @@
 		
 		
 		/**
-         * romoves all rootid attributes
-         *
-         * @param  {DOM Node} rootNode
-         */
+		 * romoves all rootid attributes
+		 *
+		 * @param  {DOM Node} rootNode
+		 */
 		removeRootIds: function(rootNode){
 			var arr,
 				i;
@@ -1250,10 +1316,10 @@
 		
 		
 		/**
-         * removes all changes made to DOM
-         *
-         * @param  {DOM Node} rootNode
-         */
+		 * removes all changes made to DOM
+		 *
+		 * @param  {DOM Node} rootNode
+		 */
 		clearUpDom: function(rootNode){
 			if(this.removeIncludes){
 				this.removeIncludes(rootNode);
@@ -1265,7 +1331,7 @@
 	};
 	
 	
-    modules.Parser.prototype.constructor = modules.Parser;
+	modules.Parser.prototype.constructor = modules.Parser;
 
 
 	// check parser module is loaded
@@ -1298,9 +1364,6 @@
 				if(!uf.properties.name) {
 					value = this.getImpliedProperty(node, ['img', 'area', 'abbr'], this.getNameAttr);
 					var textFormat = this.options.textFormat;
-					if(this.options.textFormat === 'impliednametrimmed'){
-						textFormat = 'whitespacetrimmed';
-					}
 					if(!value) {
 						uf.properties.name = [modules.text.parse(this.document, node, textFormat)];
 					}else{
@@ -1579,9 +1642,6 @@
 	
 			id = modules.utils.trim(id.replace('#', ''));
 			include = modules.domUtils.getElementById(this.document, id);
-			if(include === null){
-				include = this.options.node.querySelector('#' + id);
-			}
 			if(include) {
 				clone = modules.domUtils.clone(include);
 				this.markIncludeChildren(clone);
@@ -1641,10 +1701,9 @@
 		 * finds rel=* structures
 		 *
 		 * @param  {DOM node} rootNode
-		 * @param  {Boolean} fromChildren
 		 * @return {Object}
 		 */
-		modules.Parser.prototype.findRels = function(rootNode, fromChildren) {
+		modules.Parser.prototype.findRels = function(rootNode) {
 			var out = {
 					'items': [],
 					'rels': {},
@@ -1660,15 +1719,7 @@
 				value,
 				arr;
 	
-	
-			// get all elements that have a rel attribute
-			fromChildren = (fromChildren) ? fromChildren : false; 
-			if(fromChildren) {
-				arr = modules.domUtils.getNodesByAttribute(rootNode.children, 'rel');
-			} else {
-				arr = modules.domUtils.getNodesByAttribute(rootNode, 'rel');
-			}
-	
+			arr = modules.domUtils.getNodesByAttribute(rootNode, 'rel');
 			x = 0;
 			i = arr.length;
 			while(x < i) {
@@ -1826,274 +1877,274 @@
 
 
 	modules.utils = {
-        
-        /**
-         * is the object a string
-         *
-         * @param  {Object} obj
-         * @return {Boolean}
-         */
-        isString: function( obj ) {
-            return typeof( obj ) === 'string';
-        },
-        
-        /**
-         * is the object a number
-         *
-         * @param  {Object} obj
-         * @return {Boolean}
-         */
-        isNumber: function( obj ) {
-            return !isNaN(parseFloat( obj )) && isFinite( obj );
-        },
-        
-        
-        /**
-         * is the object a array
-         *
-         * @param  {Object} obj
-         * @return {Boolean}
-         */
-        isArray: function( obj ) {
-            return obj && !( obj.propertyIsEnumerable( 'length' ) ) && typeof obj === 'object' && typeof obj.length === 'number';
-        },
-    
-    
-        /**
-         * does a text start with the string
-         *
-         * @param  {String} text
-         * @param  {String} test
-         * @return {Boolean}
-         */
-        startWith: function( text, test ) {
-            return(text.indexOf(test) === 0);
-        },
-    
-        
-        /**
-         * removes spaces at front and back of text
-         *
-         * @param  {String} text
-         * @return {String}
-         */
-        trim: function( text ) {
-            if(text && this.isString(text)){
-                return text.replace(/^\s+|\s+$/g, '');
-            }else{
-                return '';
-            }
-        },
-        
-        
-        /**
-         * replaces a character in text
-         *
-         * @param  {String} text
-         * @param  {Int} index
-         * @param  {String} character
-         * @return {String}
-         */
-        replaceCharAt: function( text, index, character ) {
-            if(text && text.length > index){
-               return text.substr(0, index) + character + text.substr(index+character.length); 
-            }else{
-                return text;
-            }
-        },
-        
-        
-        /**
-         * removes whitespace, tabs and returns from start and end of text
-         *
-         * @param  {String} text
-         * @return {String}
-         */
-        trimWhitespace: function( text ){
-            if(text && text.length){
-                var i = text.length,
-                    x = 0;
-                
-                // turn all whitespace chars at end into spaces
-                while (i--) {
-                    if(this.isOnlyWhiteSpace(text[i])){
-                        text = this.replaceCharAt( text, i, ' ' );
-                    }else{
-                        break;
-                    }
-                }
-                
-                // turn all whitespace chars at start into spaces
-                i = text.length;
-                while (x < i) {
-                    if(this.isOnlyWhiteSpace(text[x])){
-                        text = this.replaceCharAt( text, i, ' ' );
-                    }else{
-                        break;
-                    }
-                    x++;
-                }
-            }
-            return this.trim(text);
-        },
-    
-    
-        /**
-         * does text only contain whitespace characters
-         *
-         * @param  {String} text
-         * @return {Boolean}
-         */
-        isOnlyWhiteSpace: function( text ){
-            return !(/[^\t\n\r ]/.test( text ));
-        },
-        
-        
-        /**
-         * removes whitespace from a text (leaves a single space)
-         *
-         * @param  {String} text
-         * @return {Sring}
-         */
-        removeWhiteSpace: function( text ){
-            return text.replace(/[\t\n\r ]+/g, ' ');
-        },
-    
-    
-        /**
-         * does an object have any of its own properties
-         *
-         * @param  {Object} obj
-         * @return {Boolean}
-         */ 
-        hasProperties: function( obj ) {
-            var key;
-            for(key in obj) {
-                if( obj.hasOwnProperty( key ) ) {
-                    return true;
-                }
-            }
-            return false;
-        },
-        
-        
-        // sort objects in an array by given property
-        
-        /**
-         * a sort function - to sort objects in an array by a given property
-         *
-         * @param  {String} property
-         * @param  {Boolean} reverse
-         * @return {Int}
-         */ 
-        sortObjects: function(property, reverse) {
-            reverse = (reverse) ? -1 : 1;
-            return function (a, b) {
-                a = a[property];
-                b = b[property];
-                if (a < b) {
-                    return reverse * -1;
-                }
-                if (a > b) {
-                    return reverse * 1;
-                }
-                return 0;
-            };
-        }
-        
-    };
+		
+		/**
+		 * is the object a string
+		 *
+		 * @param  {Object} obj
+		 * @return {Boolean}
+		 */
+		isString: function( obj ) {
+			return typeof( obj ) === 'string';
+		},
+		
+		/**
+		 * is the object a number
+		 *
+		 * @param  {Object} obj
+		 * @return {Boolean}
+		 */
+		isNumber: function( obj ) {
+			return !isNaN(parseFloat( obj )) && isFinite( obj );
+		},
+		
+		
+		/**
+		 * is the object a array
+		 *
+		 * @param  {Object} obj
+		 * @return {Boolean}
+		 */
+		isArray: function( obj ) {
+			return obj && !( obj.propertyIsEnumerable( 'length' ) ) && typeof obj === 'object' && typeof obj.length === 'number';
+		},
+	
+	
+		/**
+		 * does a text start with the string
+		 *
+		 * @param  {String} text
+		 * @param  {String} test
+		 * @return {Boolean}
+		 */
+		startWith: function( text, test ) {
+			return(text.indexOf(test) === 0);
+		},
+	
+		
+		/**
+		 * removes spaces at front and back of text
+		 *
+		 * @param  {String} text
+		 * @return {String}
+		 */
+		trim: function( text ) {
+			if(text && this.isString(text)){
+				return text.replace(/^\s+|\s+$/g, '');
+			}else{
+				return '';
+			}
+		},
+		
+		
+		/**
+		 * replaces a character in text
+		 *
+		 * @param  {String} text
+		 * @param  {Int} index
+		 * @param  {String} character
+		 * @return {String}
+		 */
+		replaceCharAt: function( text, index, character ) {
+			if(text && text.length > index){
+			   return text.substr(0, index) + character + text.substr(index+character.length); 
+			}else{
+				return text;
+			}
+		},
+		
+		
+		/**
+		 * removes whitespace, tabs and returns from start and end of text
+		 *
+		 * @param  {String} text
+		 * @return {String}
+		 */
+		trimWhitespace: function( text ){
+			if(text && text.length){
+				var i = text.length,
+					x = 0;
+				
+				// turn all whitespace chars at end into spaces
+				while (i--) {
+					if(this.isOnlyWhiteSpace(text[i])){
+						text = this.replaceCharAt( text, i, ' ' );
+					}else{
+						break;
+					}
+				}
+				
+				// turn all whitespace chars at start into spaces
+				i = text.length;
+				while (x < i) {
+					if(this.isOnlyWhiteSpace(text[x])){
+						text = this.replaceCharAt( text, i, ' ' );
+					}else{
+						break;
+					}
+					x++;
+				}
+			}
+			return this.trim(text);
+		},
+	
+	
+		/**
+		 * does text only contain whitespace characters
+		 *
+		 * @param  {String} text
+		 * @return {Boolean}
+		 */
+		isOnlyWhiteSpace: function( text ){
+			return !(/[^\t\n\r ]/.test( text ));
+		},
+		
+		
+		/**
+		 * removes whitespace from a text (leaves a single space)
+		 *
+		 * @param  {String} text
+		 * @return {Sring}
+		 */
+		removeWhiteSpace: function( text ){
+			return text.replace(/[\t\n\r ]+/g, ' ');
+		},
+	
+	
+		/**
+		 * does an object have any of its own properties
+		 *
+		 * @param  {Object} obj
+		 * @return {Boolean}
+		 */ 
+		hasProperties: function( obj ) {
+			var key;
+			for(key in obj) {
+				if( obj.hasOwnProperty( key ) ) {
+					return true;
+				}
+			}
+			return false;
+		},
+		
+		
+		// sort objects in an array by given property
+		
+		/**
+		 * a sort function - to sort objects in an array by a given property
+		 *
+		 * @param  {String} property
+		 * @param  {Boolean} reverse
+		 * @return {Int}
+		 */ 
+		sortObjects: function(property, reverse) {
+			reverse = (reverse) ? -1 : 1;
+			return function (a, b) {
+				a = a[property];
+				b = b[property];
+				if (a < b) {
+					return reverse * -1;
+				}
+				if (a > b) {
+					return reverse * 1;
+				}
+				return 0;
+			};
+		}
+		
+	};
 
 
 	(function(DOMParser) {
 
-    var DOMParser_proto;
-    var real_parseFromString;
-    var textHTML;         // Flag for text/html support
-    var textXML;          // Flag for text/xml support
-    var htmlElInnerHTML;  // Flag for support for setting html element's innerHTML
+	var DOMParser_proto;
+	var real_parseFromString;
+	var textHTML;         // Flag for text/html support
+	var textXML;          // Flag for text/xml support
+	var htmlElInnerHTML;  // Flag for support for setting html element's innerHTML
 
-    // Stop here if DOMParser not defined
-    if (!DOMParser) {
+	// Stop here if DOMParser not defined
+	if (!DOMParser) {
 		return;
 	}
 
-    // Firefox, Opera and IE throw errors on unsupported types
-    try {
-        // WebKit returns null on unsupported types
-        textHTML = !!(new DOMParser()).parseFromString('', 'text/html');
-    } catch (er) {
-        textHTML = false;
-    }
+	// Firefox, Opera and IE throw errors on unsupported types
+	try {
+		// WebKit returns null on unsupported types
+		textHTML = !!(new DOMParser()).parseFromString('', 'text/html');
+	} catch (er) {
+		textHTML = false;
+	}
 
-    // If text/html supported, don't need to do anything.
-    if (textHTML) {
-        return;
-    }
+	// If text/html supported, don't need to do anything.
+	if (textHTML) {
+		return;
+	}
 
-    // Next try setting innerHTML of a created document
-    // IE 9 and lower will throw an error (can't set innerHTML of its HTML element)
-    try {
-      var doc = document.implementation.createHTMLDocument('');
-      doc.documentElement.innerHTML = '<title></title><div></div>';
-      htmlElInnerHTML = true;
-    } catch (er) {
-      htmlElInnerHTML = false;
-    }
+	// Next try setting innerHTML of a created document
+	// IE 9 and lower will throw an error (can't set innerHTML of its HTML element)
+	try {
+	  var doc = document.implementation.createHTMLDocument('');
+	  doc.documentElement.innerHTML = '<title></title><div></div>';
+	  htmlElInnerHTML = true;
+	} catch (er) {
+	  htmlElInnerHTML = false;
+	}
 
-    // If if that failed, try text/xml
-    if (!htmlElInnerHTML) {
-        try {
-            textXML = !!(new DOMParser()).parseFromString('', 'text/xml');
-        } catch (er) {
-            textHTML = false;
-        }
-    }
+	// If if that failed, try text/xml
+	if (!htmlElInnerHTML) {
+		try {
+			textXML = !!(new DOMParser()).parseFromString('', 'text/xml');
+		} catch (er) {
+			textHTML = false;
+		}
+	}
 
-    // Mess with DOMParser.prototype (less than optimal...) if one of the above worked
-    // Assume can write to the prototype, if not, make this a stand alone function
-    if (DOMParser.prototype && (htmlElInnerHTML || textXML)) { 
-        DOMParser_proto = DOMParser.prototype;
-        real_parseFromString = DOMParser_proto.parseFromString;
+	// Mess with DOMParser.prototype (less than optimal...) if one of the above worked
+	// Assume can write to the prototype, if not, make this a stand alone function
+	if (DOMParser.prototype && (htmlElInnerHTML || textXML)) { 
+		DOMParser_proto = DOMParser.prototype;
+		real_parseFromString = DOMParser_proto.parseFromString;
 
-        DOMParser_proto.parseFromString = function (markup, type) {
+		DOMParser_proto.parseFromString = function (markup, type) {
 
-            // Only do this if type is text/html
-            if (/^\s*text\/html\s*(?:;|$)/i.test(type)) {
-                var doc, doc_el, first_el;
+			// Only do this if type is text/html
+			if (/^\s*text\/html\s*(?:;|$)/i.test(type)) {
+				var doc, doc_el, first_el;
 
-                // Use innerHTML if supported
-                if (htmlElInnerHTML) {
-                    doc = document.implementation.createHTMLDocument('');
-                    doc_el = doc.documentElement;
-                    doc_el.innerHTML = markup;
-                    first_el = doc_el.firstElementChild;
+				// Use innerHTML if supported
+				if (htmlElInnerHTML) {
+					doc = document.implementation.createHTMLDocument('');
+					doc_el = doc.documentElement;
+					doc_el.innerHTML = markup;
+					first_el = doc_el.firstElementChild;
 
-                // Otherwise use XML method
-                } else if (textXML) {
+				// Otherwise use XML method
+				} else if (textXML) {
 
-                    // Make sure markup is wrapped in HTML tags
-                    // Should probably allow for a DOCTYPE
-                    if (!(/^<html.*html>$/i.test(markup))) {
-                        markup = '<html>' + markup + '<\/html>'; 
-                    }
-                    doc = (new DOMParser()).parseFromString(markup, 'text/xml');
-                    doc_el = doc.documentElement;
-                    first_el = doc_el.firstElementChild;
-                }
+					// Make sure markup is wrapped in HTML tags
+					// Should probably allow for a DOCTYPE
+					if (!(/^<html.*html>$/i.test(markup))) {
+						markup = '<html>' + markup + '<\/html>'; 
+					}
+					doc = (new DOMParser()).parseFromString(markup, 'text/xml');
+					doc_el = doc.documentElement;
+					first_el = doc_el.firstElementChild;
+				}
 
-                // Is this an entire document or a fragment?
-                if (doc_el.childElementCount === 1 && first_el.localName.toLowerCase() === 'html') {
-                    doc.replaceChild(first_el, doc_el);
-                }
+				// Is this an entire document or a fragment?
+				if (doc_el.childElementCount === 1 && first_el.localName.toLowerCase() === 'html') {
+					doc.replaceChild(first_el, doc_el);
+				}
 
-                return doc;
+				return doc;
 
-            // If not text/html, send as-is to host method
-            } else {
-                return real_parseFromString.apply(this, arguments);
-            }
-        };
-    }
+			// If not text/html, send as-is to host method
+			} else {
+				return real_parseFromString.apply(this, arguments);
+			}
+		};
+	}
 }(DOMParser));
 
 
@@ -2101,45 +2152,45 @@
 		
 		
 		 /**
-         * abstracts DOM ownerDocument
-         *
+		 * abstracts DOM ownerDocument
+		 *
 		 * @param  {DOM Node} node
-         * @return {Dom Document}
-         */
+		 * @return {Dom Document}
+		 */
 		ownerDocument: function(node){
 			return node.ownerDocument;
 		},
 		
 	
 		/**
-         * abstracts DOM textContent
-         *
+		 * abstracts DOM textContent
+		 *
 		 * @param  {DOM Node} node
-         * @return {String}
-         */
+		 * @return {String}
+		 */
 		textContent: function(node){
 			return node.textContent;
 		},
 		
 	
-	    /**
-         * abstracts DOM innerHTML
-         *
+		/**
+		 * abstracts DOM innerHTML
+		 *
 		 * @param  {DOM Node} node
-         * @return {String}
-         */
+		 * @return {String}
+		 */
 		innerHTML: function(node){
 			return node.innerHTML;
 		},
 	
 
 		/**
-         * abstracts DOM hasAttribute
-         *
+		 * abstracts DOM hasAttribute
+		 *
 		 * @param  {DOM Node} node
 		 * @param  {String} attributeName
-         * @return {Boolean}
-         */
+		 * @return {Boolean}
+		 */
 		hasAttribute: function(node, attributeName) {
 			if(node.hasAttribute){
 				return node.hasAttribute(attributeName);
@@ -2148,12 +2199,12 @@
 		
 	
 		/**
-         * abstracts DOM getAttribute
-         *
+		 * abstracts DOM getAttribute
+		 *
 		 * @param  {DOM Node} node
 		 * @param  {String} attributeName
-         * @return {String || null}
-         */
+		 * @return {String || null}
+		 */
 		getAttribute: function(node, attributeName) {
 			if(node.getAttribute){
 				return node.getAttribute(attributeName);
@@ -2162,35 +2213,35 @@
 		
 		
 		/**
-         * abstracts DOM setAttribute
-         *
+		 * abstracts DOM setAttribute
+		 *
 		 * @param  {DOM Node} node
 		 * @param  {String} attributeName
 		 * @param  {String} attributeValue
-         */
+		 */
 		setAttribute: function(node, attributeName, attributeValue){
 			node.setAttribute(attributeName, attributeValue);
 		},
 	
 	
 		/**
-         * abstracts DOM removeAttribute
-         *
+		 * abstracts DOM removeAttribute
+		 *
 		 * @param  {DOM Node} node
 		 * @param  {String} attributeName
-         */
+		 */
 		removeAttribute: function(node, attributeName) {
 			node.removeAttribute(attributeName);
 		},
 		
 		
 		/**
-         * abstracts DOM getElementById
-         *
+		 * abstracts DOM getElementById
+		 *
 		 * @param  {DOM Node || DOM Document} node
 		 * @param  {String} id
 		 * @return {DOM Node} 
-         */
+		 */
 		getElementById: function(docNode, id) {
 			//return node.getElementById(id);
 			return docNode.querySelector( '#' + id );
@@ -2198,12 +2249,12 @@
 	
 	
 		/**
-         * get value of an Node attribute as an Array
-         *
+		 * get value of an Node attribute as an Array
+		 *
 		 * @param  {DOM Node} node
 		 * @param  {String} attributeName
 		 * @return {Array}
-         */
+		 */
 		getAttributeList: function(node, attributeName) {
 			var out = [],
 				attList;
@@ -2221,13 +2272,13 @@
 	
 	
 		/**
-         * does an attribute contain a value
-         *
+		 * does an attribute contain a value
+		 *
 		 * @param  {DOM Node} node
 		 * @param  {String} attributeName
 		 * @param  {String} value
 		 * @return {Boolean}
-         */
+		 */
 		hasAttributeValue: function(node, attributeName, value) {
 			var attList = this.getAttributeList(node, attributeName);
 			return (attList.indexOf(value) > -1);
@@ -2235,12 +2286,12 @@
 	
 	
 		/**
-         * gets all child nodes with a given attribute
-         *
+		 * gets all child nodes with a given attribute
+		 *
 		 * @param  {DOM Node} node
 		 * @param  {String} attributeName
 		 * @return {NodeList}
-         */
+		 */
 		getNodesByAttribute: function(node, attributeName) {
 			var selector = '[' + attributeName + ']';
 			return node.querySelectorAll(selector);
@@ -2249,12 +2300,12 @@
 	
 		// gets all child nodes with a given attribute containing a given value
 		/**
-         * does an attribute contain a value
-         *
+		 * does an attribute contain a value
+		 *
 		 * @param  {DOM Node} node
 		 * @param  {String} attributeName
 		 * @return {DOM NodeList}
-         */
+		 */
 		getNodesByAttributeValue: function(rootNode, name, value) {
 			var arr = [],
 				x = 0,
@@ -2276,12 +2327,12 @@
 	
 	
 		/**
-         * gets attribute value from controlled list of tags
-         *
+		 * gets attribute value from controlled list of tags
+		 *
 		 * @param  {Array} tagNames
 		 * @param  {String} attributeName
 		 * @return {String || null}
-         */
+		 */
 		getAttrValFromTagList: function(node, tagNames, attributeName) {
 			var i = tagNames.length;
 	
@@ -2299,13 +2350,13 @@
 
 		
 	   /**
-         * is a node the only descendant of a type i.e. CSS :only-of-type 
-         *
+		 * is a node the only descendant of a type i.e. CSS :only-of-type 
+		 *
 
 		 * @param  {DOM Node} rootNode
 		 * @param  {Array} tagNames
 		 * @return {DOM Node || null}
-         */
+		 */
 		isSingleDescendant: function(rootNode, tagNames){
 			var i = rootNode.children.length,
 				count = 0,
@@ -2331,13 +2382,13 @@
 	
 	
 	
-   		/**
-         * is a node the only descendant of a type i.e. CSS :only-of-type 
-         *
+		/**
+		 * is a node the only descendant of a type i.e. CSS :only-of-type 
+		 *
 		 * @param  {DOM Node} rootNode
 		 * @param  {Array} tagNames
 		 * @return {DOM Node || null}
-         */
+		 */
 		 /*
 		 isOnlySingleDescendantOfType: function(rootNode, tagNames) {
 			var i = rootNode.children.length,
@@ -2363,13 +2414,13 @@
 		*/
 	
 	
-   	   /**
-         * is a node one of a list of tags
-         *
+	   /**
+		 * is a node one of a list of tags
+		 *
 		 * @param  {DOM Node} rootNode
 		 * @param  {Array} tagNames
 		 * @return {Boolean}
-         */	
+		 */	
 		hasTagName: function(node, tagNames){
 			var i = tagNames.length;
 			while(i--) {
@@ -2382,23 +2433,23 @@
 	
 	
 	   /**
-         * abstracts DOM appendChild 
-         *
+		 * abstracts DOM appendChild 
+		 *
 		 * @param  {DOM Node} node
 		 * @param  {DOM Node} childNode
-         * @return {DOM Node}
-         */
+		 * @return {DOM Node}
+		 */
 		appendChild: function(node, childNode){
 			return node.appendChild(childNode);
 		},
 	
 	
 	   /**
-         * abstracts DOM removeChild 
-         *
+		 * abstracts DOM removeChild 
+		 *
 		 * @param  {DOM Node} childNode
-         * @return {DOM Node || null}
-         */
+		 * @return {DOM Node || null}
+		 */
 		removeChild: function(childNode){
 			if (childNode.parentNode) {
 				return childNode.parentNode.removeChild(childNode);
@@ -2409,11 +2460,11 @@
 	
 	
 		/**
-         * abstracts DOM cloneNode
-         *
+		 * abstracts DOM cloneNode
+		 *
 		 * @param  {DOM Node} node
-         * @return {DOM Node}
-         */
+		 * @return {DOM Node}
+		 */
 		clone: function(node) {
 			var newNode = node.cloneNode(true);
 			newNode.removeAttribute('id');
@@ -2422,12 +2473,12 @@
 		
 		
 		/**
-         * resolves url to absolute version using baseUrl
-         *
+		 * resolves url to absolute version using baseUrl
+		 *
 		 * @param  {String} url
 		 * @param  {String} baseUrl
-         * @return {String}
-         */
+		 * @return {String}
+		 */
 		resolveUrl: function(url, baseUrl) {
 			if(modules.utils.isString(url)){
 				if( url !== '' && url.indexOf(':') === -1 && modules.utils.isString(baseUrl) ){
@@ -2444,988 +2495,988 @@
 		
 		
 		/**
-         * gets the text of a node
-         *
+		 * gets the text of a node
+		 *
 		 * @param  {DOM Node} node
-         * @return {String}
-         */
-	    getElementText: function( node ){
-	        if(node && node.data){
-	            return node.data;
-	        }else{
-	            return '';
-	        }
-	    },
-	    
-	    
-		/**
-         * gets the attributes of a node - ordered by sequence in html
-         *
-		 * @param  {DOM Node} node
-         * @return {Array}
-         */
-	    getOrderedAttributes: function( node ){
-	        var nodeStr = node.outerHTML,
-	            attrs = [];
-	            
-	        for (var i = 0; i < node.attributes.length; i++) {
-	            var attr = node.attributes[i];
-	                attr.indexNum = nodeStr.indexOf(attr.name);
-	                
-	            attrs.push( attr );
-	        }
-	        return attrs.sort( modules.utils.sortObjects( 'indexNum' ) );
-	    },
-	    
+		 * @return {String}
+		 */
+		getElementText: function( node ){
+			if(node && node.data){
+				return node.data;
+			}else{
+				return '';
+			}
+		},
+		
 		
 		/**
-         * decodes html entities in given text
-         *
+		 * gets the attributes of a node - ordered by sequence in html
+		 *
+		 * @param  {DOM Node} node
+		 * @return {Array}
+		 */
+		getOrderedAttributes: function( node ){
+			var nodeStr = node.outerHTML,
+				attrs = [];
+				
+			for (var i = 0; i < node.attributes.length; i++) {
+				var attr = node.attributes[i];
+					attr.indexNum = nodeStr.indexOf(attr.name);
+					
+				attrs.push( attr );
+			}
+			return attrs.sort( modules.utils.sortObjects( 'indexNum' ) );
+		},
+		
+		
+		/**
+		 * decodes html entities in given text
+		 *
 		 * @param  {DOM Document} doc
 		 * @param  String} text
-         * @return {String}
-         */
-	    decodeEntities: function( doc, text ){
+		 * @return {String}
+		 */
+		decodeEntities: function( doc, text ){
 			return text;
-	        //return doc.createTextNode( text ).nodeValue;
-	    },
+			//return doc.createTextNode( text ).nodeValue;
+		},
 	
 
 	};
 
 
 	/**
-     * constructor
-     * parses text to find just the date element of a ISO date/time string i.e. 2008-05-01
-     *
-     * @param  {String} dateString
+	 * constructor
+	 * parses text to find just the date element of a ISO date/time string i.e. 2008-05-01
+	 *
+	 * @param  {String} dateString
 	 * @param  {String} format
-     * @return {String}
-     */ 
-    modules.ISODate = function ( dateString, format ) {
-        this.clear();
-    
-        this.format = (format)? format : 'auto'; // auto or W3C or RFC3339 or HTML5
-        this.setFormatSep();
-    
-        // optional should be full iso date/time string 
-        if(arguments[0]) {
-            this.parse(dateString, format);
-        }
-    };
-    
+	 * @return {String}
+	 */ 
+	modules.ISODate = function ( dateString, format ) {
+		this.clear();
+	
+		this.format = (format)? format : 'auto'; // auto or W3C or RFC3339 or HTML5
+		this.setFormatSep();
+	
+		// optional should be full iso date/time string 
+		if(arguments[0]) {
+			this.parse(dateString, format);
+		}
+	};
+	
 
-    modules.ISODate.prototype = {
-        
-        
-        /**
-         * clear all state
-         *
-         */ 
-        clear: function(){
-            this.clearDate();
-            this.clearTime();
-            this.clearTimeZone();
-            this.setAutoProfileState();
-        },
-        
-        
-        /**
-         * clear date state
-         *
-         */ 
-        clearDate: function(){
-            this.dY = -1;
-            this.dM = -1;
-            this.dD = -1;
-            this.dDDD = -1;
-        },
-        
-        
-        /**
-         * clear time state
-         *
-         */ 
-        clearTime: function(){
-            this.tH = -1;
-            this.tM = -1;
-            this.tS = -1;
-            this.tD = -1;
-        },
-        
-        
-        /**
-         * clear timezone state
-         *
-         */ 
-        clearTimeZone: function(){
-            this.tzH = -1;
-            this.tzM = -1;
-            this.tzPN = '+';
-            this.z = false;
-        },
-        
-        
-        /**
-         * resets the auto profile state
-         *
-         */ 
-        setAutoProfileState: function(){
-            this.autoProfile = {
-               sep: 'T',
-               dsep: '-',
-               tsep: ':',
-               tzsep: ':',
-               tzZulu: 'Z'
-            };
-        },
-        
-      
-        /**
-         * parses text to find ISO date/time string i.e. 2008-05-01T15:45:19Z
-         *
-         * @param  {String} dateString
+	modules.ISODate.prototype = {
+		
+		
+		/**
+		 * clear all state
+		 *
+		 */ 
+		clear: function(){
+			this.clearDate();
+			this.clearTime();
+			this.clearTimeZone();
+			this.setAutoProfileState();
+		},
+		
+		
+		/**
+		 * clear date state
+		 *
+		 */ 
+		clearDate: function(){
+			this.dY = -1;
+			this.dM = -1;
+			this.dD = -1;
+			this.dDDD = -1;
+		},
+		
+		
+		/**
+		 * clear time state
+		 *
+		 */ 
+		clearTime: function(){
+			this.tH = -1;
+			this.tM = -1;
+			this.tS = -1;
+			this.tD = -1;
+		},
+		
+		
+		/**
+		 * clear timezone state
+		 *
+		 */ 
+		clearTimeZone: function(){
+			this.tzH = -1;
+			this.tzM = -1;
+			this.tzPN = '+';
+			this.z = false;
+		},
+		
+		
+		/**
+		 * resets the auto profile state
+		 *
+		 */ 
+		setAutoProfileState: function(){
+			this.autoProfile = {
+			   sep: 'T',
+			   dsep: '-',
+			   tsep: ':',
+			   tzsep: ':',
+			   tzZulu: 'Z'
+			};
+		},
+		
+	  
+		/**
+		 * parses text to find ISO date/time string i.e. 2008-05-01T15:45:19Z
+		 *
+		 * @param  {String} dateString
 		 * @param  {String} format
-         * @return {String}
-         */ 
-        parse: function( dateString, format ) {
-            this.clear();
-            
-            var parts = [],
-                tzArray = [],
-                position = 0,
-                datePart = '',
-                timePart = '',
-                timeZonePart = '';
-                
-            if(format){
-                this.format = format;
-            }
-            
-    
-            
-            // discover date time separtor for auto profile
-            // Set to 'T' by default
-            if(dateString.indexOf('t') > -1) {
-                this.autoProfile.sep = 't';
-            }
-            if(dateString.indexOf('z') > -1) {
-                this.autoProfile.tzZulu = 'z';
-            }
-            if(dateString.indexOf('Z') > -1) {
-                this.autoProfile.tzZulu = 'Z';
-            }
-            if(dateString.toUpperCase().indexOf('T') === -1) {
-                this.autoProfile.sep = ' ';
-            }     
-    
-    
-            dateString = dateString.toUpperCase().replace(' ','T');
-    
-            // break on 'T' divider or space
-            if(dateString.indexOf('T') > -1) {
-                parts = dateString.split('T');
-                datePart = parts[0];
-                timePart = parts[1];
-    
-                // zulu UTC                 
-                if(timePart.indexOf( 'Z' ) > -1) {
-                    this.z = true;
-                }
-    
-                // timezone
-                if(timePart.indexOf( '+' ) > -1 || timePart.indexOf( '-' ) > -1) {
-                    tzArray = timePart.split( 'Z' ); // incase of incorrect use of Z
-                    timePart = tzArray[0];
-                    timeZonePart = tzArray[1];
-    
-                    // timezone
-                    if(timePart.indexOf( '+' ) > -1 || timePart.indexOf( '-' ) > -1) {
-                        position = 0;
-    
-                        if(timePart.indexOf( '+' ) > -1) {
-                            position = timePart.indexOf( '+' );
-                        } else {
-                            position = timePart.indexOf( '-' );
-                        }
-    
-                        timeZonePart = timePart.substring( position, timePart.length );
-                        timePart = timePart.substring( 0, position );
-                    }
-                }
-    
-            } else {
-                datePart = dateString;
-            }
-    
-            if(datePart !== '') {
-                this.parseDate( datePart );
-                if(timePart !== '') {
-                    this.parseTime( timePart );
-                    if(timeZonePart !== '') {
-                        this.parseTimeZone( timeZonePart );
-                    }
-                }
-            }
-            return this.toString( format );
-        },
-    
-        
-        /**
-         * parses text to find just the date element of a ISO date/time string i.e. 2008-05-01
-         *
-         * @param  {String} dateString
+		 * @return {String}
+		 */ 
+		parse: function( dateString, format ) {
+			this.clear();
+			
+			var parts = [],
+				tzArray = [],
+				position = 0,
+				datePart = '',
+				timePart = '',
+				timeZonePart = '';
+				
+			if(format){
+				this.format = format;
+			}
+			
+	
+			
+			// discover date time separtor for auto profile
+			// Set to 'T' by default
+			if(dateString.indexOf('t') > -1) {
+				this.autoProfile.sep = 't';
+			}
+			if(dateString.indexOf('z') > -1) {
+				this.autoProfile.tzZulu = 'z';
+			}
+			if(dateString.indexOf('Z') > -1) {
+				this.autoProfile.tzZulu = 'Z';
+			}
+			if(dateString.toUpperCase().indexOf('T') === -1) {
+				this.autoProfile.sep = ' ';
+			}     
+	
+	
+			dateString = dateString.toUpperCase().replace(' ','T');
+	
+			// break on 'T' divider or space
+			if(dateString.indexOf('T') > -1) {
+				parts = dateString.split('T');
+				datePart = parts[0];
+				timePart = parts[1];
+	
+				// zulu UTC                 
+				if(timePart.indexOf( 'Z' ) > -1) {
+					this.z = true;
+				}
+	
+				// timezone
+				if(timePart.indexOf( '+' ) > -1 || timePart.indexOf( '-' ) > -1) {
+					tzArray = timePart.split( 'Z' ); // incase of incorrect use of Z
+					timePart = tzArray[0];
+					timeZonePart = tzArray[1];
+	
+					// timezone
+					if(timePart.indexOf( '+' ) > -1 || timePart.indexOf( '-' ) > -1) {
+						position = 0;
+	
+						if(timePart.indexOf( '+' ) > -1) {
+							position = timePart.indexOf( '+' );
+						} else {
+							position = timePart.indexOf( '-' );
+						}
+	
+						timeZonePart = timePart.substring( position, timePart.length );
+						timePart = timePart.substring( 0, position );
+					}
+				}
+	
+			} else {
+				datePart = dateString;
+			}
+	
+			if(datePart !== '') {
+				this.parseDate( datePart );
+				if(timePart !== '') {
+					this.parseTime( timePart );
+					if(timeZonePart !== '') {
+						this.parseTimeZone( timeZonePart );
+					}
+				}
+			}
+			return this.toString( format );
+		},
+	
+		
+		/**
+		 * parses text to find just the date element of a ISO date/time string i.e. 2008-05-01
+		 *
+		 * @param  {String} dateString
 		 * @param  {String} format
-         * @return {String}
-         */ 
-        parseDate: function( dateString, format ) {
-            this.clearDate();
-            
-            var parts = [];
-                
-            // discover timezone separtor for auto profile // default is ':'
-            if(dateString.indexOf('-') === -1) {
-                this.autoProfile.tsep = '';
-            }  
-    
-            // YYYY-DDD
-            parts = dateString.match( /(\d\d\d\d)-(\d\d\d)/ );
-            if(parts) {
-                if(parts[1]) {
-                    this.dY = parts[1];
-                }
-                if(parts[2]) {
-                    this.dDDD = parts[2];
-                }
-            }
-    
-            if(this.dDDD === -1) {
-                // YYYY-MM-DD ie 2008-05-01 and YYYYMMDD ie 20080501
-                parts = dateString.match( /(\d\d\d\d)?-?(\d\d)?-?(\d\d)?/ );
-                if(parts[1]) {
-                    this.dY = parts[1];
-                }
-                if(parts[2]) {
-                    this.dM = parts[2];
-                }
-                if(parts[3]) {
-                    this.dD = parts[3];
-                }
-            }
-            return this.toString(format);
-        },
-    
-    
-        /**
-         * parses text to find just the time element of a iso date/time string i.e. 13:30:45
-         *
-         * @param  {String} timeString
+		 * @return {String}
+		 */ 
+		parseDate: function( dateString, format ) {
+			this.clearDate();
+			
+			var parts = [];
+				
+			// discover timezone separtor for auto profile // default is ':'
+			if(dateString.indexOf('-') === -1) {
+				this.autoProfile.tsep = '';
+			}  
+	
+			// YYYY-DDD
+			parts = dateString.match( /(\d\d\d\d)-(\d\d\d)/ );
+			if(parts) {
+				if(parts[1]) {
+					this.dY = parts[1];
+				}
+				if(parts[2]) {
+					this.dDDD = parts[2];
+				}
+			}
+	
+			if(this.dDDD === -1) {
+				// YYYY-MM-DD ie 2008-05-01 and YYYYMMDD ie 20080501
+				parts = dateString.match( /(\d\d\d\d)?-?(\d\d)?-?(\d\d)?/ );
+				if(parts[1]) {
+					this.dY = parts[1];
+				}
+				if(parts[2]) {
+					this.dM = parts[2];
+				}
+				if(parts[3]) {
+					this.dD = parts[3];
+				}
+			}
+			return this.toString(format);
+		},
+	
+	
+		/**
+		 * parses text to find just the time element of a iso date/time string i.e. 13:30:45
+		 *
+		 * @param  {String} timeString
 		 * @param  {String} format
-         * @return {String}
-         */ 
-        parseTime: function( timeString, format ) {
-            this.clearTime();
-            var parts = [];
-                
-            // discover date separtor for auto profile // default is ':'
-            if(timeString.indexOf(':') === -1) {
-                this.autoProfile.tsep = '';
-            }      
-    
-            // finds timezone HH:MM:SS and HHMMSS  ie 13:30:45, 133045 and 13:30:45.0135
-            parts = timeString.match( /(\d\d)?:?(\d\d)?:?(\d\d)?.?([0-9]+)?/ );
-            if(parts[1]) {
-                this.tH = parts[1];
-            }
-            if(parts[2]) {
-                this.tM = parts[2];
-            }
-            if(parts[3]) {
-                this.tS = parts[3];
-            }
-            if(parts[4]) {
-                this.tD = parts[4];
-            }
-            return this.toTimeString(format);
-        },
-    
-        
-        /**
-         * parses text to find just the time element of a iso date/time string i.e. +08:00
-         *
-         * @param  {String} timeString
+		 * @return {String}
+		 */ 
+		parseTime: function( timeString, format ) {
+			this.clearTime();
+			var parts = [];
+				
+			// discover date separtor for auto profile // default is ':'
+			if(timeString.indexOf(':') === -1) {
+				this.autoProfile.tsep = '';
+			}      
+	
+			// finds timezone HH:MM:SS and HHMMSS  ie 13:30:45, 133045 and 13:30:45.0135
+			parts = timeString.match( /(\d\d)?:?(\d\d)?:?(\d\d)?.?([0-9]+)?/ );
+			if(parts[1]) {
+				this.tH = parts[1];
+			}
+			if(parts[2]) {
+				this.tM = parts[2];
+			}
+			if(parts[3]) {
+				this.tS = parts[3];
+			}
+			if(parts[4]) {
+				this.tD = parts[4];
+			}
+			return this.toTimeString(format);
+		},
+	
+		
+		/**
+		 * parses text to find just the time element of a iso date/time string i.e. +08:00
+		 *
+		 * @param  {String} timeString
 		 * @param  {String} format
-         * @return {String}
-         */ 
-        parseTimeZone: function( timeString, format ) {
-            this.clearTimeZone();
-            var parts = [];
-            
-            if(timeString.toLowerCase() === 'z'){
-                this.z = true;
-                // set case for z
-                this.autoProfile.tzZulu = (timeString === 'z')? 'z' : 'Z';
-            }else{
-                
-                // discover timezone separtor for auto profile // default is ':'
-                if(timeString.indexOf(':') === -1) {
-                    this.autoProfile.tzsep = '';
-                }   
-               
-                // finds timezone +HH:MM and +HHMM  ie +13:30 and +1330
-                parts = timeString.match( /([\-\+]{1})?(\d\d)?:?(\d\d)?/ );
-                if(parts[1]) {
-                    this.tzPN = parts[1];
-                }
-                if(parts[2]) {
-                    this.tzH = parts[2];
-                }
-                if(parts[3]) {
-                    this.tzM = parts[3];
-                } 
-                
-      
-            }
-            this.tzZulu = 'z';    
-            return this.toTimeString( format );
-        },
-        
-        
-        /**
-         * returns ISO date/time string in W3C Note, RFC 3339, HTML5, or auto profile
-         *
+		 * @return {String}
+		 */ 
+		parseTimeZone: function( timeString, format ) {
+			this.clearTimeZone();
+			var parts = [];
+			
+			if(timeString.toLowerCase() === 'z'){
+				this.z = true;
+				// set case for z
+				this.autoProfile.tzZulu = (timeString === 'z')? 'z' : 'Z';
+			}else{
+				
+				// discover timezone separtor for auto profile // default is ':'
+				if(timeString.indexOf(':') === -1) {
+					this.autoProfile.tzsep = '';
+				}   
+			   
+				// finds timezone +HH:MM and +HHMM  ie +13:30 and +1330
+				parts = timeString.match( /([\-\+]{1})?(\d\d)?:?(\d\d)?/ );
+				if(parts[1]) {
+					this.tzPN = parts[1];
+				}
+				if(parts[2]) {
+					this.tzH = parts[2];
+				}
+				if(parts[3]) {
+					this.tzM = parts[3];
+				} 
+				
+	  
+			}
+			this.tzZulu = 'z';    
+			return this.toTimeString( format );
+		},
+		
+		
+		/**
+		 * returns ISO date/time string in W3C Note, RFC 3339, HTML5, or auto profile
+		 *
 		 * @param  {String} format
-         * @return {String}
-         */ 
-        toString: function( format ) {
-            var output = '';
-    
-            if(format){
-                this.format = format;
-            }
-            this.setFormatSep();
-    
-            if(this.dY  > -1) {
-                output = this.dY;
-                if(this.dM > 0 && this.dM < 13) {
-                    output += this.dsep + this.dM;
-                    if(this.dD > 0 && this.dD < 32) {
-                        output += this.dsep + this.dD;
-                        if(this.tH > -1 && this.tH < 25) {
-                            output += this.sep + this.toTimeString( format );
-                        }
-                    }
-                }
-                if(this.dDDD > -1) {
-                    output += this.dsep + this.dDDD;
-                }
-            } else if(this.tH > -1) {
-                output += this.toTimeString( format );
-            }
-    
-            return output;
-        },
-    
-    
-        /**
-         * returns just the time string element of a ISO date/time
-         * in W3C Note, RFC 3339, HTML5, or auto profile
-         *
+		 * @return {String}
+		 */ 
+		toString: function( format ) {
+			var output = '';
+	
+			if(format){
+				this.format = format;
+			}
+			this.setFormatSep();
+	
+			if(this.dY  > -1) {
+				output = this.dY;
+				if(this.dM > 0 && this.dM < 13) {
+					output += this.dsep + this.dM;
+					if(this.dD > 0 && this.dD < 32) {
+						output += this.dsep + this.dD;
+						if(this.tH > -1 && this.tH < 25) {
+							output += this.sep + this.toTimeString( format );
+						}
+					}
+				}
+				if(this.dDDD > -1) {
+					output += this.dsep + this.dDDD;
+				}
+			} else if(this.tH > -1) {
+				output += this.toTimeString( format );
+			}
+	
+			return output;
+		},
+	
+	
+		/**
+		 * returns just the time string element of a ISO date/time
+		 * in W3C Note, RFC 3339, HTML5, or auto profile
+		 *
 		 * @param  {String} format
-         * @return {String}
-         */ 
-        toTimeString: function( format ) {
-            var out = '';
-    
-            if(format){
-                this.format = format;
-            }
-            this.setFormatSep();
-            
-            // time and can only be created with a full date
-            if(this.tH) {
-                if(this.tH > -1 && this.tH < 25) {
-                    out += this.tH;
-                    if(this.tM > -1 && this.tM < 61){
-                        out += this.tsep + this.tM;
-                        if(this.tS > -1 && this.tS < 61){
-                            out += this.tsep + this.tS;
-                            if(this.tD > -1){
-                                out += '.' + this.tD;
-                            }
-                        }
-                    }
-                    
-                    
-              
-                    // time zone offset 
-                    if(this.z) {
-                        out += this.tzZulu;
-                    } else {
-                        if(this.tzH && this.tzH > -1 && this.tzH < 25) {
-                            out += this.tzPN + this.tzH;
-                            if(this.tzM > -1 && this.tzM < 61){
-                                out += this.tzsep + this.tzM;
-                            }
-                        }
-                    }
-                }
-            }
-            return out;
-        },
-    
-    
-        /**
-         * set the current profile to W3C Note, RFC 3339, HTML5, or auto profile
-         *
-         */ 
-        setFormatSep: function() {
-            switch( this.format.toLowerCase() ) {
-                case 'rfc3339':
-                    this.sep = 'T';
-                    this.dsep = '';
-                    this.tsep = '';
-                    this.tzsep = '';
-                    this.tzZulu = 'Z';
-                    break;
-                case 'w3c':
-                    this.sep = 'T';
-                    this.dsep = '-';
-                    this.tsep = ':';
-                    this.tzsep = ':';
-                    this.tzZulu = 'Z';
-                    break;
-                case 'html5':
-                    this.sep = ' ';
-                    this.dsep = '-';
-                    this.tsep = ':';
-                    this.tzsep = ':';
-                    this.tzZulu = 'Z';
-                    break;
-                default:
-                    // auto - defined by format of input string
-                    this.sep = this.autoProfile.sep;
-                    this.dsep = this.autoProfile.dsep;
-                    this.tsep = this.autoProfile.tsep;
-                    this.tzsep = this.autoProfile.tzsep;
-                    this.tzZulu = this.autoProfile.tzZulu;
-            }
-        },
-    
-    
-        /**
-         * does current data contain a full date ie 2015-03-23
-         *
-         * @return {Boolean}
-         */ 
-        hasFullDate: function() {
-            return(this.dY !== -1 && this.dM !== -1 && this.dD !== -1);
-        },
-    
-    
-        /**
-         * does current data contain a minimum date which is just year number ie 2015
-         *
-         * @return {Boolean}
-         */ 
-        hasDate: function() {
-            return(this.dY !== -1);
-        },
-    
-    
-        /**
-         * does current data contain a minimum time which is just hour number ie 13
-         *
-         * @return {Boolean}
-         */     
-        hasTime: function() {
-            return(this.tH !== -1);
-        },
-    
-        /**
-         * does current data contain a minimum timezone ie -1 || +1 || z
-         *
-         * @return {Boolean}
-         */    
-        hasTimeZone: function() {
-            return(this.tzH !== -1);
-        }
-    
-    };
-    
-    modules.ISODate.prototype.constructor = modules.ISODate;
+		 * @return {String}
+		 */ 
+		toTimeString: function( format ) {
+			var out = '';
+	
+			if(format){
+				this.format = format;
+			}
+			this.setFormatSep();
+			
+			// time and can only be created with a full date
+			if(this.tH) {
+				if(this.tH > -1 && this.tH < 25) {
+					out += this.tH;
+					if(this.tM > -1 && this.tM < 61){
+						out += this.tsep + this.tM;
+						if(this.tS > -1 && this.tS < 61){
+							out += this.tsep + this.tS;
+							if(this.tD > -1){
+								out += '.' + this.tD;
+							}
+						}
+					}
+					
+					
+			  
+					// time zone offset 
+					if(this.z) {
+						out += this.tzZulu;
+					} else {
+						if(this.tzH && this.tzH > -1 && this.tzH < 25) {
+							out += this.tzPN + this.tzH;
+							if(this.tzM > -1 && this.tzM < 61){
+								out += this.tzsep + this.tzM;
+							}
+						}
+					}
+				}
+			}
+			return out;
+		},
+	
+	
+		/**
+		 * set the current profile to W3C Note, RFC 3339, HTML5, or auto profile
+		 *
+		 */ 
+		setFormatSep: function() {
+			switch( this.format.toLowerCase() ) {
+				case 'rfc3339':
+					this.sep = 'T';
+					this.dsep = '';
+					this.tsep = '';
+					this.tzsep = '';
+					this.tzZulu = 'Z';
+					break;
+				case 'w3c':
+					this.sep = 'T';
+					this.dsep = '-';
+					this.tsep = ':';
+					this.tzsep = ':';
+					this.tzZulu = 'Z';
+					break;
+				case 'html5':
+					this.sep = ' ';
+					this.dsep = '-';
+					this.tsep = ':';
+					this.tzsep = ':';
+					this.tzZulu = 'Z';
+					break;
+				default:
+					// auto - defined by format of input string
+					this.sep = this.autoProfile.sep;
+					this.dsep = this.autoProfile.dsep;
+					this.tsep = this.autoProfile.tsep;
+					this.tzsep = this.autoProfile.tzsep;
+					this.tzZulu = this.autoProfile.tzZulu;
+			}
+		},
+	
+	
+		/**
+		 * does current data contain a full date ie 2015-03-23
+		 *
+		 * @return {Boolean}
+		 */ 
+		hasFullDate: function() {
+			return(this.dY !== -1 && this.dM !== -1 && this.dD !== -1);
+		},
+	
+	
+		/**
+		 * does current data contain a minimum date which is just year number ie 2015
+		 *
+		 * @return {Boolean}
+		 */ 
+		hasDate: function() {
+			return(this.dY !== -1);
+		},
+	
+	
+		/**
+		 * does current data contain a minimum time which is just hour number ie 13
+		 *
+		 * @return {Boolean}
+		 */     
+		hasTime: function() {
+			return(this.tH !== -1);
+		},
+	
+		/**
+		 * does current data contain a minimum timezone ie -1 || +1 || z
+		 *
+		 * @return {Boolean}
+		 */    
+		hasTimeZone: function() {
+			return(this.tzH !== -1);
+		}
+	
+	};
+	
+	modules.ISODate.prototype.constructor = modules.ISODate;
 
 
 	modules.dates = {
 
-        
-        /**
-         * does text contain am
-         *
-         * @param  {String} text
-         * @return {Boolean}
-         */
-        hasAM: function( text ) {
-            text = text.toLowerCase();
-            return(text.indexOf('am') > -1 || text.indexOf('a.m.') > -1);
-        },
-    
-    
-        /**
-         * does text contain pm
-         *
-         * @param  {String} text
-         * @return {Boolean}
-         */
-        hasPM: function( text ) {
-            text = text.toLowerCase();
-            return(text.indexOf('pm') > -1 || text.indexOf('p.m.') > -1);
-        },
-    
-    
-        /**
-         * remove am and pm from a text and return it
-         *
-         * @param  {String} text
-         * @return {String}
-         */
-        removeAMPM: function( text ) {
-            return text.replace('pm', '').replace('p.m.', '').replace('am', '').replace('a.m.', '');
-        },
-    
-       
-       /**
-         * simple test of weather ISO date string is a duration  i.e.  PY17M or PW12
-         *
-         * @param  {String} text
-         * @return {Boolean}
-         */
-        isDuration: function( text ) {
-            if(modules.utils.isString( text )){
-                text = text.toLowerCase();
-                if(modules.utils.startWith(text, 'p') ){
-                    return true;
-                }
-            }
-            return false;
-        },
-    
-    
-       /**
-         * is text a time or timezone
-         * i.e. HH-MM-SS or z+-HH-MM-SS 08:43 | 15:23:00:0567 | 10:34pm | 10:34 p.m. | +01:00:00 | -02:00 | z15:00 | 0843
-         *
-         * @param  {String} text
-         * @return {Boolean}
-         */ 
-        isTime: function( text ) {
-            if(modules.utils.isString(text)){
-                text = text.toLowerCase();
-                text = modules.utils.trim( text );
-                // start with timezone char
-                if( text.match(':') && ( modules.utils.startWith(text, 'z') || modules.utils.startWith(text, '-')  || modules.utils.startWith(text, '+') )) {
-                    return true;
-                }
-                // has ante meridiem or post meridiem
-                if( text.match(/^[0-9]/) && 
-                    ( this.hasAM(text) || this.hasPM(text) )) {
-                    return true;
-                }
-                // contains time delimiter but not datetime delimiter
-                if( text.match(':') && !text.match(/t|\s/) ) {
-                    return true;
-                }
-                
-                // if its a number of 2, 4 or 6 chars
-                if(modules.utils.isNumber(text)){
-                    if(text.length === 2 || text.length === 4 || text.length === 6){
-                        return true;
-                    }
-                }
-            }
-            return false;
-        },
-    
+		
+		/**
+		 * does text contain am
+		 *
+		 * @param  {String} text
+		 * @return {Boolean}
+		 */
+		hasAM: function( text ) {
+			text = text.toLowerCase();
+			return(text.indexOf('am') > -1 || text.indexOf('a.m.') > -1);
+		},
+	
+	
+		/**
+		 * does text contain pm
+		 *
+		 * @param  {String} text
+		 * @return {Boolean}
+		 */
+		hasPM: function( text ) {
+			text = text.toLowerCase();
+			return(text.indexOf('pm') > -1 || text.indexOf('p.m.') > -1);
+		},
+	
+	
+		/**
+		 * remove am and pm from a text and return it
+		 *
+		 * @param  {String} text
+		 * @return {String}
+		 */
+		removeAMPM: function( text ) {
+			return text.replace('pm', '').replace('p.m.', '').replace('am', '').replace('a.m.', '');
+		},
+	
+	   
+	   /**
+		 * simple test of weather ISO date string is a duration  i.e.  PY17M or PW12
+		 *
+		 * @param  {String} text
+		 * @return {Boolean}
+		 */
+		isDuration: function( text ) {
+			if(modules.utils.isString( text )){
+				text = text.toLowerCase();
+				if(modules.utils.startWith(text, 'p') ){
+					return true;
+				}
+			}
+			return false;
+		},
+	
+	
+	   /**
+		 * is text a time or timezone
+		 * i.e. HH-MM-SS or z+-HH-MM-SS 08:43 | 15:23:00:0567 | 10:34pm | 10:34 p.m. | +01:00:00 | -02:00 | z15:00 | 0843
+		 *
+		 * @param  {String} text
+		 * @return {Boolean}
+		 */ 
+		isTime: function( text ) {
+			if(modules.utils.isString(text)){
+				text = text.toLowerCase();
+				text = modules.utils.trim( text );
+				// start with timezone char
+				if( text.match(':') && ( modules.utils.startWith(text, 'z') || modules.utils.startWith(text, '-')  || modules.utils.startWith(text, '+') )) {
+					return true;
+				}
+				// has ante meridiem or post meridiem
+				if( text.match(/^[0-9]/) && 
+					( this.hasAM(text) || this.hasPM(text) )) {
+					return true;
+				}
+				// contains time delimiter but not datetime delimiter
+				if( text.match(':') && !text.match(/t|\s/) ) {
+					return true;
+				}
+				
+				// if its a number of 2, 4 or 6 chars
+				if(modules.utils.isNumber(text)){
+					if(text.length === 2 || text.length === 4 || text.length === 6){
+						return true;
+					}
+				}
+			}
+			return false;
+		},
+	
 
-        /**
-         * parses a time from text and return 24hr time string
-         * i.e. 5:34am = 05:34:00 and 1:52:04p.m. = 13:52:04
-         *
-         * @param  {String} text
-         * @return {String}
-         */ 
-        parseAmPmTime: function( text ) {
-            var out = text,
-                times = [];
-    
-            // if the string has a text : or am or pm
-            if(modules.utils.isString(out)) {
-                //text = text.toLowerCase();
-                text = text.replace(/[ ]+/g, '');
-    
-                if(text.match(':') || this.hasAM(text) || this.hasPM(text)) {
-    
-                    if(text.match(':')) {
-                        times = text.split(':');
-                    } else {
-                        // single number text ie 5pm
-                        times[0] = text;
-                        times[0] = this.removeAMPM(times[0]);
-                    }
-                    
-                    // change pm hours to 24 hour number
-                    if(this.hasPM(text)) {
-                        if(times[0] < 12) {
-                            times[0] = parseInt(times[0], 10) + 12;
-                        }
-                    }
-    
-                    // add leading zero's where needed
-                    if(times[0] && times[0].length === 1) {
-                        times[0] = '0' + times[0];
-                    }
-                    
-                    // rejoin text elements together
-                    if(times[0]) {
-                        text = times.join(':');
-                    }
-                }
-            }
-            
-            // remove am/pm strings
-            return this.removeAMPM(text);
-        },
-    
-    
-       /**
-         * overlays a time on a given data to return the union of the two
-         *
-         * @param  {String} date
-         * @param  {String} time
-         * @param  {String} format ( Modules.ISODate profile format )
-         * @return {Object} Modules.ISODate
-         */ 
-        dateTimeUnion: function(date, time, format) {
-            var isodate = new modules.ISODate(date, format),
-                isotime = new modules.ISODate();
-    
-            isotime.parseTime(this.parseAmPmTime(time), format);
-            if(isodate.hasFullDate() && isotime.hasTime()) {
-                isodate.tH = isotime.tH;
-                isodate.tM = isotime.tM;
-                isodate.tS = isotime.tS;
-                isodate.tD = isotime.tD;
-                return isodate;
-            } else {
-                if(isodate.hasFullDate()){
-                    return isodate;
-                }
-                return new modules.ISODate();
-            }
-        },
-    
-    
-       /**
-         * concatenate a array of date and time text fragments to create an ISODate object
-         * used for microformat value and value-title rules
-         *
-         * @param  {Array} arr ( Array of Strings )
-         * @param  {String} format ( Modules.ISODate profile format )
-         * @return {Object} Modules.ISODate
-         */ 
-        concatFragments: function (arr, format) {
-            var out = new modules.ISODate(),
-                i = 0,
-                value = '';
-            
-            // if the fragment already contains a full date just return it once its converted to profile
-            if(arr[0].toUpperCase().match('T')) {
-                return new modules.ISODate(arr[0], format);
-            }else{
-                for(i = 0; i < arr.length; i++) {
-                value = arr[i];
-      
-                // date pattern
-                if( value.charAt(4) === '-' && out.hasFullDate() === false ){
-                    out.parseDate(value);
-                }
-                
-                // time pattern
-                if( (value.indexOf(':') > -1 || modules.utils.isNumber( this.parseAmPmTime(value) )) && out.hasTime() === false ) {
-                    // split time And timezone
-                    var items = this.splitTimeAndZone(value);
-                    value = items[0];
-                    
-                    // parse any use of am/pm
-                    value = this.parseAmPmTime(value);
-                    out.parseTime(value);
-                    
-                    // parse any timezone that ws appended to time
-                    if(items.length > 1){
-                         out.parseTimeZone(items[1], format);
-                    }
-                }
-                
-                // timezone pattern
-                if(value.charAt(0) === '-' || value.charAt(0) === '+' || value.toUpperCase() === 'Z') {
-                    if( out.hasTimeZone() === false ){
-                        out.parseTimeZone(value);
-                    }
-                }
-    
-            }
-            return out;
-                
-            }
-        },
-        
-        
-       /**
-         * parses text by spliting it into an array time and timezone strings
-         *
-         * @param  {String} text
-         * @return {Array} Modules.ISODate
-         */ 
-        splitTimeAndZone: function ( text ){
-           var out = [text],
-               chars = ['-','+','z','Z'],
-               i = chars.length;
-               
-            while (i--) {
-              if(text.indexOf(chars[i]) > -1){
-                  out[0] = text.slice( 0, text.indexOf(chars[i]) );
-                  out.push( text.slice( text.indexOf(chars[i]) ) );
-                  break;
-               }
-            }
-           return out;
-        }
-        
-    };
+		/**
+		 * parses a time from text and return 24hr time string
+		 * i.e. 5:34am = 05:34:00 and 1:52:04p.m. = 13:52:04
+		 *
+		 * @param  {String} text
+		 * @return {String}
+		 */ 
+		parseAmPmTime: function( text ) {
+			var out = text,
+				times = [];
+	
+			// if the string has a text : or am or pm
+			if(modules.utils.isString(out)) {
+				//text = text.toLowerCase();
+				text = text.replace(/[ ]+/g, '');
+	
+				if(text.match(':') || this.hasAM(text) || this.hasPM(text)) {
+	
+					if(text.match(':')) {
+						times = text.split(':');
+					} else {
+						// single number text ie 5pm
+						times[0] = text;
+						times[0] = this.removeAMPM(times[0]);
+					}
+					
+					// change pm hours to 24 hour number
+					if(this.hasPM(text)) {
+						if(times[0] < 12) {
+							times[0] = parseInt(times[0], 10) + 12;
+						}
+					}
+	
+					// add leading zero's where needed
+					if(times[0] && times[0].length === 1) {
+						times[0] = '0' + times[0];
+					}
+					
+					// rejoin text elements together
+					if(times[0]) {
+						text = times.join(':');
+					}
+				}
+			}
+			
+			// remove am/pm strings
+			return this.removeAMPM(text);
+		},
+	
+	
+	   /**
+		 * overlays a time on a given data to return the union of the two
+		 *
+		 * @param  {String} date
+		 * @param  {String} time
+		 * @param  {String} format ( Modules.ISODate profile format )
+		 * @return {Object} Modules.ISODate
+		 */ 
+		dateTimeUnion: function(date, time, format) {
+			var isodate = new modules.ISODate(date, format),
+				isotime = new modules.ISODate();
+	
+			isotime.parseTime(this.parseAmPmTime(time), format);
+			if(isodate.hasFullDate() && isotime.hasTime()) {
+				isodate.tH = isotime.tH;
+				isodate.tM = isotime.tM;
+				isodate.tS = isotime.tS;
+				isodate.tD = isotime.tD;
+				return isodate;
+			} else {
+				if(isodate.hasFullDate()){
+					return isodate;
+				}
+				return new modules.ISODate();
+			}
+		},
+	
+	
+	   /**
+		 * concatenate a array of date and time text fragments to create an ISODate object
+		 * used for microformat value and value-title rules
+		 *
+		 * @param  {Array} arr ( Array of Strings )
+		 * @param  {String} format ( Modules.ISODate profile format )
+		 * @return {Object} Modules.ISODate
+		 */ 
+		concatFragments: function (arr, format) {
+			var out = new modules.ISODate(),
+				i = 0,
+				value = '';
+			
+			// if the fragment already contains a full date just return it once its converted to profile
+			if(arr[0].toUpperCase().match('T')) {
+				return new modules.ISODate(arr[0], format);
+			}else{
+				for(i = 0; i < arr.length; i++) {
+				value = arr[i];
+	  
+				// date pattern
+				if( value.charAt(4) === '-' && out.hasFullDate() === false ){
+					out.parseDate(value);
+				}
+				
+				// time pattern
+				if( (value.indexOf(':') > -1 || modules.utils.isNumber( this.parseAmPmTime(value) )) && out.hasTime() === false ) {
+					// split time And timezone
+					var items = this.splitTimeAndZone(value);
+					value = items[0];
+					
+					// parse any use of am/pm
+					value = this.parseAmPmTime(value);
+					out.parseTime(value);
+					
+					// parse any timezone that ws appended to time
+					if(items.length > 1){
+						 out.parseTimeZone(items[1], format);
+					}
+				}
+				
+				// timezone pattern
+				if(value.charAt(0) === '-' || value.charAt(0) === '+' || value.toUpperCase() === 'Z') {
+					if( out.hasTimeZone() === false ){
+						out.parseTimeZone(value);
+					}
+				}
+	
+			}
+			return out;
+				
+			}
+		},
+		
+		
+	   /**
+		 * parses text by spliting it into an array time and timezone strings
+		 *
+		 * @param  {String} text
+		 * @return {Array} Modules.ISODate
+		 */ 
+		splitTimeAndZone: function ( text ){
+		   var out = [text],
+			   chars = ['-','+','z','Z'],
+			   i = chars.length;
+			   
+			while (i--) {
+			  if(text.indexOf(chars[i]) > -1){
+				  out[0] = text.slice( 0, text.indexOf(chars[i]) );
+				  out.push( text.slice( text.indexOf(chars[i]) ) );
+				  break;
+			   }
+			}
+		   return out;
+		}
+		
+	};
 
 
 	modules.text = {
-        
-        // normalised or whitespace or whitespacetrimmed
-        textFormat: 'whitespacetrimmed', 
-        
-        // block level tags, used to add line returns
-        blockLevelTags: ['h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'p', 'hr', 'pre', 'table',
-            'address', 'article', 'aside', 'blockquote', 'caption', 'col', 'colgroup', 'dd', 'div', 
-            'dt', 'dir', 'fieldset', 'figcaption', 'figure', 'footer', 'form',  'header', 'hgroup', 'hr', 
-            'li', 'map', 'menu', 'nav', 'optgroup', 'option', 'section', 'tbody', 'testarea', 
-            'tfoot', 'th', 'thead', 'tr', 'td', 'ul', 'ol', 'dl', 'details'],
+		
+		// normalised or whitespace or whitespacetrimmed
+		textFormat: 'whitespacetrimmed', 
+		
+		// block level tags, used to add line returns
+		blockLevelTags: ['h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'p', 'hr', 'pre', 'table',
+			'address', 'article', 'aside', 'blockquote', 'caption', 'col', 'colgroup', 'dd', 'div', 
+			'dt', 'dir', 'fieldset', 'figcaption', 'figure', 'footer', 'form',  'header', 'hgroup', 'hr', 
+			'li', 'map', 'menu', 'nav', 'optgroup', 'option', 'section', 'tbody', 'testarea', 
+			'tfoot', 'th', 'thead', 'tr', 'td', 'ul', 'ol', 'dl', 'details'],
 
-        // tags which have code metadata 
-        excludeTags: ['noframe', 'noscript', 'script', 'style', 'frames', 'frameset'],
+		// tags which have code metadata 
+		excludeTags: ['noframe', 'noscript', 'script', 'style', 'frames', 'frameset'],
  
-    
-        /**
-         * parses the text from DOM Node 
-         *
+	
+		/**
+		 * parses the text from DOM Node 
+		 *
 		 * @param  {DOM Node} node
-         * @param  {String} textFormat
-         * @return {String}
-         */
-        parse: function(doc, node, textFormat){
-            var out;
-            this.textFormat = (textFormat)? textFormat : this.textFormat;
-            if(this.textFormat === 'normalised'){
-                out = this.walkTreeForText( node );
-                if(out !== undefined){
-                    return this.normalise( doc, out );
-                }else{
-                    return '';
-                }
-            }else{
-               return this.formatText( doc, modules.domUtils.textContent(node), this.textFormat );
-            }
-        },
-        
-        
-        /**
-         * parses the text from html string 
-         *
-         * @param  {DOM Document} doc
+		 * @param  {String} textFormat
+		 * @return {String}
+		 */
+		parse: function(doc, node, textFormat){
+			var out;
+			this.textFormat = (textFormat)? textFormat : this.textFormat;
+			if(this.textFormat === 'normalised'){
+				out = this.walkTreeForText( node );
+				if(out !== undefined){
+					return this.normalise( doc, out );
+				}else{
+					return '';
+				}
+			}else{
+			   return this.formatText( doc, modules.domUtils.textContent(node), this.textFormat );
+			}
+		},
+		
+		
+		/**
+		 * parses the text from html string 
+		 *
+		 * @param  {DOM Document} doc
 		 * @param  {String} text
-         * @param  {String} textFormat
-         * @return {String}
-         */  
-        parseText: function( doc, text, textFormat ){
-           var node = doc.createElement('div');
-           node.innerHTML = text;
-           return this.parse( doc, node, textFormat );
-        },
-        
-        
-        /**
-         * parses the text from html string - only for whitespace or whitespacetrimmed formats
-         *
+		 * @param  {String} textFormat
+		 * @return {String}
+		 */  
+		parseText: function( doc, text, textFormat ){
+		   var node = doc.createElement('div');
+		   node.innerHTML = text;
+		   return this.parse( doc, node, textFormat );
+		},
+		
+		
+		/**
+		 * parses the text from html string - only for whitespace or whitespacetrimmed formats
+		 *
 		 * @param  {String} text
-         * @param  {String} textFormat
-         * @return {String}
-         */  
-        formatText: function( doc, text, textFormat ){
-           this.textFormat = (textFormat)? textFormat : this.textFormat;
-           if(text){
-              var out = '',
-                  regex = /(<([^>]+)>)/ig;
-                
-              out = text.replace(regex, '');   
-              if(this.textFormat === 'whitespacetrimmed') {    
-                 out = modules.utils.trimWhitespace( out );
-              }
-              
-              //return entities.decode( out, 2 );
-              return modules.domUtils.decodeEntities( doc, out );
-           }else{
-              return ''; 
-           }
-        },
-        
-        
-        /**
-         * normalises whitespace in given text 
-         *
+		 * @param  {String} textFormat
+		 * @return {String}
+		 */  
+		formatText: function( doc, text, textFormat ){
+		   this.textFormat = (textFormat)? textFormat : this.textFormat;
+		   if(text){
+			  var out = '',
+				  regex = /(<([^>]+)>)/ig;
+				
+			  out = text.replace(regex, '');   
+			  if(this.textFormat === 'whitespacetrimmed') {    
+				 out = modules.utils.trimWhitespace( out );
+			  }
+			  
+			  //return entities.decode( out, 2 );
+			  return modules.domUtils.decodeEntities( doc, out );
+		   }else{
+			  return ''; 
+		   }
+		},
+		
+		
+		/**
+		 * normalises whitespace in given text 
+		 *
 		 * @param  {String} text
-         * @return {String}
-         */ 
-        normalise: function( doc, text ){
-            text = text.replace( /&nbsp;/g, ' ') ;    // exchanges html entity for space into space char
-            text = modules.utils.removeWhiteSpace( text );     // removes linefeeds, tabs and addtional spaces
-            text = modules.domUtils.decodeEntities( doc, text );  // decode HTML entities
-            text = text.replace( '–', '-' );          // correct dash decoding
-            return modules.utils.trim( text );
-        },
-        
-     
-        /**
-         * walks DOM tree parsing the text from DOM Nodes
-         *
-	     * @param  {DOM Node} node
-         * @return {String}
-         */ 
-        walkTreeForText: function( node ) {
-            var out = '',
-                j = 0;
-    
-            if(node.tagName && this.excludeTags.indexOf( node.tagName.toLowerCase() ) > -1){
-                return out;
-            }
-    
-            // if node is a text node get its text
-            if(node.nodeType && node.nodeType === 3){
-                out += modules.domUtils.getElementText( node ); 
-            }
-    
-            // get the text of the child nodes
-            if(node.childNodes && node.childNodes.length > 0){
-                for (j = 0; j < node.childNodes.length; j++) {
-                    var text = this.walkTreeForText( node.childNodes[j] );
-                    if(text !== undefined){
-                        out += text;
-                    }
-                }
-            }
-    
-            // if its a block level tag add an additional space at the end
-            if(node.tagName && this.blockLevelTags.indexOf( node.tagName.toLowerCase() ) !== -1){
-                out += ' ';
-            } 
-            
-            return (out === '')? undefined : out ;
-        }
-        
-    };
+		 * @return {String}
+		 */ 
+		normalise: function( doc, text ){
+			text = text.replace( /&nbsp;/g, ' ') ;    // exchanges html entity for space into space char
+			text = modules.utils.removeWhiteSpace( text );     // removes linefeeds, tabs and addtional spaces
+			text = modules.domUtils.decodeEntities( doc, text );  // decode HTML entities
+			text = text.replace( '–', '-' );          // correct dash decoding
+			return modules.utils.trim( text );
+		},
+		
+	 
+		/**
+		 * walks DOM tree parsing the text from DOM Nodes
+		 *
+		 * @param  {DOM Node} node
+		 * @return {String}
+		 */ 
+		walkTreeForText: function( node ) {
+			var out = '',
+				j = 0;
+	
+			if(node.tagName && this.excludeTags.indexOf( node.tagName.toLowerCase() ) > -1){
+				return out;
+			}
+	
+			// if node is a text node get its text
+			if(node.nodeType && node.nodeType === 3){
+				out += modules.domUtils.getElementText( node ); 
+			}
+	
+			// get the text of the child nodes
+			if(node.childNodes && node.childNodes.length > 0){
+				for (j = 0; j < node.childNodes.length; j++) {
+					var text = this.walkTreeForText( node.childNodes[j] );
+					if(text !== undefined){
+						out += text;
+					}
+				}
+			}
+	
+			// if its a block level tag add an additional space at the end
+			if(node.tagName && this.blockLevelTags.indexOf( node.tagName.toLowerCase() ) !== -1){
+				out += ' ';
+			} 
+			
+			return (out === '')? undefined : out ;
+		}
+		
+	};
 
 
 	modules.html = {
-        
-        // elements which are self closing
-        selfClosingElt: ['area', 'base', 'br', 'col', 'hr', 'img', 'input', 'link', 'meta', 'param', 'command', 'keygen', 'source'],
-    
+		
+		// elements which are self closing
+		selfClosingElt: ['area', 'base', 'br', 'col', 'hr', 'img', 'input', 'link', 'meta', 'param', 'command', 'keygen', 'source'],
+	
 
-        /**
-         * parse the html string from DOM Node
-         *
+		/**
+		 * parse the html string from DOM Node
+		 *
 		 * @param  {DOM Node} node
-         * @return {String}
-         */ 
-        parse: function( node ){
-            var out = '',
-                j = 0;
-    
-            // we don not want the outer container
-            if(node.childNodes && node.childNodes.length > 0){
-                for (j = 0; j < node.childNodes.length; j++) {
-                    var text = this.walkTreeForHtml( node.childNodes[j] );
-                    if(text !== undefined){
-                        out += text;
-                    }
-                }
-            }
-    
-            return out;
-        },
-    
+		 * @return {String}
+		 */ 
+		parse: function( node ){
+			var out = '',
+				j = 0;
+	
+			// we don not want the outer container
+			if(node.childNodes && node.childNodes.length > 0){
+				for (j = 0; j < node.childNodes.length; j++) {
+					var text = this.walkTreeForHtml( node.childNodes[j] );
+					if(text !== undefined){
+						out += text;
+					}
+				}
+			}
+	
+			return out;
+		},
+	
   
-        /**
-         * walks DOM tree parsing the html string from DOM Nodes
-         *
-         * @param  {DOM Document} doc
+		/**
+		 * walks DOM tree parsing the html string from DOM Nodes
+		 *
+		 * @param  {DOM Document} doc
 		 * @param  {DOM Node} node
-         * @return {String}
-         */ 
-        walkTreeForHtml: function( node ) {
-            var out = '',
-                j = 0;
-    
-            // if node is a text node get its text
-            if(node.nodeType && node.nodeType === 3){
-                out += modules.domUtils.getElementText( node ); 
-            }
-    
-        
-            // exclude text which has been added with uf include pattern  - 
-            if(node.nodeType && node.nodeType === 1 && modules.domUtils.hasAttribute(node, 'data-include') === false){
-    
-                // begin tag
-                out += '<' + node.tagName.toLowerCase();  
-    
-                // add attributes
-                var attrs = modules.domUtils.getOrderedAttributes(node);
-                for (j = 0; j < attrs.length; j++) {
-                    out += ' ' + attrs[j].name +  '=' + '"' + attrs[j].value + '"';
-                }
-    
-                if(this.selfClosingElt.indexOf(node.tagName.toLowerCase()) === -1){
-                    out += '>';
-                }
-    
-                // get the text of the child nodes
-                if(node.childNodes && node.childNodes.length > 0){
-                    
-                    for (j = 0; j < node.childNodes.length; j++) {
-                        var text = this.walkTreeForHtml( node.childNodes[j] );
-                        if(text !== undefined){
-                            out += text;
-                        }
-                    }
-                }
-    
-                // end tag
-                if(this.selfClosingElt.indexOf(node.tagName.toLowerCase()) > -1){
-                    out += ' />'; 
-                }else{
-                    out += '</' + node.tagName.toLowerCase() + '>'; 
-                }
-            } 
-            
-            return (out === '')? undefined : out;
-        }    
-    
-    
-    };
+		 * @return {String}
+		 */ 
+		walkTreeForHtml: function( node ) {
+			var out = '',
+				j = 0;
+	
+			// if node is a text node get its text
+			if(node.nodeType && node.nodeType === 3){
+				out += modules.domUtils.getElementText( node ); 
+			}
+	
+		
+			// exclude text which has been added with uf include pattern  - 
+			if(node.nodeType && node.nodeType === 1 && modules.domUtils.hasAttribute(node, 'data-include') === false){
+	
+				// begin tag
+				out += '<' + node.tagName.toLowerCase();  
+	
+				// add attributes
+				var attrs = modules.domUtils.getOrderedAttributes(node);
+				for (j = 0; j < attrs.length; j++) {
+					out += ' ' + attrs[j].name +  '=' + '"' + attrs[j].value + '"';
+				}
+	
+				if(this.selfClosingElt.indexOf(node.tagName.toLowerCase()) === -1){
+					out += '>';
+				}
+	
+				// get the text of the child nodes
+				if(node.childNodes && node.childNodes.length > 0){
+					
+					for (j = 0; j < node.childNodes.length; j++) {
+						var text = this.walkTreeForHtml( node.childNodes[j] );
+						if(text !== undefined){
+							out += text;
+						}
+					}
+				}
+	
+				// end tag
+				if(this.selfClosingElt.indexOf(node.tagName.toLowerCase()) > -1){
+					out += ' />'; 
+				}else{
+					out += '</' + node.tagName.toLowerCase() + '>'; 
+				}
+			} 
+			
+			return (out === '')? undefined : out;
+		}    
+	
+	
+	};
 
 
 	modules.maps['h-adr'] = {
@@ -3440,7 +3491,7 @@
 			'postal-code': {},
 			'country-name': {}
 		}
-  	};
+	};
 
 
 	modules.maps['h-card'] =  {
@@ -3545,9 +3596,9 @@
 			'latitude': {},
 			'longitude': {},
 			'url': {
-	            'map': 'u-url',
-	            'relAlt': ['bookmark']
-	        }
+				'map': 'u-url',
+				'relAlt': ['bookmark']
+			}
 		}
 	};
 
@@ -3633,142 +3684,142 @@
 
 
 	modules.maps['h-listing'] = {
-      root: 'hlisting',
-      name: 'h-listing',
-      properties: {
-        'version': {},
-        'lister': {
-          'uf': ['h-card']
-        },
-        'dtlisted': {
-          'map': 'dt-listed'
-        },
-        'dtexpired': {
-          'map': 'dt-expired'
-        },
-        'location': {},
-        'price': {},
-        'item': {
-          'uf': ['h-card','a-adr','h-geo']
-        },
-        'summary': {
-          'map': 'p-name'
-        },
-        'description': {
-          'map': 'e-description'
-        },
-        'listing': {}
-      }
-    };
+			root: 'hlisting',
+			name: 'h-listing',
+			properties: {
+				'version': {},
+				'lister': {
+					'uf': ['h-card']
+				},
+				'dtlisted': {
+					'map': 'dt-listed'
+				},
+				'dtexpired': {
+					'map': 'dt-expired'
+				},
+				'location': {},
+				'price': {},
+				'item': {
+					'uf': ['h-card','a-adr','h-geo']
+				},
+				'summary': {
+					'map': 'p-name'
+				},
+				'description': {
+					'map': 'e-description'
+				},
+				'listing': {}
+			}
+		};
 
 
 	modules.maps['h-news'] = {
-      root: 'hnews',
-      name: 'h-news',
-      properties: {
-        'entry': {
-          'uf': ['h-entry']
-        },
-        'geo': {
-          'uf': ['h-geo']
-        },
-        'latitude': {},
-        'longitude': {},
-        'source-org': {
-          'uf': ['h-card']
-        },
-        'dateline': {
-          'uf': ['h-card']
-        },
-        'item-license': {
-          'map': 'u-item-license'
-        },
-        'principles': {
-          'map': 'u-principles', 
-          'relAlt': ['principles']
-        }
-      }
-    };
+			root: 'hnews',
+			name: 'h-news',
+			properties: {
+				'entry': {
+					'uf': ['h-entry']
+				},
+				'geo': {
+					'uf': ['h-geo']
+				},
+				'latitude': {},
+				'longitude': {},
+				'source-org': {
+					'uf': ['h-card']
+				},
+				'dateline': {
+					'uf': ['h-card']
+				},
+				'item-license': {
+					'map': 'u-item-license'
+				},
+				'principles': {
+					'map': 'u-principles', 
+					'relAlt': ['principles']
+				}
+			}
+		};
 
 
 	modules.maps['h-org'] = {
-        root: 'h-x-org',  // drop this from v1 as it causes issue with fn org hcard pattern
-        name: 'h-org',
-        properties: {
-            'organization-name': {},
-            'organization-unit': {}
-        }
-    };
+		root: 'h-x-org',  // drop this from v1 as it causes issue with fn org hcard pattern
+		name: 'h-org',
+		properties: {
+			'organization-name': {},
+			'organization-unit': {}
+		}
+	};
 
 
 	modules.maps['h-product'] = {
-      root: 'hproduct',
-      name: 'h-product',
-      properties: {
-        'brand': {
-          'uf': ['h-card']
-        },
-        'category': {
-          'map': 'p-category',
-          'relAlt': ['tag']
-        },
-        'price': {},
-        'description': {
-          'map': 'e-description'
-        },
-        'fn': {
-          'map': 'p-name'
-        },
-        'photo': {
-          'map': 'u-photo'
-        },
-        'url': {
-          'map': 'u-url'
-        },
-        'review': {
-          'uf': ['h-review', 'h-review-aggregate']
-        },
-        'listing': {
-          'uf': ['h-listing']
-        },
-        'identifier': {
-          'map': 'u-identifier'
-        }
-      }
-    };
+			root: 'hproduct',
+			name: 'h-product',
+			properties: {
+				'brand': {
+					'uf': ['h-card']
+				},
+				'category': {
+					'map': 'p-category',
+					'relAlt': ['tag']
+				},
+				'price': {},
+				'description': {
+					'map': 'e-description'
+				},
+				'fn': {
+					'map': 'p-name'
+				},
+				'photo': {
+					'map': 'u-photo'
+				},
+				'url': {
+					'map': 'u-url'
+				},
+				'review': {
+					'uf': ['h-review', 'h-review-aggregate']
+				},
+				'listing': {
+					'uf': ['h-listing']
+				},
+				'identifier': {
+					'map': 'u-identifier'
+				}
+			}
+		};
 
 
 	modules.maps['h-recipe'] = {
-      root: 'hrecipe',
-      name: 'h-recipe',
-      properties: {
-        'fn': {
-          'map': 'p-name'
-        },
-        'ingredient': {
-          'map': 'e-ingredient'
-        },
-        'yield': {},
-        'instructions': {
-          'map': 'e-instructions'
-        },
-        'duration': {
-          'map': 'dt-duration'
-        },
-        'photo': {
-          'map': 'u-photo'
-        },
-        'summary': {},
-        'author': {
-          'uf': ['h-card']
-        },
-        'published': {
-          'map': 'dt-published'
-        },
-        'nutrition': {},
-        'tag': {}
-      }
-    };
+			root: 'hrecipe',
+			name: 'h-recipe',
+			properties: {
+				'fn': {
+					'map': 'p-name'
+				},
+				'ingredient': {
+					'map': 'e-ingredient'
+				},
+				'yield': {},
+				'instructions': {
+					'map': 'e-instructions'
+				},
+				'duration': {
+					'map': 'dt-duration'
+				},
+				'photo': {
+					'map': 'u-photo'
+				},
+				'summary': {},
+				'author': {
+					'uf': ['h-card']
+				},
+				'published': {
+					'map': 'dt-published'
+				},
+				'nutrition': {},
+				'tag': {}
+			}
+		};
 
 
 	modules.maps['h-resume'] = {
@@ -3794,67 +3845,67 @@
 
 
 	modules.maps['h-review-aggregate'] = {
-        root: 'hreview-aggregate',
-        name: 'h-review-aggregate',
-        properties: {
-            'summary': {
-                'map': 'p-name'
-            },
-            'item': {
-                'map': 'p-item',
-                'uf': ['h-item', 'h-geo', 'h-adr', 'h-card', 'h-event', 'h-product']
-            },
-            'rating': {},
-            'average': {},
-            'best': {},
-            'worst': {},       
-            'count': {},
-            'votes': {},
-            'category': {
-                'map': 'p-category',
-                'relAlt': ['tag']
-            },
-            'url': {
-                'map': 'u-url',
-                'relAlt': ['self', 'bookmark']
-            }
-        }
-    };
+		root: 'hreview-aggregate',
+		name: 'h-review-aggregate',
+		properties: {
+			'summary': {
+				'map': 'p-name'
+			},
+			'item': {
+				'map': 'p-item',
+				'uf': ['h-item', 'h-geo', 'h-adr', 'h-card', 'h-event', 'h-product']
+			},
+			'rating': {},
+			'average': {},
+			'best': {},
+			'worst': {},       
+			'count': {},
+			'votes': {},
+			'category': {
+				'map': 'p-category',
+				'relAlt': ['tag']
+			},
+			'url': {
+				'map': 'u-url',
+				'relAlt': ['self', 'bookmark']
+			}
+		}
+	};
 
 
 	modules.maps['h-review'] = {
-        root: 'hreview',
-        name: 'h-review',
-        properties: {
-            'summary': {
-                'map': 'p-name'
-            },
-            'description': {
-                'map': 'e-description'
-            },
-            'item': {
-                'map': 'p-item',
-                'uf': ['h-item', 'h-geo', 'h-adr', 'h-card', 'h-event', 'h-product']
-            },
-            'reviewer': {
-                'uf': ['h-card']
-            },
-            'dtreviewer': {
-                'map': 'dt-reviewer'
-            },
-            'rating': {},
-            'best': {},
-            'worst': {},
-            'category': {
-                'map': 'p-category',
-                'relAlt': ['tag']
-            },
-            'url': {
-                'map': 'u-url',
-                'relAlt': ['self', 'bookmark']
-            }
-        }
-    };
+		root: 'hreview',
+		name: 'h-review',
+		properties: {
+			'summary': {
+				'map': 'p-name'
+			},
+			'description': {
+				'map': 'e-description'
+			},
+			'item': {
+				'map': 'p-item',
+				'uf': ['h-item', 'h-geo', 'h-adr', 'h-card', 'h-event', 'h-product']
+			},
+			'reviewer': {
+				'uf': ['h-card']
+			},
+			'dtreviewer': {
+				'map': 'dt-reviewer'
+			},
+			'rating': {},
+			'best': {},
+			'worst': {},
+			'category': {
+				'map': 'p-category',
+				'relAlt': ['tag']
+			},
+			'url': {
+				'map': 'u-url',
+				'relAlt': ['self', 'bookmark']
+			}
+		}
+	};
 
 
 	modules.rels = {
@@ -3902,10 +3953,20 @@
     
 	// creates an instance of parser before firing get
     Microformats.get = function(options){
-    	var parser;
-        
-		parser = new modules.Parser();
-    	return parser.get(options.node, options);
+    	var parser = new modules.Parser();
+    	return parser.get( options );
+    };
+    
+    
+    Microformats.count = function(options){
+    	var parser = new modules.Parser();
+    	return parser.count( options );
+    };
+    
+    
+    Microformats.isMicroformat = function( node ){
+    	var parser = new modules.Parser();
+    	return parser.isMicroformat( node );
     };
 
     return Microformats;

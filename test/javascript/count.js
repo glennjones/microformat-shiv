@@ -14,10 +14,6 @@ window.onload = function() {
         e.preventDefault();
         
         var html,
-            baseUrl,
-            collapsewhitespace,
-            dateformatElt,
-            dateformat,
             doc,
             node,
             options,
@@ -26,10 +22,6 @@ window.onload = function() {
     
         // get data from html
         html = document.getElementById('html').value;
-        baseUrl = document.getElementById('baseurl').value;
-        collapsewhitespace = document.getElementById('collapsewhitespace').checked;   
-        dateformatElt = document.getElementById("dateformat");
-        dateformat = dateformatElt.options[dateformatElt.selectedIndex].value;
         parserJSONElt = document.querySelector('#parser-json pre code')
         
         // createHTMLDocument is not well support below ie9
@@ -39,23 +31,15 @@ window.onload = function() {
     	doc.body.appendChild(node);    
         
         options ={
-            'document': doc, // limit document to current fragment of html by passing in node instead - only need in this usecase
-            'node': node,
-            'dateFormat': dateformat
+            'node': node
         };
-        if(baseUrl.trim() !== ''){
-            options.baseUrl = baseUrl;
-        }
-        if(collapsewhitespace === true){
-            options.textFormat = 'normalised';
-        }
-        
+
         // parse direct into Modules to help debugging
         if(window.Modules){
             var parser = new Modules.Parser();
-            mfJSON = parser.get(options);
+            mfJSON = parser.count(options);
         }else if(window.Microformats){
-            mfJSON = Microformats.get(options);
+            mfJSON = Microformats.count(options);
         }
 
         

@@ -26,11 +26,14 @@ module.exports = function( grunt ) {
 					banner: '<%= meta.banner %>',
 					process: function(src, filename) {
 					  console.log(filename);
+					  if(filename.indexOf('maps') > -1){
+						  src = src.replace('modules.maps = (modules.maps)? modules.maps : {};','');  
+					  }
 					  if(filename.indexOf('umd') === -1){
 						  src = src.replace(/(^|\n)[ \t]*('use strict'|"use strict");?\s*/g, '');
 						  src = src.replace('var Modules = (function (modules) {','');
 						  src = src.replace('return modules;','');
-						  src = src.replace('} (Modules || {}));',''); 
+						  src = src.replace('} (Modules || {}));','');
 						  if(src.indexOf('*/') > -1){
 						  	src = '\n	' + src.substr(src.indexOf('*/')+2).trim() + '\n';
 						  }
@@ -57,7 +60,7 @@ module.exports = function( grunt ) {
 						'lib/dates.js',
 						'lib/text.js',
 						'lib/html.js',
-						'lib/maps.js',
+						'lib/maps/*.js',
 						'umd/umd-end.js'
 					]
 				}
@@ -68,11 +71,11 @@ module.exports = function( grunt ) {
 					process: function(src, filename) {
 					  if(filename.indexOf('umd') === -1){
 						  src = src.replace(/(^|\n)[ \t]*('use strict'|"use strict");?\s*/g, '');
-						  src = src.replace('var Modules = (function (modules) {','');
-						  src = src.replace('return modules;','');
-						  src = src.replace('} (Modules || {}));',''); 
+						  //src = src.replace('var Modules = (function (modules) {','');
+						  //src = src.replace('return modules;','');
+						  //src = src.replace('} (Modules || {}));',''); 
 						  
-						  src = src.replace('modules.maps = (modules.maps)? modules.maps : {};',''); 
+						  //src = src.replace('modules.maps = (modules.maps)? modules.maps : {};',''); 
 						  if(src.indexOf('*/') > -1){
 						  	src = '\n	' + src.substr(src.indexOf('*/')+2).trim() + '\n';
 						  }

@@ -3,7 +3,7 @@
     <head>
 
 		<meta charset="UTF-8">
-		<title>Parse Microformats - Modules</title>
+		<title>Count Microformats - Modules</title>
 		<meta name="description" content="microformat-shiv - A light-weight cross browser javascript microformats 2 parser" />
 
         <link rel="stylesheet" href="css/testrunner.css">
@@ -42,13 +42,13 @@
 		<script src="javascript/beautify.js"></script>
         <script src="javascript/prettify.js"></script>	
 			
-		<script src="javascript/parse.js"></script>	
+		<script src="javascript/count.js"></script>	
 
 	</head>
 	
 	<body>
         
-        <h1>Parse Microformats - Modules</h1>
+        <h1>Count Microformats - Modules</h1>
 		<p>Type or copy and paste the HTML you want to parse into the box below.</p>
         
                 <form id="mf-form" class="tool-interface" method="get" action="">
@@ -58,34 +58,18 @@
      &lt;span class="p-given-name"&gt;Glenn&lt;/span&gt;
      &lt;span class="p-family-name"&gt;Jones&lt;/span&gt;
 &lt;/a&gt;
+&lt;a class="h-card" href="http://janedoe.net"&gt;
+     &lt;span class="p-given-name"&gt;Jane&lt;/span&gt;
+     &lt;span class="p-family-name"&gt;Doe&lt;/span&gt;
+&lt;/a&gt;
+&lt;a class="h-event" href="http://janedoe.net"&gt;
+     &lt;span class="p-name"&gt;Event&lt;/span&gt;
+     &lt;span class="dt-start"&gt;2015-07-01&lt;/span&gt;
+&lt;/a&gt;
 </textarea>
 	          		</p>
-
-					
-					<p>
-			        	<label for="baseurl">BaseURL</label>
-			          	<input id="baseurl" name="baseurl" placeholder="Optional URL to help resolve relative links" value="http://example.com" type="text">
-			        </p>
-
-					
-					<p class="checkbox">
-						<input id="collapsewhitespace" name="collapsewhitespace" id="textformat2" type="checkbox">
-						<label class="checkbox-label" for="textformat2"><strong>Experimental</strong> ‐ Text white-space collapsing</label>
-			        </p>
-					
-					<p>
-                      
-						<select id="dateformat" class="indent" name="dateformat" id="dateformat2">
-							<option value="auto" selected="selected">auto</option>
-							<option value="W3C">w3c</option>
-							<option value="HTML5">html5</option>
-							<option value="RFC3339">rfc3339</option>
-		           		</select>
-             
-						<label class="checkbox-label" for="dateformat2"><strong>Experimental</strong> ‐ ISO date profile</label>
-	 				</p>
-
-	          		<input class="button" value="Parse" type="submit">
+					  
+	          		<input class="button" value="Count" type="submit">
 	         	</form>
                  
              <h1>Parser JSON</h1>
