@@ -67,9 +67,9 @@ The parser will find any microformats in yor HTML even custom strutures you defi
 #### Available options
 * `node` - (DOM element) a reference to an element to be used as the root to parse from - default is the current browser document
 * `filter` - (Array) a list of microformat type you which to only return - i.e. `['h-card']` - always returns `rels`
-* `textFormat` - (string) text output style `normalised` or `whitespacetrimmed` default is `whitespacetrimmed`
-* `dateFormat` - (string) the ISO date profile for output `auto`, `w3c` `rfc3339` or `html5` default is `auto`
-
+* `textFormat` - (String) text output style `normalised` or `whitespacetrimmed` default is `whitespacetrimmed`
+* `dateFormat` - (String) the ISO date profile for output `auto`, `w3c` `rfc3339` or `html5` default is `auto`
+* `add` - (Array) of version 1 definition objects
 
 
 ### Response 
@@ -99,7 +99,7 @@ Typical error structure.
         "items":[],
         "rels": {},
         "rel-urls": {}
-        "errors":["The options.document object does not have the right nodeType"]
+        "errors":["No options.node was provided and no global document object could be found."]
     }
 ```  
 
@@ -134,30 +134,47 @@ The `isMicroformat` method returns weather a node has a valid microformats class
     </script>    
 ```  
 
-
+### Version 1 definitions object
+The library has a large number of built in version 1 microformats definitions, but you can add new ones if you wish. Example of a definitions object
+```javascript
+    {
+		root: 'hpayment',
+		name: 'h-payment',
+		properties: {
+			'amount': {}
+		}
+	}
+```  
+Custom version 2 formats are automatticlly pick up by the parser without the need to add new definitions
 
 ### Unit and integration tests
 
 The library includes web pages which run the [microfomats test suite](https://github.com/microformats/tests).The tests are built using Mocha.js and you can run them directly from node.js.
 
 To run the test server download and install node.js and npm. From the command line move the project directory and excute the following commands:
-
+```  
     $ npm install
     $ node app
-    
+```      
 Within a browser entry the following web address
 
-    http://localhost:3000/mocha-tests-client.html
+*  http://localhost:3000/mocha-tests-client.html
     
     
 ### Test Coverage tools
 The tests page also has coverage report for the sub modules that the library uses:
 
-    http://localhost:3000/mocha-tests-client.html 
+*  http://localhost:3000/mocha-tests-client.html 
 
+```  
     $ ./node_modules/.bin/poncho --reporter lcov test/mocha-tests-server.html
-    $ ./node_modules/.bin/poncho --reporter lcov test/mocha-tests-server.html | ./node_modules/codacy-coverage/bin/codacy-coverage.js
+```  
 
+or
+
+```  
+    $ ./node_modules/.bin/poncho --reporter lcov test/mocha-tests-server.html | ./node_modules/codacy-coverage/bin/codacy-coverage.js
+```  
 
 ### Other tests and debugging tools
 There are also three other tests tools:

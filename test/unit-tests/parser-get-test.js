@@ -706,6 +706,61 @@ describe('get', function() {
         assert.deepEqual( result, altExpected );
         
    });
+   
+   
+   it('get - add new v1 format through options', function(){
+       
+       var  doc,
+            node,
+            options,
+            parser,
+            result;
+            
+        var altHTML = '<div class="hpayment">£<span class="amount">36.78</span></div>';
+        var altExpected = {   
+                'items': [{
+                    'type': ['h-payment'],
+                    'properties': {
+                        'amount': ['36.78'],
+                        'name': ['£36.78']
+                    }
+                }],
+                'rels': {},
+                'rel-urls': {}
+            };
+        var v1Definition = {
+        		root: 'hpayment',
+        		name: 'h-payment',
+        		properties: {
+        			'amount': {}
+        		}
+        	};
+
+
+        doc = document.implementation.createHTMLDocument('New Document');
+        node =  document.createElement('div');
+        node.innerHTML = altHTML;
+        doc.body.appendChild(node);    
+        
+        options ={
+            'node': node
+        };
+        // test access the private Modules.Parser object to provide coverage data 
+        // please use the public Microformats.get instead and add new definition throungh options
+        /* i.e.
+             options ={
+                'node': node,
+                'add': [v1Definition],
+            };
+        
+        */
+        parser = new Modules.Parser();
+        parser.add([v1Definition]);
+        result = parser.get(options);
+        
+        assert.deepEqual( result, altExpected );
+        
+   });
 
 
 

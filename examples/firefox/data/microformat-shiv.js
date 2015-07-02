@@ -1,6 +1,6 @@
 /*
    microformat-shiv - v0.3.4
-   Built: 2015-07-02 03:07 - http://microformat-shiv.com
+   Built: 2015-07-02 04:07 - http://microformat-shiv.com
    Copyright (c) 2015 Glenn Jones
    Licensed MIT 
 */
@@ -67,6 +67,7 @@
 			this.init();
 		
 			if(this.hasDOMContext( options )){
+				
 			
 				if(this.options.filters.length > 0){
 					// parse flat list of items
@@ -180,13 +181,16 @@
 		/**
 		 * add a new V1 mapping object to parser
 		 *
-		 * @param  {Object} map
+		 * @param  {Array} maps
 		 */
-		add: function( map ){
-			if(map && map.name){
-				modules.maps[name] = JSON.parser(JSON.stringify(map));	
-			}
+		add: function( maps ){
+			maps.forEach(function(map){
+				if(map && map.root && map.name && map.properties){
+				modules.maps[map.name] = JSON.parse(JSON.stringify(map));	
+				}
+			})
 		},
+
 		
 		
 		
@@ -4000,13 +4004,26 @@
     
     Microformats.count = function(options){
     	var parser = new modules.Parser();
+        addV1(parser, options);
     	return parser.count( options );
     };
     
     
-    Microformats.isMicroformat = function( node ){
+    Microformats.isMicroformat = function( node, options ){
     	var parser = new modules.Parser();
+        addV1(parser, options);
     	return parser.isMicroformat( node );
+    };
+    
+    
+    function addV1(parser, options){
+		if(options.maps){
+			if(Array.isArray(options.maps)){
+				parser.add(options.maps);
+			}else{
+				parser.add([options.maps]);
+			}
+		}
     };
 
     return Microformats;
