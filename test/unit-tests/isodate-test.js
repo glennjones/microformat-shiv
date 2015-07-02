@@ -5,6 +5,10 @@ Unit test for dates
 assert = chai.assert;
 
 
+// Tests private Modules.ISODate object 
+// Modules.ISODate is unit tested as it has an interface access by other modules  
+
+
 describe('Modules.ISODates', function() {
     
 

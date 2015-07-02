@@ -1,5 +1,6 @@
 # microformat-shiv
 
+[![build status](https://secure.travis-ci.org/glennjones/microformat-shiv.png)](http://travis-ci.org/glennjones/microformat-shiv)
 [![Codacy Badge](https://www.codacy.com/project/badge/520b9cab36254761b100c33d3e3899e3)](https://www.codacy.com/app/glennjonesnet/microformat-shiv)
 [![MIT license](http://img.shields.io/badge/license-MIT-blue.svg?style=flat)](https://raw.github.com/glennjones/microformat-shic/master/license.txt)
 
@@ -16,14 +17,14 @@ microformat-shiv is a cross browser javascript [microformats](http://microformat
 ### Supported formats
 The parser will find any microformats in yor HTML even custom strutures you define yourselve. A list of some of the formats its can parse:
 
-h-adr, h-card, h-feed, h-entry, h-event, h-geo, h-news, h-product, h-recipe, h-resume, h-review-aggregate, h-review, adr, hCard, hEntry, hEvent, geo, hNews hProduct, hRecipe, hResume, hReview-aggregate, hReview, rel=tag, rel=licence, rel=no-follow, rel=author and XFN
+`h-adr`, `h-card`, `h-feed`, `h-entry`, `h-event`, `h-geo`, `h-news`, `h-product`, `h-recipe`, `h-resume`, `h-review-aggregate`, `h-review`, `adr`, `hCard`, `hEntry`, `hEvent`, `geo`, `hNews`, `hProduct`, `hRecipe`, `hResume`, `hReview-aggregate`, `hReview`, `rel=tag`, `rel=licence`, `rel=no-follow`, `rel=author`, `XFN` and more
 
 
 
 ### Use
 
 #### simple
-
+```javascript
     <script src="microformat-shiv.min.js" type="text/javascript"></script>
     <script type="text/javascript">
         var items;
@@ -31,11 +32,11 @@ h-adr, h-card, h-feed, h-entry, h-event, h-geo, h-news, h-product, h-recipe, h-r
         items = Microformats.get()
         // do something with data `items`
     </script>
-    
+```    
 
 
 #### using options
-
+```javascript
     <script src="microformat-shiv.min.js" type="text/javascript"></script>
     <script type="text/javascript">
         var items,
@@ -45,10 +46,10 @@ h-adr, h-card, h-feed, h-entry, h-event, h-geo, h-news, h-product, h-recipe, h-r
         var items = microformats.get( options )
         // do something with data `items`
     </script>
-
+``` 
 
 #### targeting just part of a page
-
+```javascript
     <script src="microformat-shiv.min.js" type="text/javascript"></script>
     <script type="text/javascript">
         var items,
@@ -61,13 +62,13 @@ h-adr, h-card, h-feed, h-entry, h-event, h-geo, h-news, h-product, h-recipe, h-r
         var items = Microformats.get( options )
         // do something with data `items`
     </script>    
-
+```  
 
 #### Available options
-* document - (DOM element) a reference to a document - default is the current browser document.
-* node - (DOM element) a reference to an element to be used as the root to parse from - default is the current browser document
-* textFormat - (string) plain text output style 'normalised' or 'whitespace' default is 'normalised'
-* dateFormat - (string) the ISO date profile for output 'auto' or 'w3c' rfc3339 or html5 default is 'auto'
+* `node` - (DOM element) a reference to an element to be used as the root to parse from - default is the current browser document
+* `filter` - (Array) a list of microformat type you which to only return - i.e. `['h-card']` - always returns `rels`
+* `textFormat` - (string) text output style `normalised` or `whitespacetrimmed` default is `whitespacetrimmed`
+* `dateFormat` - (string) the ISO date profile for output `auto`, `w3c` `rfc3339` or `html5` default is `auto`
 
 
 
@@ -75,8 +76,8 @@ h-adr, h-card, h-feed, h-entry, h-event, h-geo, h-news, h-product, h-recipe, h-r
 
 __Version 0.3.0 was a complete rewrite of the microformat-shiv library to conform to the new version 2 specification of microformats. __
 
-Typical data structure. This is an example of a h-card microformat.
-
+Typical data structure. This is an example of a `h-card` microformat.
+```javascript
     {
         "items": [{
             "type": ["h-card"],
@@ -91,34 +92,49 @@ Typical data structure. This is an example of a h-card microformat.
         "rels": {},
         "rel-urls": {}
     }
-
+```  
 Typical error structure. 
-
+```javascript
     {
         "items":[],
         "rels": {},
         "rel-urls": {}
         "errors":["The options.document object does not have the right nodeType"]
     }
+```  
 
 
-
-### Counts
-There is a simple method called getCounts, which will return the number of each type of microformat found. It does not do a full parse so it is much quicker method that can be used to add notifications to the UI. It currently does not count rel=* microformats.
-
+### Count
+The `count` method returns the number of each type of microformat found in the document/node. It does not do a full parse so it is much quicker 
+method that can be used to add notifications to the UI. It currently does not count `rel=*` microformats.
+```javascript
     <script type="text/javascript">
         var counts;
         
-        var counts = Microformats.counts()
+        var counts = Microformats.count()
         // do something with data 
     </script>    
-
+```  
 Typical error structure. 
-
+```javascript
     {
         'h-event': 1,
         'h-card': 2
     }
+```  
+
+### isMicroformat
+The `isMicroformat` method returns weather a node has a valid microformats class.
+```javascript
+    <script type="text/javascript">
+        var node = document.getElementById('target')
+        
+        var isVaild = Microformats.isMicroformat( node );
+        // do something with data 
+    </script>    
+```  
+
+
 
 ### Unit and integration tests
 

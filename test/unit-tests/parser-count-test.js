@@ -1,12 +1,10 @@
   
-  /*
-Unit test for dates
+/*
+Unit test for count
 */
 
 assert = chai.assert;
 
-
-    
 
 describe('count', function() {
   
@@ -25,10 +23,11 @@ describe('count', function() {
         node.innerHTML = html;
         doc.body.appendChild(node);    
         
-        // standard parse
         options ={
             'node': node,
         };
+        // test access the private Modules.Parser object to provide coverage data 
+        // please use the public Microformats.count instead 
         parser = new Modules.Parser();
         result = parser.count(options);
         assert.deepEqual( result, {'h-event': 1,'h-card': 2} );
@@ -52,10 +51,11 @@ describe('count', function() {
         node.innerHTML = html;
         doc.body.appendChild(node);    
         
-        // standard parse
         options ={
             'node': node,
         };
+        // test access the private Modules.Parser object to provide coverage data 
+        // please use the public Microformats.count instead 
         parser = new Modules.Parser();
         result = parser.count(options);
         assert.deepEqual( result, {} );
@@ -68,7 +68,9 @@ describe('count', function() {
        
        var result,
            parser;
-
+           
+        // test access the private Modules.Parser object to provide coverage data 
+        // please use the public Microformats.count instead    
         parser = new Modules.Parser();
         result = parser.count({});
         assert.deepEqual( result, {'errors': ['No options.node to parser microformats from']} );

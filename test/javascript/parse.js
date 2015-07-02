@@ -15,6 +15,7 @@ window.onload = function() {
         
         var html,
             baseUrl,
+            filter,
             collapsewhitespace,
             dateformatElt,
             dateformat,
@@ -27,6 +28,7 @@ window.onload = function() {
         // get data from html
         html = document.getElementById('html').value;
         baseUrl = document.getElementById('baseurl').value;
+        filters = document.getElementById('filters').value;
         collapsewhitespace = document.getElementById('collapsewhitespace').checked;   
         dateformatElt = document.getElementById("dateformat");
         dateformat = dateformatElt.options[dateformatElt.selectedIndex].value;
@@ -45,6 +47,13 @@ window.onload = function() {
         };
         if(baseUrl.trim() !== ''){
             options.baseUrl = baseUrl;
+        }
+        if(filters.trim() !== ''){
+            if(filters.indexOf(',') > -1){
+               options.filters = trimArrayItems(filters.split(','));
+            }else{
+                options.filters = [filters.trim()];
+            }
         }
         if(collapsewhitespace === true){
             options.textFormat = 'normalised';
@@ -72,6 +81,13 @@ window.onload = function() {
                 .replace(/'/g, '&#39;')
                 .replace(/</g, '&lt;')
                 .replace(/>/g, '&gt;');
+    }
+    
+    
+    function trimArrayItems( arr ){
+        return arr.map(function(item){
+            return item.trim();
+        })
     }
   
   

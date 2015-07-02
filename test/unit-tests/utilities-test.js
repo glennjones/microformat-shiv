@@ -1,6 +1,15 @@
+/*
+Unit test for utilities
+*/
+
+assert = chai.assert;
+
+// Tests the private Modules.utils object 
+// Modules.utils is unit tested as it has an interface access by other modules  
+
+
 describe('utilities', function() {
     
-  
     
    it('isString', function(){     
        assert.isTrue( Modules.utils.isString( 'abc' ) );
@@ -79,8 +88,6 @@ describe('utilities', function() {
        assert.deepEqual( arr.sort( Modules.utils.sortObjects( 'name', false ) ), [{"name":"one"},{"name":"three"},{'name': 'three'},{"name":"two"}] );
    });
    
-   
-  
    
    
 });

@@ -5,11 +5,13 @@ Unit test for domutils
 assert = chai.assert;
 
 
+// Tests the private Modules.domUtils object 
+// Modules.domUtils is unit tested as it has an interface access by other modules  
+
+
 describe('domutils', function() {
     
-    
- 
-    
+
    it('ownerDocument', function(){
        var node = document.createElement('div'); 
        assert.equal( Modules.domUtils.ownerDocument( node ).nodeType,  9);

@@ -1,9 +1,11 @@
 /*
-Unit test for domutils
+Unit test for html
 */
 
 assert = chai.assert;
 
+// Tests the private Modules.html object 
+// Modules.html is unit tested as it has an interface access by other modules  
 
 describe('html', function() {
     

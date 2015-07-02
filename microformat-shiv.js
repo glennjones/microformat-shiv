@@ -1,6 +1,6 @@
 /*
    microformat-shiv - v0.3.4
-   Built: 2015-07-01 03:07 - http://microformat-shiv.com
+   Built: 2015-07-02 03:07 - http://microformat-shiv.com
    Copyright (c) 2015 Glenn Jones
    Licensed MIT 
 */
@@ -62,67 +62,20 @@
 		get: function(options) {
 			var out = {},
 				data = [],
-				rels,
-				baseTag,
-				href;
+				rels;
 	
 			this.init();
-			this.mergeOptions(options);
-	
-			if(!options.node){
-				this.errors.push('No options.node to parser microformats from');
-			}else{
-				this.rootNode = options.node;
-				
-				// set this.document from options or discover it
-				// used for DOM function like calls to createElement;
-				if(options.document){
-					if(options.document.nodeType === 9){
-						this.document = options.document;
-					}else{
-						this.errors.push('The options.document object does not have the right nodeType');
-						return this.formatError();
-					}
-				}else{
-					// passed rootNode can be either DOM Node or Document
-					if(this.rootNode.nodeType === 9){
-						this.document = this.rootNode;
-					}else{
-						// if its DOM Node get parent DOM Document
-						this.document = modules.domUtils.ownerDocument(this.rootNode);
-					}
-				}
-				
-				
-				if(!options.baseUrl && this.document && this.document.location){
-					options.baseUrl = this.document.location.href;
-				}
-	
-	
-				// add includes
-				if(this.addIncludes){
-					this.addIncludes( this.document );
-				}
-				
-				
-				// find base tag to set baseUrl
-				baseTag = this.rootNode.querySelector('base');
-				if(baseTag) {
-					href = modules.domUtils.getAttribute(baseTag, 'href');
-					if(href){
-						this.options.baseUrl = href;
-					}
-				}
-				
+		
+			if(this.hasDOMContext( options )){
+			
 				if(this.options.filters.length > 0){
 					// parse flat list of items
-					var struct = this.findFilterNodes(this.rootNode, this.options.filters);
-					data = this.walkRoot(struct[0], struct[1]);
+					var newRootNode = this.findFilterNodes(this.rootNode, this.options.filters);
+					data = this.walkRoot(newRootNode);
 				}else{
 					// parse whole document from root
 					data = this.walkRoot(this.rootNode);
 				}
-	
 	
 				out.items = data;
 				
@@ -143,6 +96,69 @@
 				return this.formatError();
 			}
 			return out;
+		},
+		
+				
+		/**
+		 * does library have DOM objects it can parse
+		 *
+		 * * @return {Boolean}
+		 */
+		hasDOMContext: function( options ){
+			
+			var baseTag,
+				href;
+				
+			this.mergeOptions(options);
+			
+			// if a node is passed in options use it
+			if(options.node){
+				this.rootNode = options.node;
+				// if document is passed in as options.node get html element
+				if(this.rootNode.nodeType === 9){
+					this.document = this.rootNode;
+					this.rootNode = modules.domUtils.querySelector(this.rootNode, 'html');
+				}else{
+					// if its DOM Node get parent DOM Document
+					this.document = modules.domUtils.ownerDocument(this.rootNode);
+				} 
+			}
+
+			// if no node is passed in options but there is a global document object use that
+			if(!this.rootNode && document){
+				this.rootNode = modules.domUtils.querySelector(document, 'html');
+				this.document = document;
+			}
+			
+			// if we do not have any context create error
+			if(!this.rootNode || !this.document){
+				this.errors.push('No options.node was provided and no global document object could be found.');
+			}else{
+				
+				// add includes
+				if(this.addIncludes){
+					this.addIncludes( this.document );
+				}
+				
+				// use current document to define baseUrl
+				if(!options.baseUrl && this.document && this.document.location){
+					this.options.baseUrl = this.document.location.href;
+				}
+				
+				// find base tag to set baseUrl
+				var baseTag = this.rootNode.querySelector('base');
+				if(baseTag) {
+					href = modules.domUtils.getAttribute(baseTag, 'href');
+					if(href){
+						this.options.baseUrl = href;
+					}
+				}
+			
+					
+			}
+			
+				
+			return (this.rootNode && this.document);
 		},
 		
 		
@@ -173,40 +189,45 @@
 		},
 		
 		
-		/*
+		
 		// find uf's of a given type and return a dom and node structure of just that type of ufs
 		findFilterNodes: function(rootNode, filters) {
 			
-			var newDom = cheerio.load('<div></div>', {xmlMode: true}),
-				newRootNode = dom.root(),
+			var newRootNode = this.document.createElement('div'),
 				items = this.findRootNodes(rootNode),
 				i = 0,
 				x = 0,
 				y = 0;
 	
-			newRootNode.html('');
-	
 			if(items){
 				i = items.length;		
 				while(x < i) {
-					var y = filters.length;
+					// add v1 names
+					y = filters.length;
 					while (y--) {
-						if(domUtils.hasAttributeValue(items[x], 'class', filters[y])){
-							var clone = domUtils.clone(items[x]);
-							domUtils.appendChild(newDom, newRootNode, clone);
+						if(this.getMapping(filters[y])){
+							var v1Name = this.getMapping(filters[y]).root;
+							filters.push(v1Name);
+						}
+					}
+					// append matching nodes into newRootNode
+					y = filters.length;
+					while (y--) {
+						if(modules.domUtils.hasAttributeValue(items[x], 'class', filters[y])){
+							var clone = modules.domUtils.clone(items[x]);
+							modules.domUtils.appendChild(newRootNode, clone);
+							break;
 						}
 					}
 					x++;
 				}
 			}	
 	
-			return [newDom, newRootNode];
+			return newRootNode;
 		},
-		*/
 		
-		findFilterNodes: function(){
-			return [null, null];
-		},
+		
+
 	
 	
 		/**
@@ -268,10 +289,10 @@
 			var classes;
 				
 			if(!node){
-				return {'errors': ['No node to parser microformats from']};
+				return false;
 			}		
 			classes = this.getUfClassNames(node);
-			return (classes.roots.length > 0);
+			return (classes.root.length > 0);
 		},		
 			
 	
@@ -2192,9 +2213,19 @@
 		 * @return {Boolean}
 		 */
 		hasAttribute: function(node, attributeName) {
-			if(node.hasAttribute){
-				return node.hasAttribute(attributeName);
-			}
+			return node.hasAttribute(attributeName);
+		},
+		
+		
+		/**
+		 * does value exists as item
+		 *
+		 * @param  {DOM Node} node
+		 * @param  {String} attributeName
+		 * @return {Boolean}
+		 */
+		hasAttributeValue: function(node, attributeName, value) {
+			return (this.getAttributeList(node, attributeName).indexOf(value) > -1);
 		},
 		
 	
@@ -2206,9 +2237,7 @@
 		 * @return {String || null}
 		 */
 		getAttribute: function(node, attributeName) {
-			if(node.getAttribute){
-				return node.getAttribute(attributeName);
-			}
+			return node.getAttribute(attributeName);
 		},
 		
 		
@@ -2243,8 +2272,19 @@
 		 * @return {DOM Node} 
 		 */
 		getElementById: function(docNode, id) {
-			//return node.getElementById(id);
 			return docNode.querySelector( '#' + id );
+		},
+		
+		
+		/**
+		 * abstracts DOM querySelector
+		 *
+		 * @param  {DOM Node || DOM Document} node
+		 * @param  {String} selector
+		 * @return {DOM Node} 
+		 */
+		querySelector: function(docNode, selector) {
+			return docNode.querySelector( selector );
 		},
 	
 	
@@ -2537,8 +2577,8 @@
 		 * @return {String}
 		 */
 		decodeEntities: function( doc, text ){
-			return text;
-			//return doc.createTextNode( text ).nodeValue;
+			//return text;
+			return doc.createTextNode( text ).nodeValue;
 		},
 	
 

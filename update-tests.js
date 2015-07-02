@@ -244,7 +244,8 @@ function buildTest( testData, testStructure, version, repo ){
 	out += '<script src="unit-tests/text-test.js"></script>\r\n';
 	out += '<script src="unit-tests/utilities-test.js"></script>\r\n';
 	out += '<script src="unit-tests/parser-get-test.js"></script>\r\n';
-	out += '<script src="unit-tests/parser-count-test.js"></script>\r\n\r\n';
+	out += '<script src="unit-tests/parser-count-test.js"></script>\r\n';
+	out += '<script src="unit-tests/parser.ismicroformat-test.js"></script>\r\n\r\n';
 	
 	
 	

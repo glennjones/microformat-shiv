@@ -4,8 +4,9 @@ Unit test for dates
 
 assert = chai.assert;
 
+// Tests the private Modules.dates object 
+// Modules.dates is unit tested as it has an interface access by other modules  
 
-    
 
 describe('dates', function() {
     

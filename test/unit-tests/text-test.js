@@ -1,7 +1,15 @@
+/*
+Unit test for text
+*/
+
+assert = chai.assert;
+
+// Tests the private Modules.text object 
+// Modules.text is unit tested as it has an interface access by other modules  
+
+
 describe('text', function() {
     
-    
-    //normalised or whitespace or whitespacetrimmed
     
    it('parse', function(){
        var html = '\n   <a href="http://glennjones.net">Glenn\n Jones  \n</a>   \n',
@@ -39,8 +47,6 @@ describe('text', function() {
    it('formatText', function(){      
        assert.equal( Modules.text.formatText( document, null, 'whitespacetrimmed' ), '' );
    });
-
-   
 
    
   
