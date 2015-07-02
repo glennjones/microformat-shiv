@@ -8,10 +8,14 @@
     "lib",
     "node_modules",
     "test",
+    "umd",
     ".gitignore",
     "Gruntfile.js",
     "package.json",
     "update-tests.js",
-    "bower.json"
+    "bower.json",
+    "Makefile",
+    ".travis.yml",
+    "app"
   ]
 }

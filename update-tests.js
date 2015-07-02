@@ -252,13 +252,13 @@ function buildTest( testData, testStructure, version, repo ){
 	if(client === true){
 		out += '\r\n<script src="../node_modules/poncho/node_modules/blanket/dist/qunit/blanket.min.js"> </script>\r\n';
     	out += '<script src="../node_modules/poncho/node_modules/blanket/src/adapters/mocha-blanket.js"></script>\r\n\r\n';
+	}else{
+    	out += '<script>window.onload= function(){\r\n';
+		out += 'if (window.mochaPhantomJS) {\r\nmochaPhantomJS.run();\r\n}else{\r\n mocha.run();\r\n}\r\n';
+		out += '};</script>\r\n';
 	}
 	
-
-    //out += '<script>window.onload= function(){\r\n';
-	//out += 'if (window.mochaPhantomJS) {\r\nmochaPhantomJS.run();\r\n}else{\r\n mocha.run();\r\n}\r\n';
-	//out += '};</script>\r\n';
-    //out += '</head><body>\r\n';
+    out += '</head><body>\r\n';
     out += '<h3>Microformats test suite - v' + version + '</h3>\r\n';
 	out += '<p>Mocha tests built on ' + date + '. Downloaded from github repo: ' + repo + ' version v' + version + '</p>\r\n';
     out += '<div id="mocha"></div>\r\n';

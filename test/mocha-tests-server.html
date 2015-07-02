@@ -177,6 +177,13 @@
 <script src="unit-tests/parser-get-test.js"></script>
 <script src="unit-tests/parser-count-test.js"></script>
 
+<script>
+      if (window.mochaPhantomJS) { 
+		  mochaPhantomJS.run(); 
+	}else { 
+		mocha.run(); 
+	}
+</script> 
 
 <h3>Microformats test suite - v0.1.18</h3>
 <p>Mocha tests built on Wed Jul 01 2015 12:00:56 GMT+0100 (BST). Downloaded from github repo: glennjones/tests version v0.1.18</p>

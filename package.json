@@ -10,6 +10,10 @@
 		"url": "git://github.com/glennjones/microformat-shiv.git"
 	},
 	"main": "microformat-shiv.js",
+	"scripts": {
+		"start": "app",
+   		 "test": "make test"
+ 	},
 	"devDependencies": {
 		"hapi": "8.4.x",
 		"blipp": "2.1.x",
@@ -32,7 +36,8 @@
 		"poncho": "0.1.x",
 		"codacy-coverage": "1.1.x",
 		"mocha-lcov-reporter": "0.0.x",
-		"coveralls": "2.11.x"
+		"coveralls": "2.11.x",
+		"mocha-phantomjs": "3.5.x"
 	},
 	"config": {
 		"blanket": {
