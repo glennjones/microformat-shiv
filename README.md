@@ -1,6 +1,7 @@
 # microformat-shiv
 
 [![build status](https://secure.travis-ci.org/glennjones/microformat-shiv.png)](http://travis-ci.org/glennjones/microformat-shiv)
+[![Coverage Status](https://coveralls.io/repos/glennjones/microformat-shiv/badge.svg)](https://coveralls.io/r/glennjones/microformat-shiv)
 [![Codacy Badge](https://www.codacy.com/project/badge/520b9cab36254761b100c33d3e3899e3)](https://www.codacy.com/app/glennjonesnet/microformat-shiv)
 [![MIT license](http://img.shields.io/badge/license-MIT-blue.svg?style=flat)](https://raw.github.com/glennjones/microformat-shic/master/license.txt)
 

@@ -7,9 +7,11 @@ install:
   - npm install -g grunt
   - npm install
 before_script:
+  - git config user.name "Travis CI" 
   - phantomjs --version
   - mocha-phantomjs --version
   - grunt &
   - sleep 5 # give grunt background task some time to execute.
 script:
   - mocha-phantomjs test/mocha-tests-server.html
+  - npm run coveralls
