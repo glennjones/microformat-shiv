@@ -65,17 +65,19 @@ The parser will find any microformats in yor HTML even custom strutures you defi
 ```  
 
 #### Available options
-* `node` - (DOM element) a reference to an element to be used as the root to parse from - default is the current browser document
-* `filter` - (Array) a list of microformat type you which to only return - i.e. `['h-card']` - always returns `rels`
-* `textFormat` - (String) text output style `normalised` or `whitespacetrimmed` default is `whitespacetrimmed`
+* `node` - (DOM element) the element to be parse - default is the current browser document
+* `filter` - (Array) a list of microformat to only return - i.e. `['h-card']` - always adds `rels`
+* `textFormat` - (String) text style `whitespacetrimmed` or `normalised` default is `whitespacetrimmed`
 * `dateFormat` - (String) the ISO date profile for output `auto`, `w3c` `rfc3339` or `html5` default is `auto`
 * `add` - (Array) of version 1 definition objects
 
 
+#### Text style option - `textFormat`
+__I would recommended always setting `textFormat` option to `normalised`. This is not part of the microformat 
+parsing rules, but in most cases provides more usable output.__
+
+
 ### Response 
-
-__Version 0.3.0 was a complete rewrite of the microformat-shiv library to conform to the new version 2 specification of microformats. __
-
 Typical data structure. This is an example of a `h-card` microformat.
 ```javascript
     {
@@ -102,7 +104,6 @@ Typical error structure.
         "errors":["No options.node was provided and no global document object could be found."]
     }
 ```  
-
 
 ### Count
 The `count` method returns the number of each type of microformat found in the document/node. It does not do a full parse so it is much quicker 
@@ -134,7 +135,14 @@ The `isMicroformat` method returns weather a node has a valid microformats class
     </script>    
 ```  
 
-### Version 1 definitions object
+### Version and livingStandard
+The library has two properties to help identify now up todate its is:
+
+*  `version` (String) is this the libraries only interanl version number
+*  `livingStandard` (String ISO Date) as microformats does not have minor or semantic versioning the library provides the date test from https://github.com/microformats/tests where last sync.
+
+
+### Microformats version 1 definitions object
 The library has a large number of built in version 1 microformats definitions, but you can add new ones if you wish. Example of a definitions object
 ```javascript
     {

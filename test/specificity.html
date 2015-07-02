@@ -1,0 +1,51 @@
+<html>
+	<head>
+		<title>Specificity test for implied rules</title>
+		<style>
+			img.h-card{
+				border: 3px solid orange;
+			}
+			
+			.h-card>img:only-of-type:not(.h-card){
+				border: 3px solid red;
+			}
+			
+			.h-card>:only-child>img:only-of-type:not(.h-card){
+				border: 3px solid red;
+			}
+			
+			
+			.h-card>:only-child>img{
+				border: 3px solid green;
+			}
+			.h-card>:only-child>img:only-of-type{
+				border: 3px solid blue;
+			}
+			img{
+				width: 100px;
+				height: 100px;
+				margin: 10px;
+			}
+		</style>
+		
+		<link rel="stylesheet" href="css/testrunner.css">
+	</head>
+	<body>
+		<h1>Specificity test for implied rules</h1>
+		<p>Experiments with CSS Specificity for implied rules</p>
+		
+		<img class="h-card" img src="photo.jpeg" alt="Glenn Jones"/> <!-- this one -->
+		<div class="h-card"><img src="photo.jpeg" alt="Glenn Jones"/></div> <!-- this one -->
+		<div class="h-card"><span><img src="photo.jpeg" alt="Glenn Jones"></span></div> <!-- this one -->
+		
+		<div class="h-card"><img class="h-card" src="photo.jpeg"/></div> <!-- this is a strange one as the first implied rule works on chlid -->
+		<p>Below here no image should have red or orange border</p>
+		
+	
+		<div class="h-card"><span><img class="h-card" src="photo.jpeg"></span></div>
+		<div class="h-card"><span><img src="photo.jpeg"><img src="photo.jpeg"></span></div>
+		<div class="h-card"><img class="h-card" src="photo.jpeg"></div>
+		<div class="h-card"><img src="photo.jpeg"><img src="photo.jpeg"></div>
+	</body>
+
+</html>

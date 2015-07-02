@@ -36,6 +36,16 @@ describe('domutils', function() {
    });
    
    
+   it('hasAttributeValue', function(){
+       var node = document.createElement('a');
+           
+       node.href = 'http://glennjones.net';
+       assert.isTrue( Modules.domUtils.hasAttributeValue( node, 'href', 'http://glennjones.net' ) );
+       assert.isFalse( Modules.domUtils.hasAttributeValue( node, 'href', 'http://example.net' ) );
+       assert.isFalse( Modules.domUtils.hasAttributeValue( node, 'class', 'test' ) );
+   });
+   
+   
    it('getAttribute', function(){
        var node = document.createElement('a');
            
@@ -127,43 +137,40 @@ describe('domutils', function() {
    });
    
    
-   it('isSingleDescendant', function(){
+   it('getSingleDescendant', function(){
        var html = '<a class="u-url" href="http://glennjones.net">Glenn Jones</a>',
            node = document.createElement('div');
            
        node.innerHTML = html,
        
        // one instance of a element   
-       assert.equal( Modules.domUtils.isSingleDescendant( node, ['a', 'link']).outerHTML, html );
-       assert.equal( Modules.domUtils.isSingleDescendant( node, ['img','area']), null );
+       assert.equal( Modules.domUtils.getSingleDescendant( node ).outerHTML, html );
        
        // two instances of a element  
        node.appendChild(document.createElement('a'));
-       assert.equal( Modules.domUtils.isSingleDescendant( node, ['a', 'link']), null );
+       assert.equal( Modules.domUtils.getSingleDescendant( node ), null );
        
-
    });
    
-   /*
-   it('isOnlySingleDescendantOfType', function(){
+
+   it('getSingleDescendantOfType', function(){
        var html = '<a class="u-url" href="http://glennjones.net">Glenn Jones</a>',
            node = document.createElement('div');
            
        node.innerHTML = html,
        
        // one instance of a element   
-       assert.equal( Modules.domUtils.isOnlySingleDescendantOfType( node, ['a', 'link']).outerHTML, html );
-       assert.equal( Modules.domUtils.isOnlySingleDescendantOfType( node, ['img','area']), null );
+       assert.equal( Modules.domUtils.getSingleDescendantOfType( node, ['a', 'link']).outerHTML, html );
+       assert.equal( Modules.domUtils.getSingleDescendantOfType( node, ['img','area']), null );
        
        node.appendChild(document.createElement('p'));
-       assert.equal( Modules.domUtils.isOnlySingleDescendantOfType( node, ['a', 'link']).outerHTML, html );
+       assert.equal( Modules.domUtils.getSingleDescendantOfType( node, ['a', 'link']).outerHTML, html );
        
        // two instances of a element  
        node.appendChild(document.createElement('a'));
-       assert.equal( Modules.domUtils.isOnlySingleDescendantOfType( node, ['a', 'link']), null );
+       assert.equal( Modules.domUtils.getSingleDescendantOfType( node, ['a', 'link']), null );
       
    });
-   */
    
    
    it('appendChild', function(){

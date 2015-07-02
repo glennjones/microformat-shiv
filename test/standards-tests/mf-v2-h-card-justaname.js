@@ -1,7 +1,7 @@
 /*
 Microformats Test Suite - Downloaded from github repo: glennjones/tests version v0.1.18 
 Mocha integration test from: microformats-v2/h-card/justaname
-The test was built on Wed Jul 01 2015 12:00:56 GMT+0100 (BST)
+The test was built on Thu Jul 02 2015 21:37:44 GMT+0100 (BST)
 */
 
 assert = chai.assert;

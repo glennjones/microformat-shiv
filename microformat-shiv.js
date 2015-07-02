@@ -1,6 +1,6 @@
 /*
    microformat-shiv - v0.3.4
-   Built: 2015-07-02 04:07 - http://microformat-shiv.com
+   Built: 2015-07-02 09:07 - http://microformat-shiv.com
    Copyright (c) 2015 Glenn Jones
    Licensed MIT 
 */
@@ -20,7 +20,7 @@
     
 
 	modules.version = '0.3.4';
-	modules.livingStandard = '2015-06-30T12:45:50Z';
+	modules.livingStandard = '2015-07-02T20:30:44Z';
 
 	/**
 	 * constructor
@@ -1379,12 +1379,17 @@
 				
 				// implied name rule
 				/*
-					img.h-x[alt]
-					abbr.h-x[title] 
-					.h-x>img:only-node[alt] 
-					.h-x>abbr:only-node[title] 
-					.h-x>:only-node>img:only-node[alt]
-					.h-x>:only-node>abbr:only-node[title] 
+					img.h-x[alt]										<img class="h-card" src="glenn.htm" alt="Glenn Jones"></a>
+					area.h-x[alt] 										<area class="h-card" href="glenn.htm" alt="Glenn Jones"></area>
+					abbr.h-x[title]										<abbr class="h-card" title="Glenn Jones"GJ</abbr>
+
+					.h-x>img:only-child[alt]:not[.h-*]					<div class="h-card"><a src="glenn.htm" alt="Glenn Jones"></a></div>
+					.h-x>area:only-child[alt]:not[.h-*] 				<div class="h-card"><area href="glenn.htm" alt="Glenn Jones"></area></div>
+					.h-x>abbr:only-child[title] 						<div class="h-card"><abbr title="Glenn Jones">GJ</abbr></div>
+
+					.h-x>:only-child>img:only-child[alt]:not[.h-*] 		<div class="h-card"><span><img src="jane.html" alt="Jane Doe"/></span></div>
+					.h-x>:only-child>area:only-child[alt]:not[.h-*] 	<div class="h-card"><span><area href="jane.html" alt="Jane Doe"></area></span></div>
+					.h-x>:only-child>abbr:only-child[title]				<div class="h-card"><span><abbr title="Jane Doe">JD</abbr></span></div>
 				*/
 				if(!uf.properties.name) {
 					value = this.getImpliedProperty(node, ['img', 'area', 'abbr'], this.getNameAttr);
@@ -1407,12 +1412,12 @@
 	
 				// implied photo rule
 				/*
-					img.h-x[src] 
-					object.h-x[data] 
-					.h-x>img[src]:only-of-type
-					.h-x>object[data]:only-of-type 
-					.h-x>:only-child>img[src]:only-of-type 
-					.h-x>:only-child>object[data]:only-of-type 
+					img.h-x[src] 												<img class="h-card" alt="Jane Doe" src="jane.jpeg"/>
+					object.h-x[data] 											<object class="h-card" data="jane.jpeg"/>Jane Doe</object>
+					.h-x>img[src]:only-of-type:not[.h-*]						<div class="h-card"><img alt="Jane Doe" src="jane.jpeg"/></div> 
+					.h-x>object[data]:only-of-type:not[.h-*] 					<div class="h-card"><object data="jane.jpeg"/>Jane Doe</object></div> 
+					.h-x>:only-child>img[src]:only-of-type:not[.h-*] 			<div class="h-card"><span><img alt="Jane Doe" src="jane.jpeg"/></span></div> 
+					.h-x>:only-child>object[data]:only-of-type:not[.h-*] 		<div class="h-card"><span><object data="jane.jpeg"/>Jane Doe</object></span></div> 
 				*/
 				if(!uf.properties.photo) {
 					value = this.getImpliedProperty(node, ['img', 'object'], this.getPhotoAttr);
@@ -1428,10 +1433,10 @@
 				
 				// implied url rule
 				/*
-				a.h-x[href] 
-				area.h-x[href] 
-				.h-x>a[href]:only-of-type:not[.h-*] 
-				.h-x>area[href]:only-of-type:not[.h-*] 
+					a.h-x[href]  							<a class="h-card" href="glenn.html">Glenn</a>
+					area.h-x[href]  						<area class="h-card" href="glenn.html">Glenn</area>
+					.h-x>a[href]:only-of-type:not[.h-*]  	<div class="h-card" ><a href="glenn.html">Glenn</a><p>...</p></div> 
+					.h-x>area[href]:only-of-type:not[.h-*]  <div class="h-card" ><area href="glenn.html">Glenn</area><p>...</p></div>
 				*/
 				if(!uf.properties.url) {
 					value = this.getImpliedProperty(node, ['a', 'area'], this.getURLAttr);
@@ -1480,19 +1485,22 @@
 		 * @return {String || null}
 		 */
 		modules.Parser.prototype.getImpliedProperty = function(node, tagList, getAttrFunction) {
-			var value = getAttrFunction(node),
+			// ie img.h-card
+			var value = getAttrFunction(node), 
 				descendant,
 				child;
 					
 			if(!value) {
-				descendant = modules.domUtils.isSingleDescendant( node, tagList);
+				// ie .h-card>img:only-of-type:not(.h-card)
+				descendant = modules.domUtils.getSingleDescendantOfType( node, tagList);
 				if(descendant && this.hasHClass(descendant) === false){
 					value = getAttrFunction(descendant);
 				}
-				if(node.children.length > 0){
-					child = modules.domUtils.isSingleDescendant(node, tagList);
-					if(child){
-						descendant = modules.domUtils.isSingleDescendant(child, tagList);
+				if(node.children.length > 0 ){
+					// ie  .h-card>:only-child>img:only-of-type:not(.h-card)
+					child = modules.domUtils.getSingleDescendant(node);
+					if(child && this.hasHClass(child) === false){
+						descendant = modules.domUtils.getSingleDescendantOfType(child, tagList);
 						if(descendant && this.hasHClass(descendant) === false){
 							value = getAttrFunction(descendant);
 						}
@@ -1505,7 +1513,7 @@
 			
 			
 		/**
-		 * get an implied name value
+		 * get an implied name value from a node
 		 *
 		 * @param  {DOM Node} node
 		 * @return {String || null}
@@ -1520,7 +1528,7 @@
 	
 	
 		/**
-		 * get an implied photo value
+		 * get an implied photo value from a node
 		 *
 		 * @param  {DOM Node} node
 		 * @return {String || null}
@@ -1535,7 +1543,7 @@
 			
 			
 		/**
-		 * get an implied photo value
+		 * get an implied photo value from a node
 		 *
 		 * @param  {DOM Node} node
 		 * @return {String || null}
@@ -1543,6 +1551,7 @@
 		modules.Parser.prototype.getURLAttr = function(node) {
 			var value = null;
 			if(modules.domUtils.hasAttributeValue(node, 'class', 'include') === false){
+				
 				value = modules.domUtils.getAttrValFromTagList(node, ['a'], 'href');
 				if(!value) {
 					value = modules.domUtils.getAttrValFromTagList(node, ['area'], 'href');
@@ -2391,73 +2400,69 @@
 			return null;
 		},
 	
-
 		
 	   /**
-		 * is a node the only descendant of a type i.e. CSS :only-of-type 
+		 * get node if has no siblings CSS :only-child 
 		 *
-
 		 * @param  {DOM Node} rootNode
 		 * @param  {Array} tagNames
 		 * @return {DOM Node || null}
 		 */
-		isSingleDescendant: function(rootNode, tagNames){
-			var i = rootNode.children.length,
-				count = 0,
-				child,
-				out = null;
-	
-			while(i--) {
-				child = rootNode.children[i];
-				if(child.nodeType === 1) {
-					if(this.hasTagName(child, tagNames)){
-						out = child;
-					}
-					// count all elements
-					count++;
-				}
-			}
-			if(count === 1 && out){
-				return out;
-			}else{
-				return null;
-			}
+		getSingleDescendant: function(node){
+			return this.getDescendant( node, null, false );
+		},
+		
+		
+        /**
+		 * get node if has no siblings of the same type  i.e. CSS :only-of-type
+		 * 
+		 * @param  {DOM Node} rootNode
+		 * @param  {Array} tagNames
+		 * @return {DOM Node || null}
+		 */
+		getSingleDescendantOfType: function(node, tagNames){
+			return this.getDescendant( node, tagNames, true );
 		},
 	
 	
-	
-		/**
-		 * is a node the only descendant of a type i.e. CSS :only-of-type 
+	    /**
+		 * get child node limited by presents of siblings - either CSS :only-of-type || :only-child 
 		 *
 		 * @param  {DOM Node} rootNode
 		 * @param  {Array} tagNames
 		 * @return {DOM Node || null}
 		 */
-		 /*
-		 isOnlySingleDescendantOfType: function(rootNode, tagNames) {
-			var i = rootNode.children.length,
-				count = 0,
+		getDescendant: function( node, tagNames, onlyOfType ){
+			var i = node.children.length,
+				countAll = 0,
+				countOfType = 0,
 				child,
 				out = null;
 	
 			while(i--) {
-				child = rootNode.children[i];
+				child = node.children[i];
 				if(child.nodeType === 1) {
-					if(this.hasTagName(child, tagNames)){
+					if(tagNames){
+						// count just only-of-type
+						if(this.hasTagName(child, tagNames)){
+							out = child;
+							countOfType++;
+						}	
+					}else{
+						// count all elements
 						out = child;
-						count++;
+						countAll++;
 					}
 				}
 			}
-			if(count === 1 && out){
-				return out;
+			if(onlyOfType === true){
+				return (countOfType === 1)? out : null;
 			}else{
-				return null;
+				return (countAll === 1)? out : null;
 			}
-		}, 
-		*/
+		},
 	
-	
+
 	   /**
 		 * is a node one of a list of tags
 		 *
@@ -3991,11 +3996,12 @@
 
 
 
-
-
-    var Microformats = {};
+    var Microformats = {
+        version: modules.version,
+        livingStandard: modules.livingStandard,
+    };
     
-	// creates an instance of parser before firing get
+    
     Microformats.get = function(options){
     	var parser = new modules.Parser();
     	return parser.get( options );
@@ -4025,6 +4031,9 @@
 			}
 		}
     };
-
+    
+    
     return Microformats;
+    
+    
 }));
