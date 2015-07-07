@@ -194,19 +194,19 @@ function buildTest( testData, testStructure, version, repo ){
 	out += '<script src="../node_modules/chai/chai.js"></script>\r\n';
     out += '<script src="../node_modules/mocha/mocha.js"></script>\r\n\r\n';
 	
+	out += '<script src="../thirdparty/es5-shim.min.js"></script>\r\n\r\n';
+	
 	out += '<!--  loads Modules to help with debugging ie windows.Modules -->\r\n';
     out += '<script data-cover src="../lib/parser.js"></script>\r\n';
 	out += '<script data-cover src="../lib/parser-implied.js"></script>\r\n';
 	out += '<script data-cover src="../lib/parser-includes.js"></script>\r\n';
 	out += '<script data-cover src="../lib/parser-rels.js"></script>\r\n';
     out += '<script data-cover src="../lib/utilities.js"></script>\r\n';
-    out += '<script src="../lib/domparser.js"></script>\r\n';
     out += '<script data-cover src="../lib/domutils.js"></script>\r\n';
     out += '<script data-cover src="../lib/isodate.js"></script>\r\n';
     out += '<script data-cover src="../lib/dates.js"></script>\r\n';
     out += '<script data-cover src="../lib/text.js"></script>\r\n';
     out += '<script data-cover src="../lib/html.js"></script>\r\n';
-    out += '<script data-cover src="../lib/maps.js"></script>\r\n\r\n';
 	
     out += '<script data-cover src="../lib/maps/h-adr.js"></script>\r\n';
     out += '<script data-cover src="../lib/maps/h-card.js"></script>\r\n';

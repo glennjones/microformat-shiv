@@ -11,7 +11,14 @@ window.onload = function() {
     form= document.getElementById('mf-form'); 
     
     form.onsubmit = function(e){
-        e.preventDefault();
+        e = (e)? e : window.event;
+        
+        if (e.preventDefault) {
+             e.preventDefault(); 
+        } else {
+             event.returnValue = false; 
+        }
+
         
         var html,
             baseUrl,
@@ -34,14 +41,15 @@ window.onload = function() {
         dateformat = dateformatElt.options[dateformatElt.selectedIndex].value;
         parserJSONElt = document.querySelector('#parser-json pre code')
         
-        // createHTMLDocument is not well support below ie9
+        // createHTMLDocument is not support below ie9
     	doc = document.implementation.createHTMLDocument("New Document");
     	node =  document.createElement('div');
     	node.innerHTML = html;
     	doc.body.appendChild(node);    
+  
         
         options ={
-            'document': doc, // limit document to current fragment of html by passing in node instead - only need in this usecase
+            'document': doc,
             'node': node,
             'dateFormat': dateformat
         };
@@ -59,6 +67,12 @@ window.onload = function() {
             options.textFormat = 'normalised';
         }
         
+        if(options.baseUrl){
+            html = '<base href="' + baseUrl+ '">' + html;
+        }
+        
+
+        
         // parse direct into Modules to help debugging
         if(window.Modules){
             var parser = new Modules.Parser();
@@ -74,21 +88,26 @@ window.onload = function() {
         
     }
     
-    function htmlEscape(str) {
-        return String(str)
-                .replace(/&/g, '&amp;')
-                .replace(/"/g, '&quot;')
-                .replace(/'/g, '&#39;')
-                .replace(/</g, '&lt;')
-                .replace(/>/g, '&gt;');
-    }
-    
-    
-    function trimArrayItems( arr ){
-        return arr.map(function(item){
-            return item.trim();
-        })
-    }
-  
   
 };  
+
+
+
+
+
+function htmlEscape(str) {
+    return String(str)
+            .replace(/&/g, '&amp;')
+            .replace(/"/g, '&quot;')
+            .replace(/'/g, '&#39;')
+            .replace(/</g, '&lt;')
+            .replace(/>/g, '&gt;');
+}
+
+
+function trimArrayItems( arr ){
+    return arr.map(function(item){
+        return item.trim();
+    })
+}
+

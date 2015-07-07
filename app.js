@@ -5,7 +5,7 @@ var Hapi            = require('hapi');
 var server = new Hapi.Server();
 
 server.connection({ 
-    host: (process.env.PORT)? '0.0.0.0' : 'localhost', 
+    host: (process.env.PORT)? '0.0.0.0' : '192.168.0.8', 
     port: parseInt(process.env.PORT, 10) || 3000
 });
 
@@ -75,6 +75,15 @@ server.route([{
 	handler: {
 		directory: {
 			path: './lib',
+			listing: true,
+		}
+	}
+},{
+	method: 'GET',
+	path: '/thirdparty/{path*}',
+	handler: {
+		directory: {
+			path: './thirdparty',
 			listing: true,
 		}
 	}

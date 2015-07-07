@@ -46,7 +46,7 @@ function buildTest( test ){
         node,
         options;
         
-    // createHTMLDocument is not well support below ie9
+    // createHTMLDocument is not support below ie9
 	doc = document.implementation.createHTMLDocument("New Document");
 	node =  document.createElement('div');
 	node.innerHTML = test.html;
@@ -73,10 +73,18 @@ function buildTest( test ){
         nameElt.classList.add('failed');
         testDetailElt.classList.add('test-failed');
         testDetailElt.classList.remove('test-passed');
+        
+        //addClass(nameElt, 'failed');
+       // addClass(testDetailElt, 'test-failed');
+        //removeClass(testDetailElt, 'test-passed');
     }else{
         nameElt.classList.remove('failed');
         testDetailElt.classList.remove('test-failed');
         testDetailElt.classList.add('test-passed');
+        
+        //removeClass(nameElt, 'failed');
+        //removeClass(testDetailElt, 'test-failed');
+        //addClass(testDetailElt, 'test-passed');
     }
     
     testDetailElt.style.display = 'block';
@@ -123,7 +131,8 @@ function buildList( tests ){
         testResultListElt.appendChild(li);
         
         if( passTest( item ) === false ){
-            li.classList.add('failed')
+            //li.classList.add('failed')
+            addClass(li, 'failed');
         }else{
             passed ++;
         }
@@ -166,3 +175,29 @@ function htmlUnescape(value){
         .replace(/&gt;/g, '>')
         .replace(/&amp;/g, '&');
 }
+
+
+// Does the node have a class
+function hasClass(node, className) {
+    if (node.className) {
+        return node.className.match(
+            new RegExp('(\\s|^)' + className + '(\\s|$)'));
+    } else {
+        return false;
+    }
+};
+
+
+// Add a class to an node
+function addClass(node, className) {
+    if (hasClass(node, className)) node.className += " " + className;
+};
+
+
+// Removes a class from an node
+function removeClass(node, className) {
+    if (hasClass(node, className)) {
+        var reg = new RegExp('(\\s|^)' + className + '(\\s|$)');
+        node.className = node.className.replace(reg, ' ');
+    }
+};

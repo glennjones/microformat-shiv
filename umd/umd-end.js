@@ -2,7 +2,7 @@
 
     var Microformats = {
         version: modules.version,
-        livingStandard: modules.livingStandard,
+        livingStandard: modules.livingStandard
     };
     
     

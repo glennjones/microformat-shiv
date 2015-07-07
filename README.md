@@ -137,6 +137,28 @@ The library has two properties to help identify now up todate it is:
 
 *  `version` (String) interanl version number
 *  `livingStandard` (String ISO Date) the current https://github.com/microformats/tests used.
+ 
+
+Browser Support
+---------------
+TODO update this list with support info.
+
+* Firefox 40 > 20
+* Chrome
+* Opera
+* Safari
+* IE11 
+* IE10 
+* IE9 (needs ES6-shim.js)
+* IE8 (needs ES6-shim.js)
+
+Device Browser Support
+----------------------
+* iOS
+* Andriod
+
+Add notes on support:
+
 
 
 Microformats definitions object
