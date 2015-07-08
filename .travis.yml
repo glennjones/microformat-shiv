@@ -2,7 +2,6 @@ language: node_js
 node_js:
   - "0.10"
 install:
-  - npm install phantomjs@1.9.1 -g
   - npm install -g mocha-phantomjs
   - npm install -g grunt
   - npm install
