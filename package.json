@@ -13,8 +13,6 @@
 	"scripts": {
 		"start": "app",
    		"test": "make test",
-		"coveralls1": "npm run coverage && cat ./.es5/coverage/lcov.info | coveralls && echo 'Coverage info sent to <http://coveralls.io>.' || echo 'Sending coverage info failed'",
- 		"coverage1": "npm run test:transpile && cd .es5 && istanbul cover test.js", 
 		"coveralls": "poncho -R lcov test/mocha-tests-server.html  | coveralls"
 	 },
 	"devDependencies": {
