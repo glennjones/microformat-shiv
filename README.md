@@ -17,10 +17,10 @@ Using bower:
 $ bower install microformat-shiv
 ```
 
-Usage
+get
 -----
 
-Simple
+Simple parse of HTML document or a selected section. 
 ```javascript
     <script src="microformat-shiv.min.js" type="text/javascript"></script>
     <script type="text/javascript">
@@ -100,6 +100,35 @@ JSON output with error.
         "errors":["No options.node was provided and no global document object could be found."]
     }
 ```  
+
+getParent
+-----
+
+Given an HTML DOM node in a document it will return its first parent microformat.
+```javascript
+    <script src="microformat-shiv.min.js" type="text/javascript"></script>
+    <script type="text/javascript">
+        var items,
+            node = document.getElementById('target');
+
+        items = Microformats.getParent( node )
+        // do something with data `items`
+    </script>
+```  
+The `getParent` method takes the same `options` as the `get` method. The one difference is how the `options.filters` property affects the output. Adding a filter list to `getParent` will allow the search for a parent to pass throught microformats you do not want to target.
+
+```javascript
+    <script src="microformat-shiv.min.js" type="text/javascript"></script>
+    <script type="text/javascript">
+        var items,
+            options = {'filters': ['h-entry']},
+            node = document.getElementById('target');
+
+        items = Microformats.getParent( node, options )
+        // do something with data `items`
+    </script>
+```  
+
 
 Count
 -----

@@ -1,6 +1,6 @@
 /*
    microformat-shiv - v0.3.4
-   Built: 2015-07-07 02:07 - http://microformat-shiv.com
+   Built: 2015-07-13 11:07 - http://microformat-shiv.com
    Copyright (c) 2015 Glenn Jones
    Licensed MIT 
 */
@@ -101,6 +101,60 @@ var Microformats;
 			return out;
 		},
 		
+		
+		/**
+		 * parse to get parent microformat of passed node
+		 *
+		 * @param  {DOM Node} node
+		 * @param  {Object} options
+		 * @return {Object}
+		 */
+		getParent: function(node, options) {
+			options = (options)? options : {};
+			if(node && node.nodeType && node.nodeType === 1){
+				return this.getParentTreeWalk(node, options);
+			}else{
+				this.errors.push('No node was provided or it was the wrong type of object.');
+				return this.formatError();
+			}
+		},
+		
+		
+		/**
+		 * internal parse to get parent microformat by walking up the tree
+		 *
+		 * @param  {DOM Node} node
+		 * @param  {Object} options
+		 * @return {Object}
+		 */
+		getParentTreeWalk: function (node, options) {
+			options = (options)? options : {};
+			
+			// recursive calls
+		    if (arguments.length === 2) {
+		        if (node.parentNode && node.nodeName !== "BODY")
+		            return this.getParentTreeWalk(node.parentNode, options, 1);
+		        else
+		            return this.formatEmpty();
+		    }
+		    if (node !== null && node !== undefined) {
+		        if (this.isMicroformat( node, options )) {
+					// if we have match return microformats
+					options.node = node;
+		            return this.get( options );
+		        } else {
+					// no match keep looking there is no parent
+		            if (node.parentNode)
+		                return this.getParentTreeWalk(node.parentNode, options, 1);
+		            else
+		                return this.formatEmpty();
+		        }
+		    } else {
+		        return this.formatEmpty();
+		    }
+		},
+
+		
 				
 		/**
 		 * does library have DOM objects it can parse
@@ -173,16 +227,27 @@ var Microformats;
 
 							
 		/**
-		 * formats errors for return to user
+		 * returns an empty structure with errors
 		 *
 		 *   @return {Object}
 		 */
 		formatError: function(){
+			var out = this.formatEmpty();
+			out.errors = this.errors;
+			return out;
+		},
+		
+		
+		/**
+		 * returns an empty structure
+		 *
+		 *   @return {Object}
+		 */
+		formatEmpty: function(){
 			return {
 			    'items': [],
 			    'rels': {},
-			    'rel-urls': {},
-			    'errors': this.errors
+			    'rel-urls': {}
 			};
 		},
 		
@@ -201,13 +266,11 @@ var Microformats;
 		},
 
 		
-		
-		
 		// find uf's of a given type and return a dom and node structure of just that type of ufs
 		findFilterNodes: function(rootNode, filters) {
 			
 			var newRootNode = this.document.createElement('div'),
-				items = this.findRootNodes(rootNode),
+				items = this.findRootNodes(rootNode, true),
 				i = 0,
 				x = 0,
 				y = 0;
@@ -240,9 +303,6 @@ var Microformats;
 		},
 		
 		
-
-	
-	
 		/**
 		 * get the count of microformats
 		 *
@@ -268,7 +328,7 @@ var Microformats;
 				}
 			}		
 				
-			items = this.findRootNodes( options.node );	
+			items = this.findRootNodes( options.node, true );	
 			i = items.length;
 			while(i--) {
 				classItems = modules.domUtils.getAttributeList(items[i], 'class');
@@ -296,20 +356,31 @@ var Microformats;
 		 * does a node have a class that marks it as a microformats root
 		 *
 		 * @param  {DOM Node} node
+		 * @param  {Objecte} options
 		 * @return {Boolean}
 		 */
-		isMicroformat: function( node ) {
-			var classes;
+		isMicroformat: function( node, options ) {
+			var classes,
+				i;
 				
-			if(!node){
+			if(!node || !node.nodeType || node.nodeType !== 1){
 				return false;
 			}		
 			classes = this.getUfClassNames(node);
-			return (classes.root.length > 0);
+			if(options && options.filters && modules.utils.isArray(options.filters)){
+				i = options.filters.length;
+				while(i--) {
+					if(classes.root.indexOf(options.filters[i]) > -1){
+						return true;
+					}
+				}
+				return false;
+			}else{
+				return (classes.root.length > 0);
+			}
 		},		
 			
 	
-		
 		/**
 		 * is the microformats type in the filter list
 		 *
@@ -380,10 +451,10 @@ var Microformats;
 		 * finds  all microformat roots in a rootNode
 		 *
 		 * @param  {DOM Node} rootNode
-		 * @param  {Boolean} fromChildren
+		 * @param  {Boolean} includeRoot
 		 * @return {Array}
 		 */
-		findRootNodes: function(rootNode, fromChildren) {
+		findRootNodes: function(rootNode, includeRoot) {
 			var arr = null,			
 				out = [], 
 				classList = [],
@@ -402,20 +473,12 @@ var Microformats;
 			}
 	
 			// get all elements that have a class attribute  
-			fromChildren = (fromChildren) ? fromChildren : false;
-			if(fromChildren) {
-				//var nodes;
-				//if(modules.utils.isArray(rootNode.children)){
-				//	nodes = rootNode.children;
-				//}else{
-				//	nodes = rootNode.children();
-				//}
-				//arr = modules.domUtils.getNodesByAttribute(nodes, 'class');
-				arr = modules.domUtils.getNodesByAttribute(rootNode, 'class');
+			includeRoot = (includeRoot) ? includeRoot : false;
+			if(includeRoot && rootNode.parentNode) {
+				arr = modules.domUtils.getNodesByAttribute(rootNode.parentNode, 'class');
 			} else {
 				arr = modules.domUtils.getNodesByAttribute(rootNode, 'class');
 			}
-	
 	
 			// loop elements that have a class attribute
 			x = 0;    
