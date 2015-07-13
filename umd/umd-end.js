@@ -12,6 +12,12 @@
     };
     
     
+    Microformats.getParent = function(node, options){
+    	var parser = new modules.Parser();
+    	return parser.getParent( node, options );
+    };
+    
+    
     Microformats.count = function(options){
     	var parser = new modules.Parser();
         addV1(parser, options);
@@ -22,7 +28,7 @@
     Microformats.isMicroformat = function( node, options ){
     	var parser = new modules.Parser();
         addV1(parser, options);
-    	return parser.isMicroformat( node );
+    	return parser.isMicroformat( node, options );
     };
     
     

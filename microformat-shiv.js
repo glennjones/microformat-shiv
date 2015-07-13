@@ -1,6 +1,6 @@
 /*
    microformat-shiv - v0.3.4
-   Built: 2015-07-13 11:07 - http://microformat-shiv.com
+   Built: 2015-07-13 12:07 - http://microformat-shiv.com
    Copyright (c) 2015 Glenn Jones
    Licensed MIT 
 */
@@ -4092,6 +4092,12 @@ b,d){return g(y(h(a,d),h(b,d),d,!0),d)},normalize:function(a,b){"string"===typeo
     };
     
     
+    Microformats.getParent = function(node, options){
+    	var parser = new modules.Parser();
+    	return parser.getParent( node, options );
+    };
+    
+    
     Microformats.count = function(options){
     	var parser = new modules.Parser();
         addV1(parser, options);
@@ -4102,7 +4108,7 @@ b,d){return g(y(h(a,d),h(b,d),d,!0),d)},normalize:function(a,b){"string"===typeo
     Microformats.isMicroformat = function( node, options ){
     	var parser = new modules.Parser();
         addV1(parser, options);
-    	return parser.isMicroformat( node );
+    	return parser.isMicroformat( node, options );
     };
     
     
