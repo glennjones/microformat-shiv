@@ -40,7 +40,12 @@ There are also a number of other debugging and tests tools:
 * http://localhost:3000/test/count.html (clients side form to test count function)
 
 
-    
+Server-side test
+--------------------------------------
+You can run mocho html test from the command line
+```sh 
+    $ mocha-phantomjs -R dot /test/mocha-tests-server.html
+```   
     
 Server-side test coverage reports
 --------------------------------------

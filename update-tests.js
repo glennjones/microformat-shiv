@@ -193,7 +193,7 @@ function buildTest( testData, testStructure, version, repo ){
 	out += '<script src="javascript/DOMParser.js"></script>\r\n\r\n';
 	
 	out += '<!-- loads Microformats the full umd version ie window.Microformat -->\r\n';
-	out += '<script data-cover src="microformat-shiv.js"></script>\r\n\r\n';
+	out += '<script data-cover src="../microformat-shiv.js"></script>\r\n\r\n';
 	
 
     out += '<script>mocha.setup("bdd")</script>\r\n';
