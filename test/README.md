@@ -21,7 +21,7 @@ The project includes a node.js web server to run the test tools locally. To run 
 ```  
 
 
-Client-side unit and integration tests
+Client-side interface and standards tests
 --------------------------------------
 The page below run the full [microfomats test suite](https://github.com/microformats/tests) as well as the libraries own unit test for each modules interface. 
 The tests are created in [mocha](http://mochajs.org/) and test coverage is provides by blanket.

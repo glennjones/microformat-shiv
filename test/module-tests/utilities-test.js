@@ -8,7 +8,7 @@ assert = chai.assert;
 // Modules.utils is unit tested as it has an interface access by other modules  
 
 
-describe('utilities', function() {
+describe('Modules.utilities', function() {
     
     
    it('isString', function(){     

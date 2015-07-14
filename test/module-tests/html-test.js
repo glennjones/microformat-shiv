@@ -7,7 +7,7 @@ assert = chai.assert;
 // Tests the private Modules.html object 
 // Modules.html is unit tested as it has an interface access by other modules  
 
-describe('html', function() {
+describe('Modules.html', function() {
     
     
    it('parse', function(){

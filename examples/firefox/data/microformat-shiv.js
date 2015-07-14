@@ -1,6 +1,6 @@
 /*
    microformat-shiv - v0.3.4
-   Built: 2015-07-14 09:07 - http://microformat-shiv.com
+   Built: 2015-07-14 02:07 - http://microformat-shiv.com
    Copyright (c) 2015 Glenn Jones
    Licensed MIT 
 */
@@ -62,27 +62,38 @@ var Microformats;
 		 * @return {Object}
 		 */
 		get: function(options) {
-			var out = {},
+			var out = this.formatEmpty(),
 				data = [],
 				rels;
 	
 			this.init();
 		
-			if(this.hasDOMContext( options )){
+			this.getDOMContext( options );
 				
+			// if we do not have any context create error
+			if(!this.rootNode || !this.document){
+				this.errors.push('No options.node was provided and no document object could be found.');
+			}else{
 			
-				if(this.options.filters.length > 0){
-					// parse flat list of items
-					var newRootNode = this.findFilterNodes(this.rootNode, this.options.filters);
-					data = this.walkRoot(newRootNode);
-				}else{
-					// parse whole document from root
-					data = this.walkRoot(this.rootNode);
+				// only parse h-* microformats if we need too
+				// this is added to speed up parsing 
+				if(this.hasMicroformats(this.rootNode, options)){
+					this.perpareClonedDOM( options );
+			
+					if(this.options.filters.length > 0){
+						// parse flat list of items
+						var newRootNode = this.findFilterNodes(this.rootNode, this.options.filters);
+						data = this.walkRoot(newRootNode);
+					}else{
+						// parse whole document from root
+						data = this.walkRoot(this.rootNode);
+					}
+		
+					out.items = data;
+					this.clearUpDom(this.rootNode);
 				}
-	
-				out.items = data;
 				
-				// find any rel
+				// find any rels
 				if(this.findRels){
 					rels = this.findRels(this.rootNode);
 					out.rels = rels.rels;
@@ -92,8 +103,8 @@ var Microformats;
 					}
 				}
 				
-				this.clearUpDom(this.rootNode);
 			}
+		
 
 			if(this.errors.length > 0){
 				return this.formatError();
@@ -161,7 +172,7 @@ var Microformats;
 		 *
 		 * * @return {Boolean}
 		 */
-		hasDOMContext: function( options ){
+		getDOMContext: function( options ){
 			
 			var baseTag,
 				href;
@@ -187,41 +198,40 @@ var Microformats;
 				this.document = document;
 			}
 			
-			// if we do not have any context create error
-			if(!this.rootNode || !this.document){
-				this.errors.push('No options.node was provided and no global document object could be found.');
-			}else{
+		},
+		
+		
+		perpareClonedDOM: function( options ){
+		
 				
-				// use current document to define baseUrl
-				if(!options.baseUrl && this.document && this.document.location){
-					this.options.baseUrl = this.document.location.href;
-				}
-				
-				// find base tag to set baseUrl
-				baseTag = modules.domUtils.querySelector(this.document,'base');
-				if(baseTag) {
-					href = modules.domUtils.getAttribute(baseTag, 'href');
-					if(href){
-						this.options.baseUrl = href;
-					}
-				}
-				
-				// get path to rootNode 
-				// then clone document
-				// then reset the rootNode to its cloned version in new document
-				var path = modules.domUtils.getNodePath(this.rootNode);
-				var newDocument = modules.domUtils.cloneDocument(this.document);
-				this.document = newDocument;
-				this.rootNode = modules.domUtils.getNodeByPath(this.document, path);
-				
-				
-				// add includes
-				if(this.addIncludes){
-					this.addIncludes( this.document );
-				}
-					
+			// use current document to define baseUrl
+			if(!options.baseUrl && this.document && this.document.location){
+				this.options.baseUrl = this.document.location.href;
 			}
-				
+			
+			// find base tag to set baseUrl
+			baseTag = modules.domUtils.querySelector(this.document,'base');
+			if(baseTag) {
+				href = modules.domUtils.getAttribute(baseTag, 'href');
+				if(href){
+					this.options.baseUrl = href;
+				}
+			}
+			
+			// get path to rootNode 
+			// then clone document
+			// then reset the rootNode to its cloned version in new document
+			var path = modules.domUtils.getNodePath(this.rootNode);
+			var newDocument = modules.domUtils.cloneDocument(this.document);
+			this.document = newDocument;
+			this.rootNode = modules.domUtils.getNodeByPath(this.document, path);
+			
+			
+			// add includes
+			if(this.addIncludes){
+				this.addIncludes( this.document );
+			}
+						
 			return (this.rootNode && this.document);
 		},
 
@@ -347,6 +357,11 @@ var Microformats;
 					}
 				}
 			}
+			var relCount = this.countRels( options.node );
+			if(relCount > 0){
+				out.rels = relCount;
+			}
+
 		
 			return out;
 		},
@@ -363,9 +378,16 @@ var Microformats;
 			var classes,
 				i;
 				
-			if(!node || !node.nodeType || node.nodeType !== 1){
+			if(!node || !node.nodeType){
 				return false;
-			}		
+			}
+			
+			// if documemt get topmost node
+			if(node.nodeType === 9){
+				node = modules.domUtils.querySelector(node, 'html');
+			}
+			
+			// look for h-* microformats		
 			classes = this.getUfClassNames(node);
 			if(options && options.filters && modules.utils.isArray(options.filters)){
 				i = options.filters.length;
@@ -377,6 +399,42 @@ var Microformats;
 				return false;
 			}else{
 				return (classes.root.length > 0);
+			}
+		},	
+		
+		
+		/**
+		 * does a node or its children have microformats
+		 *
+		 * @param  {DOM Node} node
+		 * @param  {Objecte} options
+		 * @return {Boolean}
+		 */
+		hasMicroformats: function( node, options ) {
+			var items,
+				i;
+			
+			if(!node || !node.nodeType){
+				return false;
+			}
+	
+			// if documemt get topmost node
+			if(node.nodeType === 9){
+				node = modules.domUtils.querySelector(node, 'html');
+			}
+			
+			// returns all microformats roots	
+			items = this.findRootNodes( node, true );
+			if(options && options.filters && modules.utils.isArray(options.filters)){
+				i = items.length;
+				while(i--) {
+					if( this.isMicroformat( items[i], options ) ){
+						return true;
+					}
+				}
+				return false;
+			}else{
+				return (items.length > 0);
 			}
 		},		
 			
@@ -448,7 +506,7 @@ var Microformats;
 	
 	
 		/**
-		 * finds  all microformat roots in a rootNode
+		 * finds all microformat roots in a rootNode
 		 *
 		 * @param  {DOM Node} rootNode
 		 * @param  {Boolean} includeRoot
@@ -2008,6 +2066,32 @@ var Microformats;
 			}
 			return out;
 		};
+		
+		
+		/**
+		 * returns weather a node or its children has rel=* microformat
+		 *
+		 * @param  {DOM node} node
+		 * @return {Boolean}
+		 */
+		modules.Parser.prototype.hasRel = function(node) {
+			return (this.countRels(node) > 0);
+		};
+		
+		
+		/**
+		 * returns the number rel=* microformat a node or its children contents
+		 *
+		 * @param  {DOM node} node
+		 * @return {Int}
+		 */
+		modules.Parser.prototype.countRels = function(node) {
+			if(node && node.nodeType){
+				return modules.domUtils.getNodesByAttribute(node, 'rel').length;
+			}
+			return 0;
+		};
+	
 	
 		
 	}
@@ -4143,12 +4227,14 @@ b,d){return g(y(h(a,d),h(b,d),d,!0),d)},normalize:function(a,b){"string"===typeo
     
     Microformats.get = function(options){
     	var parser = new modules.Parser();
+        addV1(parser, options);
     	return parser.get( options );
     };
     
     
     Microformats.getParent = function(node, options){
     	var parser = new modules.Parser();
+        addV1(parser, options);
     	return parser.getParent( node, options );
     };
     
@@ -4167,8 +4253,15 @@ b,d){return g(y(h(a,d),h(b,d),d,!0),d)},normalize:function(a,b){"string"===typeo
     };
     
     
+    Microformats.hasMicroformats = function( node, options ){
+    	var parser = new modules.Parser();
+        addV1(parser, options);
+    	return parser.hasMicroformats( node, options );
+    };
+    
+    
     function addV1(parser, options){
-		if(options.maps){
+		if(options && options.maps){
 			if(Array.isArray(options.maps)){
 				parser.add(options.maps);
 			}else{

@@ -8,7 +8,7 @@ assert = chai.assert;
 // Modules.dates is unit tested as it has an interface access by other modules  
 
 
-describe('dates', function() {
+describe('Modules.dates', function() {
     
    
    it('hasAM', function(){

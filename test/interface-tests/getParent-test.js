@@ -1,5 +1,5 @@
 
-describe('getParent', function() {
+describe('Microformat.getParent', function() {
         
         var HTML = '<div class="h-event"><span class="p-name">Pub</span><span class="dt-start">2015-07-01t17:30z</span></div>';
         var emptyExpected = {
@@ -35,7 +35,6 @@ describe('getParent', function() {
        var  doc,
             node,
             span,
-            parser,
             result;
            
         doc = document.implementation.createHTMLDocument('New Document');
@@ -44,11 +43,7 @@ describe('getParent', function() {
         doc.body.appendChild(node);
         span = doc.querySelector('.dt-start');    
         
-        // test access the private Modules.Parser object to provide coverage data 
-        // please use the public Microformats.get instead 
-        parser = new Modules.Parser();
-        result = parser.getParent(span);
-        
+        result = Microformats.getParent(span);
         assert.deepEqual( result, expected );
         
    });
@@ -67,12 +62,7 @@ describe('getParent', function() {
         node.innerHTML = HTML;
         doc.body.appendChild(node);
     
-        
-        // test access the private Modules.Parser object to provide coverage data 
-        // please use the public Microformats.get instead 
-        parser = new Modules.Parser();
-        result = parser.getParent(node);
-        
+        result = Microformats.getParent(node);
         assert.deepEqual( result, emptyExpected );
         
    });
@@ -83,7 +73,6 @@ describe('getParent', function() {
        var  doc,
             node,
             span,
-            parser,
             result;
            
         doc = document.implementation.createHTMLDocument('New Document');
@@ -92,11 +81,7 @@ describe('getParent', function() {
         doc.body.appendChild(node);
         span = doc.querySelector('.dt-start');    
         
-        // test access the private Modules.Parser object to provide coverage data 
-        // please use the public Microformats.get instead 
-        parser = new Modules.Parser();
-        result = parser.getParent( span, {'filters': ['h-event']} );
-        
+        result = Microformats.getParent( span, {'filters': ['h-event']} );
         assert.deepEqual( result, expected );
         
    });
@@ -107,20 +92,15 @@ describe('getParent', function() {
        var  doc,
             node,
             span,
-            parser,
             result;
            
         doc = document.implementation.createHTMLDocument('New Document');
         node =  document.createElement('div');
         node.innerHTML = HTML;
         doc.body.appendChild(node);
-        span = doc.querySelector('.dt-start');    
-        
-        // test access the private Modules.Parser object to provide coverage data 
-        // please use the public Microformats.get instead 
-        parser = new Modules.Parser();
-        result = parser.getParent( span, {'filters': ['h-card']} );
-        
+        span = doc.querySelector('.dt-start');   
+
+        result = Microformats.getParent( span, {'filters': ['h-card']} );
         assert.deepEqual( result, emptyExpected );
         
    });
@@ -131,7 +111,6 @@ describe('getParent', function() {
        var  doc,
             node,
             span,
-            parser,
             result;
             
         var altHTML = '<div class="h-entry"><h1 class="p-name">test</h1><div class="e-content">this</div><a class="p-author h-card" href="http://glennjones.net"><span class="p-name">Glenn Jones</span></a><span class="dt-publish">2015-07-01t17:30z</span></div>';
@@ -184,11 +163,7 @@ describe('getParent', function() {
         doc.body.appendChild(node);
         span = doc.querySelector('.h-card .p-name');    
         
-        // test access the private Modules.Parser object to provide coverage data 
-        // please use the public Microformats.get instead 
-        parser = new Modules.Parser();
-        result = parser.getParent( span, {'filters': ['h-entry']} );
-        
+        result = Microformats.getParent( span, {'filters': ['h-entry']} );
         assert.deepEqual( result, altExpected );
         
    });
@@ -199,7 +174,6 @@ describe('getParent', function() {
        var  doc,
             node,
             span,
-            parser,
             result;
             
         var altHTML = '<div class="h-entry"><h1 class="p-name">test</h1><div class="e-content">this</div><a class="p-author h-card" href="http://glennjones.net"><span class="p-name">Glenn Jones</span></a><span class="dt-publish">2015-07-01t17:30z</span></div>';
@@ -230,11 +204,7 @@ describe('getParent', function() {
         doc.body.appendChild(node);
         span = doc.querySelector('.h-card .p-name');    
         
-        // test access the private Modules.Parser object to provide coverage data 
-        // please use the public Microformats.get instead 
-        parser = new Modules.Parser();
-        result = parser.getParent( span );
-        
+        result = Microformats.getParent( span );
         assert.deepEqual( result, altExpected );
         
    });

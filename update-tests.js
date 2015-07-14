@@ -165,14 +165,13 @@ function buildTest( testData, testStructure, version, repo ){
 	out += "   it('" + testStructure[2].replace('.json','')  + "', function(){\r\n";   
 	out += "       var doc, dom, node, options, parser, found;\r\n";
     out += "       dom = new DOMParser();\r\n";
-    out += "       doc = dom.parseFromString( htmlFragment, 'text/html' )";
+    out += "       doc = dom.parseFromString( htmlFragment, 'text/html' );\r\n";
     out += "       options ={\r\n";
     out += "       		'document': doc,\r\n";
     out += "       		'node': doc,\r\n";
     out += "       		'baseUrl': 'http://example.com'\r\n";
     out += "       };\r\n";
-    out += "       parser = new Modules.Parser();\r\n";
-    out += "       found = parser.get( options );\r\n";
+    out += "       found = Microformats.get( options );\r\n";
 	out += "       assert.deepEqual(found, expected);\r\n";   
 	out += "   });\r\n";
 	out += "});\r\n";
@@ -189,44 +188,14 @@ function buildTest( testData, testStructure, version, repo ){
 	out += '<link rel="stylesheet" href="css/mocha-custom.css" />\r\n\r\n';
 	
 	out += '<script src="../node_modules/chai/chai.js"></script>\r\n';
-    out += '<script src="../node_modules/mocha/mocha.js"></script>\r\n\r\n';
+    out += '<script src="../node_modules/mocha/mocha.js"></script>\r\n';
+	out += '<script src="../thirdparty/es5-shim.min.js"></script>\r\n';
+	out += '<script src="javascript/DOMParser.js"></script>\r\n\r\n';
 	
-	out += '<script src="../thirdparty/es5-shim.min.js"></script>\r\n\r\n';
+	out += '<!-- loads Microformats the full umd version ie window.Microformat -->\r\n';
+	out += '<script data-cover src="microformat-shiv.js"></script>\r\n\r\n';
 	
-	out += '<!--  loads Modules to help with debugging ie windows.Modules -->\r\n';
-    out += '<script data-cover src="../lib/parser.js"></script>\r\n';
-	out += '<script data-cover src="../lib/parser-implied.js"></script>\r\n';
-	out += '<script data-cover src="../lib/parser-includes.js"></script>\r\n';
-	out += '<script data-cover src="../lib/parser-rels.js"></script>\r\n';
-    out += '<script data-cover src="../lib/utilities.js"></script>\r\n';
-    out += '<script data-cover src="../lib/domutils.js"></script>\r\n';
-    out += '<script data-cover src="../lib/isodate.js"></script>\r\n';
-    out += '<script data-cover src="../lib/dates.js"></script>\r\n';
-    out += '<script data-cover src="../lib/text.js"></script>\r\n';
-    out += '<script data-cover src="../lib/html.js"></script>\r\n';
-	
-    out += '<script data-cover src="../lib/maps/h-adr.js"></script>\r\n';
-    out += '<script data-cover src="../lib/maps/h-card.js"></script>\r\n';
-    out += '<script data-cover src="../lib/maps/h-entry.js"></script>\r\n';
-    out += '<script data-cover src="../lib/maps/h-event.js"></script>\r\n';
-	out += '<script data-cover src="../lib/maps/h-feed.js"></script>\r\n';
-    out += '<script data-cover src="../lib/maps/h-geo.js"></script>\r\n';
-    out += '<script data-cover src="../lib/maps/h-item.js"></script>\r\n';
-    out += '<script data-cover src="../lib/maps/h-listing.js"></script>\r\n';
-    out += '<script data-cover src="../lib/maps/h-news.js"></script>\r\n';
-    out += '<script data-cover src="../lib/maps/h-org.js"></script>\r\n';
-    out += '<script data-cover src="../lib/maps/h-product.js"></script>\r\n';
-    out += '<script data-cover src="../lib/maps/h-recipe.js"></script>\r\n';
-    out += '<script data-cover src="../lib/maps/h-resume.js"></script>\r\n';
-    out += '<script data-cover src="../lib/maps/h-review-aggregate.js"></script>\r\n';
-    out += '<script data-cover src="../lib/maps/h-review.js"></script>\r\n';
-    out += '<script data-cover src="../lib/maps/rel.js"></script>\r\n\r\n';
-	
-	
-	out += '<!-- loads Microformats the full umd version ie windows.Microformat -->\r\n';
-	out += '<script src="microformat-shiv.js"></script>\r\n\r\n';
-	
-	out += '<script src="javascript/DOMParser.js"></script>\r\n';	
+
     out += '<script>mocha.setup("bdd")</script>\r\n';
 	
 	relativeTestPaths.forEach(function(item){
@@ -234,16 +203,11 @@ function buildTest( testData, testStructure, version, repo ){
 	});
 	
 	out += '\r\n';
-	out += '<script src="unit-tests/dates-test.js"></script>\r\n';
-	out += '<script src="unit-tests/isodate-test.js"></script>\r\n';
-	out += '<script src="unit-tests/domutils-test.js"></script>\r\n';
-	out += '<script src="unit-tests/html-test.js"></script>\r\n';
-	out += '<script src="unit-tests/text-test.js"></script>\r\n';
-	out += '<script src="unit-tests/utilities-test.js"></script>\r\n';
-	out += '<script src="unit-tests/parser-get-test.js"></script>\r\n';
-	out += '<script src="unit-tests/parser-getparent-test.js"></script>\r\n';
-	out += '<script src="unit-tests/parser-count-test.js"></script>\r\n';
-	out += '<script src="unit-tests/parser.ismicroformat-test.js"></script>\r\n\r\n';
+	out += '<script src="interface-tests/get-test.js"></script>\r\n';
+	out += '<script src="interface-tests/getParent-test.js"></script>\r\n';
+	out += '<script src="interface-tests/count-test.js"></script>\r\n';
+	out += '<script src="interface-tests/isMicroformat-test.js"></script>\r\n';
+	out += '<script src="interface-tests/hasMicroformats-test.js"></script>\r\n\r\n';
 	
 	
 	

@@ -9,7 +9,7 @@ assert = chai.assert;
 // Modules.domUtils is unit tested as it has an interface access by other modules  
 
 
-describe('domutils', function() {
+describe('Modules.domutils', function() {
     
 
    it('ownerDocument', function(){

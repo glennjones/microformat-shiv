@@ -8,7 +8,7 @@ assert = chai.assert;
 // Modules.text is unit tested as it has an interface access by other modules  
 
 
-describe('text', function() {
+describe('Modules.text', function() {
     
     
    it('parse', function(){

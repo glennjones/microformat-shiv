@@ -1,7 +1,7 @@
 /*
 Microformats Test Suite - Downloaded from github repo: glennjones/tests version v0.1.18 
 Mocha integration test from: microformats-v1/hcalendar/justahyperlink
-The test was built on Tue Jul 14 2015 09:20:10 GMT+0100 (BST)
+The test was built on Tue Jul 14 2015 14:14:49 GMT+0100 (BST)
 */
 
 assert = chai.assert;
@@ -14,13 +14,13 @@ describe('hcalendar', function() {
    it('justahyperlink', function(){
        var doc, dom, node, options, parser, found;
        dom = new DOMParser();
-       doc = dom.parseFromString( htmlFragment, 'text/html' )       options ={
+       doc = dom.parseFromString( htmlFragment, 'text/html' );
+       options ={
        		'document': doc,
        		'node': doc,
        		'baseUrl': 'http://example.com'
        };
-       parser = new Modules.Parser();
-       found = parser.get( options );
+       found = Microformats.get( options );
        assert.deepEqual(found, expected);
    });
 });

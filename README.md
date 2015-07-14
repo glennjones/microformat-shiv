@@ -17,6 +17,17 @@ Using bower:
 $ bower install microformat-shiv
 ```
 
+Methods
+-----
+* Parsing
+    * [`get`](#get)
+    * [`getParent`](#getParent) 
+* Discovery
+    * [`count`](#count)
+    * [`isMicroformat`](#isMicroformat)
+    * [`hasMicroformats`](#hasMicroformats)
+
+
 get
 -----
 
@@ -132,7 +143,8 @@ The `getParent` method takes the same `options` as the `get` method. The one dif
 
 Count
 -----
-The `count` method returns the number of each microformat type found. It does not do a full parse so it is much quicker than get and can be used for tasks such as adding notifications to the UI. It currently does not count `rel=*` microformats.
+The `count` method returns the number of each microformat type found. It does not do a full parse so it is much quicker 
+than get and can be used for tasks such as adding notifications to the UI.
 ```javascript
     <script src="microformat-shiv.min.js" type="text/javascript"></script>
     <script type="text/javascript">
@@ -144,7 +156,8 @@ Output
 ```javascript
     {
         'h-event': 1,
-        'h-card': 2
+        'h-card': 2,
+        'rels': 6
     }
 ```  
 
@@ -154,7 +167,7 @@ The `isMicroformat` method returns weather a node has a valid microformats class
 ```javascript
     <script src="microformat-shiv.min.js" type="text/javascript"></script>
     <script type="text/javascript">
-        var node = document.getElementById('target')
+        var node = document.getElementById('target');
         var isVaild = Microformats.isMicroformat( node );
         // do something with isVaild boolean 
     </script>    

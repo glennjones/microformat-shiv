@@ -1,6 +1,6 @@
 // Unit test for parser get function
 
-describe('get', function() {
+describe('Microformat.get', function() {
     
     
     var expected = {
@@ -45,52 +45,19 @@ describe('get', function() {
 
 
     it('get - no options.node parse this document', function(){
-        var parser,
-            result;
+        var result;
 
-        // test access the private Modules.Parser object to provide coverage data 
-        // please use the public Microformats.get instead 
-        parser = new Modules.Parser();
-        result = parser.get({});
+        result = Microformats.get({});
         assert.deepEqual( result.items, [] );
         
    });
-   
-   /*
-   it('get - incorrect setting of options.document', function(){
-       
-       var  doc,
-            node,
-            options,
-            parser,
-            result;
-       
-        doc = document.implementation.createHTMLDocument('New Document');
-        node =  document.createElement('div');
-        node.innerHTML = html;
-        doc.body.appendChild(node);    
-        
-        options ={
-            'document': node,
-            'node': node
-        };
-        // test access the private Modules.Parser object to provide coverage data 
-        // please use the public Microformats.get instead 
-        parser = new Modules.Parser();
-        result = parser.get(options);
-        assert.deepEqual( result, {'items':[],'rels':{},'rel-urls':{},'errors':['The options.document object does not have the right nodeType']} );
- 
-   });
-   */
-
-
+  
     
    it('get - standard', function(){
        
         var doc,
             node,
             options,
-            parser,
             result;
        
         doc = document.implementation.createHTMLDocument('New Document');
@@ -102,10 +69,8 @@ describe('get', function() {
             'node': node,
             'baseUrl': 'http://example.com'
         };
-        // test access the private Modules.Parser object to provide coverage data 
-        // please use the public Microformats.get instead 
-        parser = new Modules.Parser();
-        result = parser.get(options);
+
+        result = Microformats.get(options);
         assert.deepEqual( result, expected );
         
    });
@@ -116,7 +81,6 @@ describe('get', function() {
        var  doc,
             node,
             options,
-            parser,
             result;
        
         doc = document.implementation.createHTMLDocument('New Document');
@@ -128,10 +92,8 @@ describe('get', function() {
             'node': doc,
             'baseUrl': 'http://example.com'
         };
-        // test access the private Modules.Parser object to provide coverage data 
-        // please use the public Microformats.get instead 
-        parser = new Modules.Parser();
-        result = parser.get(options);
+
+        result = Microformats.get(options);
         assert.deepEqual( result, expected );
  
    });
@@ -142,7 +104,6 @@ describe('get', function() {
        var  doc,
             node,
             options,
-            parser,
             result;
        
         doc = document.implementation.createHTMLDocument('New Document');
@@ -153,10 +114,8 @@ describe('get', function() {
         options ={
             'node': node,
         };
-        // test access the private Modules.Parser object to provide coverage data 
-        // please use the public Microformats.get instead 
-        parser = new Modules.Parser();
-        result = parser.get(options);
+
+        result = Microformats.get(options);
         assert.deepEqual( result, expected );
  
    });
@@ -178,10 +137,8 @@ describe('get', function() {
         options ={
             'node': doc,
         };
-        // test access the private Modules.Parser object to provide coverage data 
-        // please use the public Microformats.get instead 
-        parser = new Modules.Parser();
-        result = parser.get(options);
+
+        result = Microformats.get(options);
         assert.deepEqual( result, expected );
  
    });
@@ -192,7 +149,6 @@ describe('get', function() {
        var  doc,
             node,
             options,
-            parser,
             result;
             
         var altHTML =   '<div class="vcard" itemref="mozilla-org mozilla-adr"><span class="fn">Brendan Eich</span></div><div class="vcard" itemref="mozilla-org mozilla-adr"><span class="fn">Mitchell Baker</span></div><p id="mozilla-org" class="org">Mozilla</p>';
@@ -223,10 +179,8 @@ describe('get', function() {
         options ={
             'node': node,
         };
-        // test access the private Modules.Parser object to provide coverage data 
-        // please use the public Microformats.get instead 
-        parser = new Modules.Parser();
-        result = parser.get(options);
+
+        result = Microformats.get(options);
       
         
         assert.deepEqual( result, altExpected );
@@ -240,7 +194,6 @@ describe('get', function() {
        var  doc,
             node,
             options,
-            parser,
             result;
             
         var altHTML = '<div class="h-feed"><p class="p-name">Blog</a> <p class="h-entry"><span class="e-content">Mozilla Foundation</span></div>';
@@ -274,15 +227,10 @@ describe('get', function() {
         options ={
             'node': node,
         };
-        // test access the private Modules.Parser object to provide coverage data 
-        // please use the public Microformats.get instead 
-        parser = new Modules.Parser();
-        result = parser.get(options);
-        
+
+        result = Microformats.get(options); 
         assert.deepEqual( result, altExpected );
         
-        
- 
    });
    
    
@@ -291,7 +239,6 @@ describe('get', function() {
        var  doc,
             node,
             options,
-            parser,
             result;
             
         var altHTML = '<a class="h-card" href="http://glennjones.net">\n';
@@ -308,11 +255,8 @@ describe('get', function() {
             'node': node,
             'textFormat': 'normalised'
         };
-        // test access the private Modules.Parser object to provide coverage data 
-        // please use the public Microformats.get instead 
-        parser = new Modules.Parser();
-        result = parser.get(options);
-        
+
+        result = Microformats.get(options);
         assert.equal( result.items[0].properties.name[0], 'Glenn Jones' );
         
    });
@@ -340,11 +284,8 @@ describe('get', function() {
             'node': node,
             'textFormat': 'whitespace'
         };
-        // test access the private Modules.Parser object to provide coverage data 
-        // please use the public Microformats.get instead 
-        parser = new Modules.Parser();
-        result = parser.get(options);
-        
+
+        result = Microformats.get(options);
         assert.equal( result.items[0].properties.name[0], '\n     Glenn\n     Jones\n' );
         
    });
@@ -356,7 +297,6 @@ describe('get', function() {
        var  doc,
             node,
             options,
-            parser,
             result;
             
         var altHTML = '<a class="h-card" href="http://glennjones.net">\n';
@@ -374,11 +314,8 @@ describe('get', function() {
             'node': node,
             'textFormat': 'whitespacetrimmed'
         };
-        // test access the private Modules.Parser object to provide coverage data 
-        // please use the public Microformats.get instead 
-        parser = new Modules.Parser();
-        result = parser.get(options);
         
+        result = Microformats.get(options);
         assert.equal( result.items[0].properties.name[0], 'Glenn\n     Jones' );
         
    });
@@ -389,7 +326,6 @@ describe('get', function() {
        var  doc,
             node,
             options,
-            parser,
             result;
             
         var altHTML = '<div class="h-event"><span class="p-name">Pub</span><span class="dt-start">2015-07-01t17:30z</span></div>';
@@ -403,11 +339,8 @@ describe('get', function() {
             'node': node,
             'dateFormat': 'auto'
         };
-        // test access the private Modules.Parser object to provide coverage data 
-        // please use the public Microformats.get instead 
-        parser = new Modules.Parser();
-        result = parser.get(options);
-        
+
+        result = Microformats.get(options);
         assert.equal( result.items[0].properties.start[0], '2015-07-01t17:30z' );
         
    });
@@ -418,7 +351,6 @@ describe('get', function() {
        var  doc,
             node,
             options,
-            parser,
             result;
             
         var altHTML = '<div class="h-event"><span class="p-name">Pub</span><span class="dt-start">2015-07-01t17:30z</span></div>';
@@ -432,11 +364,8 @@ describe('get', function() {
             'node': node,
             'dateFormat': 'w3c'
         };
-        // test access the private Modules.Parser object to provide coverage data 
-        // please use the public Microformats.get instead 
-        parser = new Modules.Parser();
-        result = parser.get(options);
-        
+
+        result = Microformats.get(options);
         assert.equal( result.items[0].properties.start[0], '2015-07-01T17:30Z' );
         
    });
@@ -447,7 +376,6 @@ describe('get', function() {
        var  doc,
             node,
             options,
-            parser,
             result;
             
         var altHTML = '<div class="h-event"><span class="p-name">Pub</span><span class="dt-start">2015-07-01t17:30z</span></div>';
@@ -461,11 +389,8 @@ describe('get', function() {
             'node': node,
             'dateFormat': 'html5'
         };
-        // test access the private Modules.Parser object to provide coverage data 
-        // please use the public Microformats.get instead 
-        parser = new Modules.Parser();
-        result = parser.get(options);
-        
+
+        result = Microformats.get(options);
         assert.equal( result.items[0].properties.start[0], '2015-07-01 17:30Z' );
         
    });
@@ -477,7 +402,7 @@ describe('get', function() {
        var  doc,
             node,
             options,
-            parser,
+
             result;
             
         var altHTML = '<div class="h-event"><span class="p-name">Pub</span><span class="dt-start">2015-07-01t17:30z</span></div>';
@@ -491,11 +416,8 @@ describe('get', function() {
             'node': node,
             'dateFormat': 'rfc3339'
         };
-        // test access the private Modules.Parser object to provide coverage data 
-        // please use the public Microformats.get instead 
-        parser = new Modules.Parser();
-        result = parser.get(options);
-        
+
+        result = Microformats.get(options);
         assert.equal( result.items[0].properties.start[0], '20150701T1730Z' );
         
    });
@@ -533,11 +455,8 @@ describe('get', function() {
             'node': node,
             'filters': ['h-card']
         };
-        // test access the private Modules.Parser object to provide coverage data 
-        // please use the public Microformats.get instead 
-        parser = new Modules.Parser();
-        result = parser.get(options);
-        
+ 
+        result = Microformats.get(options);
         assert.deepEqual( result, altExpected );
         
    });
@@ -548,7 +467,6 @@ describe('get', function() {
        var  doc,
             node,
             options,
-            parser,
             result;
             
         var altHTML = '<div class="h-event"><span class="p-name">Pub</span><span class="dt-start">2015-07-01t17:30z</span></div><a class="h-card" href="http://glennjones.net">Glenn Jones</a>';
@@ -574,11 +492,8 @@ describe('get', function() {
             'node': node,
             'filters': ['h-event']
         };
-        // test access the private Modules.Parser object to provide coverage data 
-        // please use the public Microformats.get instead 
-        parser = new Modules.Parser();
-        result = parser.get(options);
-        
+
+        result = Microformats.get(options);
         assert.deepEqual( result, altExpected );
         
    });
@@ -589,7 +504,6 @@ describe('get', function() {
        var  doc,
             node,
             options,
-            parser,
             result;
             
         var altHTML = '<div class="h-event"><span class="p-name">Pub</span><span class="dt-start">2015-07-01t17:30z</span></div><a class="h-card" href="http://glennjones.net">Glenn Jones</a>';
@@ -622,11 +536,8 @@ describe('get', function() {
             'node': node,
             'filter': ['h-event']
         };
-        // test access the private Modules.Parser object to provide coverage data 
-        // please use the public Microformats.get instead 
-        parser = new Modules.Parser();
-        result = parser.get(options);
-        
+
+        result = Microformats.get(options);
         assert.deepEqual( result, altExpected );
         
    });
@@ -637,7 +548,6 @@ describe('get', function() {
        var  doc,
             node,
             options,
-            parser,
             result;
             
         var altHTML = '<div class="h-event"><span class="p-name">Pub</span><span class="dt-start">2015-07-01t17:30z</span></div>';
@@ -657,11 +567,8 @@ describe('get', function() {
             'node': node,
             'filters': ['h-card']
         };
-        // test access the private Modules.Parser object to provide coverage data 
-        // please use the public Microformats.get instead 
-        parser = new Modules.Parser();
-        result = parser.get(options);
-        
+
+        result = Microformats.get(options);
         assert.deepEqual( result, altExpected );
         
    });
@@ -698,11 +605,8 @@ describe('get', function() {
             'node': node,
             'filter': ['h-card']
         };
-        // test access the private Modules.Parser object to provide coverage data 
-        // please use the public Microformats.get instead 
-        parser = new Modules.Parser();
-        result = parser.get(options);
-        
+
+        result = Microformats.get(options);
         assert.deepEqual( result, altExpected );
         
    });
@@ -713,7 +617,6 @@ describe('get', function() {
        var  doc,
             node,
             options,
-            parser,
             result;
             
         var altHTML = '<div class="hpayment">£<span class="amount">36.78</span></div>';
@@ -743,21 +646,11 @@ describe('get', function() {
         doc.body.appendChild(node);    
         
         options ={
-            'node': node
+            'node': node,
+            'maps': v1Definition
         };
-        // test access the private Modules.Parser object to provide coverage data 
-        // please use the public Microformats.get instead and add new definition throungh options
-        /* i.e.
-             options ={
-                'node': node,
-                'add': [v1Definition],
-            };
-        
-        */
-        parser = new Modules.Parser();
-        parser.add([v1Definition]);
-        result = parser.get(options);
-        
+
+        result = Microformats.get(options);
         assert.deepEqual( result, altExpected );
         
    });
