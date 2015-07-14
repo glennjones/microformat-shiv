@@ -1,7 +1,7 @@
 /*
 Microformats Test Suite - Downloaded from github repo: glennjones/tests version v0.1.18 
 Mocha integration test from: microformats-v2/h-resume/work
-The test was built on Thu Jul 02 2015 21:37:44 GMT+0100 (BST)
+The test was built on Tue Jul 14 2015 09:20:10 GMT+0100 (BST)
 */
 
 assert = chai.assert;
@@ -12,14 +12,11 @@ describe('h-resume', function() {
    var expected = {"items":[{"type":["h-resume"],"properties":{"name":["Tim Berners-Lee"],"contact":[{"value":"Director of the World Wide Web Foundation","type":["h-card"],"properties":{"title":["Director of the World Wide Web Foundation"],"name":["Director of the World Wide Web Foundation"]}}],"summary":["Invented the World Wide Web."],"experience":[{"value":"World Wide Web Foundation","type":["h-event","h-card"],"properties":{"title":["Director"],"name":["World Wide Web Foundation"],"org":["World Wide Web Foundation"],"url":["http://www.webfoundation.org/"],"start":["2009-01-18"],"duration":["P2Y11M"]}}]}}],"rels":{},"rel-urls":{}};
 
    it('work', function(){
-       var doc, node, options, parser, found;
-       doc = document.implementation.createHTMLDocument('New Document');
-       node =  document.createElement('div');
-       node.innerHTML = htmlFragment;
-       doc.body.appendChild(node);
-       options ={
+       var doc, dom, node, options, parser, found;
+       dom = new DOMParser();
+       doc = dom.parseFromString( htmlFragment, 'text/html' )       options ={
        		'document': doc,
-       		'node': node,
+       		'node': doc,
        		'baseUrl': 'http://example.com'
        };
        parser = new Modules.Parser();

@@ -161,17 +161,14 @@ function buildTest( testData, testStructure, version, repo ){
 	
 	out += "describe('" + testStructure[1]  + "', function() {\r\n";
     out += "   var htmlFragment = " + JSON.stringify(testData.html) + ";\r\n";
-   	//out += "   var found = helper.parseHTML(htmlFragment,'http://example.com/');\r\n";
    	out += "   var expected = " + JSON.stringify(JSON.parse(testData.json)) + ";\r\n\r\n";
 	out += "   it('" + testStructure[2].replace('.json','')  + "', function(){\r\n";   
-	out += "       var doc, node, options, parser, found;\r\n";
-    out += "       doc = document.implementation.createHTMLDocument('New Document');\r\n";
-    out += "       node =  document.createElement('div');\r\n";
-    out += "       node.innerHTML = htmlFragment;\r\n";
-    out += "       doc.body.appendChild(node);\r\n";    
+	out += "       var doc, dom, node, options, parser, found;\r\n";
+    out += "       dom = new DOMParser();\r\n";
+    out += "       doc = dom.parseFromString( htmlFragment, 'text/html' )";
     out += "       options ={\r\n";
     out += "       		'document': doc,\r\n";
-    out += "       		'node': node,\r\n";
+    out += "       		'node': doc,\r\n";
     out += "       		'baseUrl': 'http://example.com'\r\n";
     out += "       };\r\n";
     out += "       parser = new Modules.Parser();\r\n";
@@ -212,6 +209,7 @@ function buildTest( testData, testStructure, version, repo ){
     out += '<script data-cover src="../lib/maps/h-card.js"></script>\r\n';
     out += '<script data-cover src="../lib/maps/h-entry.js"></script>\r\n';
     out += '<script data-cover src="../lib/maps/h-event.js"></script>\r\n';
+	out += '<script data-cover src="../lib/maps/h-feed.js"></script>\r\n';
     out += '<script data-cover src="../lib/maps/h-geo.js"></script>\r\n';
     out += '<script data-cover src="../lib/maps/h-item.js"></script>\r\n';
     out += '<script data-cover src="../lib/maps/h-listing.js"></script>\r\n';
@@ -228,8 +226,7 @@ function buildTest( testData, testStructure, version, repo ){
 	out += '<!-- loads Microformats the full umd version ie windows.Microformat -->\r\n';
 	out += '<script src="microformat-shiv.js"></script>\r\n\r\n';
 	
-	
-    out += '<script src="javascript/helper.js"></script>\r\n';
+	out += '<script src="javascript/DOMParser.js"></script>\r\n';	
     out += '<script>mocha.setup("bdd")</script>\r\n';
 	
 	relativeTestPaths.forEach(function(item){

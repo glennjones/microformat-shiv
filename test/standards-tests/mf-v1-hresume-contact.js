@@ -1,7 +1,7 @@
 /*
 Microformats Test Suite - Downloaded from github repo: glennjones/tests version v0.1.18 
 Mocha integration test from: microformats-v1/hresume/contact
-The test was built on Thu Jul 02 2015 21:37:43 GMT+0100 (BST)
+The test was built on Tue Jul 14 2015 09:20:10 GMT+0100 (BST)
 */
 
 assert = chai.assert;
@@ -12,14 +12,11 @@ describe('hresume', function() {
    var expected = {"items":[{"type":["h-resume"],"properties":{"contact":[{"value":"Tim Berners-Lee","type":["h-card"],"properties":{"name":["Tim Berners-Lee"],"org":["MIT"],"adr":[{"value":"32 Vassar Street, \n            Room 32-G524, \n            Cambridge,  \n            MA \n            02139, \n            USA.  \n            (Work)","type":["h-adr"],"properties":{"street-address":["32 Vassar Street"],"extended-address":["Room 32-G524"],"locality":["Cambridge"],"region":["MA"],"postal-code":["02139"],"country-name":["USA"],"name":["32 Vassar Street, \n            Room 32-G524, \n            Cambridge,  \n            MA \n            02139, \n            USA.  \n            (Work)"]}}],"tel":["+1 (617) 253 5702"],"email":["mailto:timbl@w3.org"]}}],"summary":["Invented the World Wide Web."],"name":["Tim Berners-Lee\n        MIT\n        \n            32 Vassar Street, \n            Room 32-G524, \n            Cambridge,  \n            MA \n            02139, \n            USA.  \n            (Work)\n        \n        Tel:+1 (617) 253 5702\n        Email:timbl@w3.org\n    \n    Invented the World Wide Web."]}}],"rels":{},"rel-urls":{}};
 
    it('contact', function(){
-       var doc, node, options, parser, found;
-       doc = document.implementation.createHTMLDocument('New Document');
-       node =  document.createElement('div');
-       node.innerHTML = htmlFragment;
-       doc.body.appendChild(node);
-       options ={
+       var doc, dom, node, options, parser, found;
+       dom = new DOMParser();
+       doc = dom.parseFromString( htmlFragment, 'text/html' )       options ={
        		'document': doc,
-       		'node': node,
+       		'node': doc,
        		'baseUrl': 'http://example.com'
        };
        parser = new Modules.Parser();

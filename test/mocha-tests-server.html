@@ -5,6 +5,7 @@
 
 <script src="../node_modules/chai/chai.js"></script>
 <script src="../node_modules/mocha/mocha.js"></script>
+
 <script src="../thirdparty/es5-shim.min.js"></script>
 
 <!--  loads Modules to help with debugging ie windows.Modules -->
@@ -18,11 +19,11 @@
 <script data-cover src="../lib/dates.js"></script>
 <script data-cover src="../lib/text.js"></script>
 <script data-cover src="../lib/html.js"></script>
-
 <script data-cover src="../lib/maps/h-adr.js"></script>
 <script data-cover src="../lib/maps/h-card.js"></script>
 <script data-cover src="../lib/maps/h-entry.js"></script>
 <script data-cover src="../lib/maps/h-event.js"></script>
+<script data-cover src="../lib/maps/h-feed.js"></script>
 <script data-cover src="../lib/maps/h-geo.js"></script>
 <script data-cover src="../lib/maps/h-item.js"></script>
 <script data-cover src="../lib/maps/h-listing.js"></script>
@@ -38,7 +39,7 @@
 <!-- loads Microformats the full umd version ie windows.Microformat -->
 <script src="microformat-shiv.js"></script>
 
-<script src="javascript/helper.js"></script>
+<script src="javascript/DOMParser.js"></script>
 <script>mocha.setup("bdd")</script>
 <script src="standards-tests/mf-mixed-h-card-mixedpropertries.js"></script>
 <script src="standards-tests/mf-mixed-h-card-tworoots.js"></script>
@@ -69,6 +70,7 @@
 <script src="standards-tests/mf-v1-hentry-justahyperlink.js"></script>
 <script src="standards-tests/mf-v1-hentry-justaname.js"></script>
 <script src="standards-tests/mf-v1-hentry-summarycontent.js"></script>
+<script src="standards-tests/mf-v1-hfeed-simple.js"></script>
 <script src="standards-tests/mf-v1-hnews-all.js"></script>
 <script src="standards-tests/mf-v1-hnews-minimum.js"></script>
 <script src="standards-tests/mf-v1-hproduct-aggregate.js"></script>
@@ -129,6 +131,8 @@
 <script src="standards-tests/mf-v2-h-event-justahyperlink.js"></script>
 <script src="standards-tests/mf-v2-h-event-justaname.js"></script>
 <script src="standards-tests/mf-v2-h-event-time.js"></script>
+<script src="standards-tests/mf-v2-h-feed-implied-title.js"></script>
+<script src="standards-tests/mf-v2-h-feed-simple.js"></script>
 <script src="standards-tests/mf-v2-h-geo-abbrpattern.js"></script>
 <script src="standards-tests/mf-v2-h-geo-altitude.js"></script>
 <script src="standards-tests/mf-v2-h-geo-hidden.js"></script>
@@ -190,6 +194,6 @@ mochaPhantomJS.run();
 };</script>
 </head><body>
 <h3>Microformats test suite - v0.1.18</h3>
-<p>Mocha tests built on Thu Jul 02 2015 21:37:44 GMT+0100 (BST). Downloaded from github repo: glennjones/tests version v0.1.18</p>
+<p>Mocha tests built on Tue Jul 14 2015 09:20:10 GMT+0100 (BST). Downloaded from github repo: glennjones/tests version v0.1.18</p>
 <div id="mocha"></div>
 </body></html>

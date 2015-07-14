@@ -1,6 +1,6 @@
 /*
    microformat-shiv - v0.3.4
-   Built: 2015-07-13 12:07 - http://microformat-shiv.com
+   Built: 2015-07-14 09:07 - http://microformat-shiv.com
    Copyright (c) 2015 Glenn Jones
    Licensed MIT 
 */
@@ -22,7 +22,7 @@ var Microformats;
     
 
 	modules.version = '0.3.4';
-	modules.livingStandard = '2015-07-02T20:30:44Z';
+	modules.livingStandard = '2015-07-14T08:11:14Z';
 
 	/**
 	 * constructor
@@ -1449,6 +1449,8 @@ var Microformats;
 	
 			if(uf && uf.properties) {
 				
+				uf = this.impliedhFeedTitle(node, uf);
+				
 				// implied name rule
 				/*
 					img.h-x[alt]										<img class="h-card" src="glenn.htm" alt="Glenn Jones"></a>
@@ -1660,6 +1662,35 @@ var Microformats;
 			}
 			return uf;
 		};
+		
+		
+		/**
+		 * if a h-feed does not have a title use the title tag of a page
+		 *
+		 * @param  {DOM Node} node
+		 * @param  {Object} uf
+		 * @return {Object}
+		 */	
+		modules.Parser.prototype.impliedhFeedTitle = function(node, uf){
+			if(uf.type && uf.type.indexOf('h-feed') > -1){
+				
+				// has no name property
+				if(!uf.properties.name || uf.properties.name[0] === '' ){
+					
+					// use the text from title tag
+					var title = modules.domUtils.querySelector(this.document, 'title');
+					if(title){
+						uf.properties.name = [modules.text.parse(this.document, title, this.options.textFormat)];
+					}
+				}
+				
+			}
+			return uf;
+		};
+		
+		
+		
+		
 	
 	}
 
@@ -3784,6 +3815,30 @@ b,d){return g(y(h(a,d),h(b,d),d,!0),d)},normalize:function(a,b){"string"===typeo
 			'status': {},
 			'rdate': {}, 
 			'rrule': {}
+		}
+	};
+
+
+	modules.maps['h-feed'] = {
+		root: 'hfeed',
+		name: 'h-feed',
+		properties: {
+			'category': {
+				'map': 'p-category',
+				'relAlt': ['tag']
+			},
+			'summary': {
+				'map': 'p-summary'
+			},
+			'author': { 
+				'uf': ['h-card']
+			},
+			'url': {
+				'map': 'u-url'
+			},
+			'photo': {
+				'map': 'u-photo'
+			},
 		}
 	};
 

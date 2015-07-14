@@ -1,7 +1,7 @@
 /*
 Microformats Test Suite - Downloaded from github repo: glennjones/tests version v0.1.18 
 Mocha integration test from: microformats-v1/hresume/education
-The test was built on Thu Jul 02 2015 21:37:43 GMT+0100 (BST)
+The test was built on Tue Jul 14 2015 09:20:10 GMT+0100 (BST)
 */
 
 assert = chai.assert;
@@ -12,14 +12,11 @@ describe('hresume', function() {
    var expected = {"items":[{"type":["h-resume"],"properties":{"contact":[{"value":"Tim Berners-Lee","type":["h-card"],"properties":{"name":["Tim Berners-Lee"],"title":["Director of the World Wide Web Foundation"]}}],"summary":["Invented the World Wide Web."],"education":[{"value":"The Queen's College, Oxford University","type":["h-event","h-card"],"properties":{"name":["The Queen's College, Oxford University"],"org":["The Queen's College, Oxford University"],"description":["BA Hons (I) Physics"],"start":["1973-09"],"end":["1976-06"]}}],"name":["Tim Berners-Lee\n        Director of the World Wide Web Foundation\n    \n    Invented the World Wide Web.\n    \n        The Queen's College, Oxford University, \n        BA Hons (I) Physics \n        1973 –\n        1976"]}}],"rels":{},"rel-urls":{}};
 
    it('education', function(){
-       var doc, node, options, parser, found;
-       doc = document.implementation.createHTMLDocument('New Document');
-       node =  document.createElement('div');
-       node.innerHTML = htmlFragment;
-       doc.body.appendChild(node);
-       options ={
+       var doc, dom, node, options, parser, found;
+       dom = new DOMParser();
+       doc = dom.parseFromString( htmlFragment, 'text/html' )       options ={
        		'document': doc,
-       		'node': node,
+       		'node': doc,
        		'baseUrl': 'http://example.com'
        };
        parser = new Modules.Parser();

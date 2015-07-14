@@ -1,7 +1,7 @@
 /*
 Microformats Test Suite - Downloaded from github repo: glennjones/tests version v0.1.18 
 Mocha integration test from: microformats-v1/hreview-aggregate/hcard
-The test was built on Thu Jul 02 2015 21:37:43 GMT+0100 (BST)
+The test was built on Tue Jul 14 2015 09:20:10 GMT+0100 (BST)
 */
 
 assert = chai.assert;
@@ -12,14 +12,11 @@ describe('hreview-aggregate', function() {
    var expected = {"items":[{"type":["h-review-aggregate"],"properties":{"item":[{"value":"Mediterranean Wraps","type":["h-item","h-card"],"properties":{"name":["Mediterranean Wraps"],"org":["Mediterranean Wraps"],"adr":[{"value":"433 S California Ave, \n                Palo Alto, \n                CA","type":["h-adr"],"properties":{"street-address":["433 S California Ave"],"locality":["Palo Alto"],"region":["CA"],"name":["433 S California Ave, \n                Palo Alto, \n                CA"]}}],"tel":["(650) 321-8189"]}}],"rating":["9.2"],"average":["9.2"],"best":["10"],"count":["17"],"name":["Mediterranean Wraps    \n        \n            \n                433 S California Ave, \n                Palo Alto, \n                CA - \n            \n            (650) 321-8189\n        \n     \n    \n        9.2 out of \n        10 \n        based on 17 reviews"]}}],"rels":{},"rel-urls":{}};
 
    it('hcard', function(){
-       var doc, node, options, parser, found;
-       doc = document.implementation.createHTMLDocument('New Document');
-       node =  document.createElement('div');
-       node.innerHTML = htmlFragment;
-       doc.body.appendChild(node);
-       options ={
+       var doc, dom, node, options, parser, found;
+       dom = new DOMParser();
+       doc = dom.parseFromString( htmlFragment, 'text/html' )       options ={
        		'document': doc,
-       		'node': node,
+       		'node': doc,
        		'baseUrl': 'http://example.com'
        };
        parser = new Modules.Parser();

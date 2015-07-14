@@ -1,7 +1,7 @@
 /*
 Microformats Test Suite - Downloaded from github repo: glennjones/tests version v0.1.18 
 Mocha integration test from: microformats-v1/hresume/skill
-The test was built on Thu Jul 02 2015 21:37:43 GMT+0100 (BST)
+The test was built on Tue Jul 14 2015 09:20:10 GMT+0100 (BST)
 */
 
 assert = chai.assert;
@@ -12,14 +12,11 @@ describe('hresume', function() {
    var expected = {"items":[{"type":["h-resume"],"properties":{"contact":[{"value":"Tim Berners-Lee","type":["h-card"],"properties":{"name":["Tim Berners-Lee"]}}],"summary":["invented the World Wide Web"],"skill":["information systems","advocacy","leadership"],"name":["Tim Berners-Lee, \n        invented the World Wide Web.\n    \n    Skills:     \n    \n        information systems\n        advocacy\n        leadership"]}}],"rels":{"tag":["http://example.com/skills/informationsystems","http://example.com/skills/advocacy","http://example.com/skills/leadership"]},"rel-urls":{"http://example.com/skills/informationsystems":{"text":"information systems","rels":["tag"]},"http://example.com/skills/advocacy":{"text":"advocacy","rels":["tag"]},"http://example.com/skills/leadership":{"text":"leadership","rels":["tag"]}}};
 
    it('skill', function(){
-       var doc, node, options, parser, found;
-       doc = document.implementation.createHTMLDocument('New Document');
-       node =  document.createElement('div');
-       node.innerHTML = htmlFragment;
-       doc.body.appendChild(node);
-       options ={
+       var doc, dom, node, options, parser, found;
+       dom = new DOMParser();
+       doc = dom.parseFromString( htmlFragment, 'text/html' )       options ={
        		'document': doc,
-       		'node': node,
+       		'node': doc,
        		'baseUrl': 'http://example.com'
        };
        parser = new Modules.Parser();

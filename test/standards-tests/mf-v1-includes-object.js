@@ -1,7 +1,7 @@
 /*
 Microformats Test Suite - Downloaded from github repo: glennjones/tests version v0.1.18 
 Mocha integration test from: microformats-v1/includes/object
-The test was built on Thu Jul 02 2015 21:37:43 GMT+0100 (BST)
+The test was built on Tue Jul 14 2015 09:20:10 GMT+0100 (BST)
 */
 
 assert = chai.assert;
@@ -12,14 +12,11 @@ describe('includes', function() {
    var expected = {"items":[{"type":["h-event"],"properties":{"start":["2012-10-30T11:45:00-08:00"],"name":["Build Conference"],"location":[{"value":"Redmond, \n        Washington, \n        USA","type":["h-adr"],"properties":{"locality":["Redmond"],"region":["Washington"],"country-name":["USA"],"name":["Redmond, \n        Washington, \n        USA"]}}]}},{"type":["h-event"],"properties":{"start":["2012-10-31T11:15:00-08:00"],"name":["Build Conference"],"location":[{"value":"Redmond, \n        Washington, \n        USA","type":["h-adr"],"properties":{"locality":["Redmond"],"region":["Washington"],"country-name":["USA"],"name":["Redmond, \n        Washington, \n        USA"]}}]}},{"type":["h-adr"],"properties":{"locality":["Redmond"],"region":["Washington"],"country-name":["USA"],"name":["Redmond, \n        Washington, \n        USA"]}}],"rels":{},"rel-urls":{}};
 
    it('object', function(){
-       var doc, node, options, parser, found;
-       doc = document.implementation.createHTMLDocument('New Document');
-       node =  document.createElement('div');
-       node.innerHTML = htmlFragment;
-       doc.body.appendChild(node);
-       options ={
+       var doc, dom, node, options, parser, found;
+       dom = new DOMParser();
+       doc = dom.parseFromString( htmlFragment, 'text/html' )       options ={
        		'document': doc,
-       		'node': node,
+       		'node': doc,
        		'baseUrl': 'http://example.com'
        };
        parser = new Modules.Parser();

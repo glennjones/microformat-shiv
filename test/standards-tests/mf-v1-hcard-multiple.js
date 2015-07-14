@@ -1,7 +1,7 @@
 /*
 Microformats Test Suite - Downloaded from github repo: glennjones/tests version v0.1.18 
 Mocha integration test from: microformats-v1/hcard/multiple
-The test was built on Thu Jul 02 2015 21:37:43 GMT+0100 (BST)
+The test was built on Tue Jul 14 2015 09:20:10 GMT+0100 (BST)
 */
 
 assert = chai.assert;
@@ -12,14 +12,11 @@ describe('hcard', function() {
    var expected = {"items":[{"type":["h-card"],"properties":{"name":["John Doe"],"given-name":["John"],"family-name":["Doe"],"sound":["http://www.madgex.com/johndoe.mpeg"],"photo":["http://example.com/images/photo.gif"],"nickname":["Man with no name","Lost boy"],"note":["John Doe is one of those names you always have issues with.","It can be a real problem booking a hotel room with the name John Doe."],"logo":["http://example.com/images/logo.gif","http://example.com/images/logo.gif"],"url":["http://www.madgex.com/","http://www.webfeetmedia.com/"],"org":["Madgex","Web Feet Media Ltd"],"title":["Creative Director","Owner"],"category":["design","development","web"],"tel":["+1 415 555 100","+1 415 555 200","+1 415 555 300"],"email":["mailto:john.doe@madgex.com","mailto:john.doe@webfeetmedia.com"],"mailer":["PigeonMail 2.1","Outlook 2007"],"label":["Work: \n                North Street, \n                Brighton, \n                United Kingdom","Home: \n                West Street, \n                Brighton, \n                United Kingdom"],"adr":[{"value":"Work: \n                North Street, \n                Brighton, \n                United Kingdom","type":["h-adr"],"properties":{"street-address":["North Street"],"locality":["Brighton"],"country-name":["United Kingdom"],"name":["Work: \n                North Street, \n                Brighton, \n                United Kingdom"]}},{"value":"Home: \n                West Street, \n                Brighton, \n                United Kingdom","type":["h-adr"],"properties":{"street-address":["West Street"],"locality":["Brighton"],"country-name":["United Kingdom"],"name":["Home: \n                West Street, \n                Brighton, \n                United Kingdom"]}}],"agent":["Jane Doe",{"value":"Dave Doe","type":["h-card"],"properties":{"name":["Dave Doe"]}}],"key":["hd02$Gfu*d%dh87KTa2=23934532479"]}}],"rels":{"tag":["http://en.wikipedia.org/wiki/design","http://en.wikipedia.org/wiki/development","http://en.wikipedia.org/wiki/web"]},"rel-urls":{"http://en.wikipedia.org/wiki/design":{"text":"design","rels":["tag"]},"http://en.wikipedia.org/wiki/development":{"text":"development","rels":["tag"]},"http://en.wikipedia.org/wiki/web":{"text":"web","rels":["tag"]}}};
 
    it('multiple', function(){
-       var doc, node, options, parser, found;
-       doc = document.implementation.createHTMLDocument('New Document');
-       node =  document.createElement('div');
-       node.innerHTML = htmlFragment;
-       doc.body.appendChild(node);
-       options ={
+       var doc, dom, node, options, parser, found;
+       dom = new DOMParser();
+       doc = dom.parseFromString( htmlFragment, 'text/html' )       options ={
        		'document': doc,
-       		'node': node,
+       		'node': doc,
        		'baseUrl': 'http://example.com'
        };
        parser = new Modules.Parser();

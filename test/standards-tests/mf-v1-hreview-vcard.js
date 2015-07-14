@@ -1,7 +1,7 @@
 /*
 Microformats Test Suite - Downloaded from github repo: glennjones/tests version v0.1.18 
 Mocha integration test from: microformats-v1/hreview/vcard
-The test was built on Thu Jul 02 2015 21:37:43 GMT+0100 (BST)
+The test was built on Tue Jul 14 2015 09:20:10 GMT+0100 (BST)
 */
 
 assert = chai.assert;
@@ -12,14 +12,11 @@ describe('hreview', function() {
    var expected = {"items":[{"type":["h-review"],"properties":{"rating":["5"],"name":["Crepes on Cole is awesome"],"reviewer":[{"value":"Tantek","type":["h-card"],"properties":{"name":["Tantek"]}}],"description":[{"value":"Crepes on Cole is one of the best little \n        creperies in San Francisco.\n        Excellent food and service. Plenty of tables in a variety of sizes \n        for parties large and small.  Window seating makes for excellent \n        people watching to/from the N-Judah which stops right outside.  \n        I've had many fun social gatherings here, as well as gotten \n        plenty of work done thanks to neighborhood WiFi.","html":"\n        <p class=\"item vcard\">\n        <span class=\"fn org\">Crepes on Cole</span> is one of the best little \n        creperies in <span class=\"adr\"><span class=\"locality\">San Francisco</span></span>.\n        Excellent food and service. Plenty of tables in a variety of sizes \n        for parties large and small.  Window seating makes for excellent \n        people watching to/from the N-Judah which stops right outside.  \n        I've had many fun social gatherings here, as well as gotten \n        plenty of work done thanks to neighborhood WiFi.\n        </p>\n    "}],"item":[{"value":"Crepes on Cole","type":["h-item","h-card"],"properties":{"name":["Crepes on Cole"],"org":["Crepes on Cole"],"adr":[{"value":"San Francisco","type":["h-adr"],"properties":{"locality":["San Francisco"],"name":["San Francisco"]}}]}}],"category":["crepe"],"url":["http://example.com/crepe"]}}],"rels":{"tag":["http://en.wikipedia.org/wiki/crepe"],"self":["http://example.com/crepe"],"bookmark":["http://example.com/crepe"],"license":["http://en.wikipedia.org/wiki/Wikipedia:Text_of_Creative_Commons_Attribution-ShareAlike_3.0_Unported_License"]},"rel-urls":{"http://en.wikipedia.org/wiki/crepe":{"text":"crepe","rels":["tag"]},"http://example.com/crepe":{"text":"http://example.com/crepe","rels":["self","bookmark"]},"http://en.wikipedia.org/wiki/Wikipedia:Text_of_Creative_Commons_Attribution-ShareAlike_3.0_Unported_License":{"text":"Creative Commons Attribution-ShareAlike License","rels":["license"]}}};
 
    it('vcard', function(){
-       var doc, node, options, parser, found;
-       doc = document.implementation.createHTMLDocument('New Document');
-       node =  document.createElement('div');
-       node.innerHTML = htmlFragment;
-       doc.body.appendChild(node);
-       options ={
+       var doc, dom, node, options, parser, found;
+       dom = new DOMParser();
+       doc = dom.parseFromString( htmlFragment, 'text/html' )       options ={
        		'document': doc,
-       		'node': node,
+       		'node': doc,
        		'baseUrl': 'http://example.com'
        };
        parser = new Modules.Parser();

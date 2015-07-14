@@ -1,7 +1,7 @@
 /*
 Microformats Test Suite - Downloaded from github repo: glennjones/tests version v0.1.18 
 Mocha integration test from: microformats-v2/rel/rel-urls
-The test was built on Thu Jul 02 2015 21:37:44 GMT+0100 (BST)
+The test was built on Tue Jul 14 2015 09:20:10 GMT+0100 (BST)
 */
 
 assert = chai.assert;
@@ -12,14 +12,11 @@ describe('rel', function() {
    var expected = {"items":[],"rels":{"author":["http://example.com/a","http://example.com/b"],"in-reply-to":["http://example.com/1","http://example.com/2"],"home":["http://example.com/fr"],"alternate":["http://example.com/fr"]},"rel-urls":{"http://example.com/a":{"rels":["author"],"text":"author a"},"http://example.com/b":{"rels":["author"],"text":"author b"},"http://example.com/1":{"rels":["in-reply-to"],"text":"post 1"},"http://example.com/2":{"rels":["in-reply-to"],"text":"post 2"},"http://example.com/fr":{"rels":["alternate","home"],"media":"handheld","hreflang":"fr","text":"French mobile homepage"}},"alternates":[{"url":"http://example.com/fr","rel":"home","media":"handheld","hreflang":"fr","text":"French mobile homepage"}]};
 
    it('rel-urls', function(){
-       var doc, node, options, parser, found;
-       doc = document.implementation.createHTMLDocument('New Document');
-       node =  document.createElement('div');
-       node.innerHTML = htmlFragment;
-       doc.body.appendChild(node);
-       options ={
+       var doc, dom, node, options, parser, found;
+       dom = new DOMParser();
+       doc = dom.parseFromString( htmlFragment, 'text/html' )       options ={
        		'document': doc,
-       		'node': node,
+       		'node': doc,
        		'baseUrl': 'http://example.com'
        };
        parser = new Modules.Parser();

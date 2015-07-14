@@ -1,7 +1,7 @@
 /*
 Microformats Test Suite - Downloaded from github repo: glennjones/tests version v0.1.18 
 Mocha integration test from: microformats-v2/h-entry/impliedvalue-nested
-The test was built on Thu Jul 02 2015 21:37:44 GMT+0100 (BST)
+The test was built on Tue Jul 14 2015 09:20:10 GMT+0100 (BST)
 */
 
 assert = chai.assert;
@@ -12,14 +12,11 @@ describe('h-entry', function() {
    var expected = {"items":[{"type":["h-entry"],"properties":{"in-reply-to":[{"type":["h-cite"],"properties":{"name":["Example Post"],"url":["http://example.com/post"],"author":[{"type":["h-card"],"properties":{"url":["http://example.com"],"name":["Example Author"]},"value":"Example Author"}]},"value":"http://example.com/post"}],"name":["Example Author\n                  Home\n            \n            Example Post"]}}],"rels":{},"rel-urls":{}};
 
    it('impliedvalue-nested', function(){
-       var doc, node, options, parser, found;
-       doc = document.implementation.createHTMLDocument('New Document');
-       node =  document.createElement('div');
-       node.innerHTML = htmlFragment;
-       doc.body.appendChild(node);
-       options ={
+       var doc, dom, node, options, parser, found;
+       dom = new DOMParser();
+       doc = dom.parseFromString( htmlFragment, 'text/html' )       options ={
        		'document': doc,
-       		'node': node,
+       		'node': doc,
        		'baseUrl': 'http://example.com'
        };
        parser = new Modules.Parser();

@@ -1,7 +1,7 @@
 /*
 Microformats Test Suite - Downloaded from github repo: glennjones/tests version v0.1.18 
 Mocha integration test from: microformats-v1/hcard/single
-The test was built on Thu Jul 02 2015 21:37:43 GMT+0100 (BST)
+The test was built on Tue Jul 14 2015 09:20:10 GMT+0100 (BST)
 */
 
 assert = chai.assert;
@@ -12,14 +12,11 @@ describe('hcard', function() {
    var expected = {"items":[{"type":["h-card"],"properties":{"name":["John Doe"],"given-name":["John"],"sort-string":["John"],"bday":["2000-01-01T00:00:00-08:00"],"role":["Designer"],"geo":[{"value":"30.267991;-97.739568","type":["h-geo"],"properties":{"name":["30.267991;-97.739568"]}}],"tz":["-05:00"],"uid":["http://example.com/profiles/johndoe"],"class":["Public"],"rev":["2008-01-01T13:45:00"]}}],"rels":{},"rel-urls":{}};
 
    it('single', function(){
-       var doc, node, options, parser, found;
-       doc = document.implementation.createHTMLDocument('New Document');
-       node =  document.createElement('div');
-       node.innerHTML = htmlFragment;
-       doc.body.appendChild(node);
-       options ={
+       var doc, dom, node, options, parser, found;
+       dom = new DOMParser();
+       doc = dom.parseFromString( htmlFragment, 'text/html' )       options ={
        		'document': doc,
-       		'node': node,
+       		'node': doc,
        		'baseUrl': 'http://example.com'
        };
        parser = new Modules.Parser();

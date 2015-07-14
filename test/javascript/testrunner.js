@@ -47,14 +47,17 @@ function buildTest( test ){
         options;
         
     // createHTMLDocument is not support below ie9
-	doc = document.implementation.createHTMLDocument("New Document");
-	node =  document.createElement('div');
-	node.innerHTML = test.html;
-	doc.body.appendChild(node);    
+	//doc = document.implementation.createHTMLDocument("New Document");
+	//node =  document.createElement('div');
+	//node.innerHTML = test.html;
+	//doc.body.appendChild(node);   
+    
+    var dom = new DOMParser();
+        doc = dom.parseFromString( test.html, 'text/html' ); 
     
     options ={
         'document': doc,
-        'node': node,
+        'node': doc,
         'baseUrl': 'http://example.com'
     };
     var mfJSON = Microformats.get( options );
@@ -68,23 +71,24 @@ function buildTest( test ){
        diffElt.innerHTML = ''; 
     }
     
+    console.log(diff)
     
     if(diff !== undefined){
-        nameElt.classList.add('failed');
-        testDetailElt.classList.add('test-failed');
-        testDetailElt.classList.remove('test-passed');
+       // nameElt.classList.add('failed');
+       // testDetailElt.classList.add('test-failed');
+       // testDetailElt.classList.remove('test-passed');
         
-        //addClass(nameElt, 'failed');
-       // addClass(testDetailElt, 'test-failed');
-        //removeClass(testDetailElt, 'test-passed');
+        addClass(nameElt, 'failed');
+        addClass(testDetailElt, 'test-failed');
+        removeClass(testDetailElt, 'test-passed');
     }else{
-        nameElt.classList.remove('failed');
-        testDetailElt.classList.remove('test-failed');
-        testDetailElt.classList.add('test-passed');
+       // nameElt.classList.remove('failed');
+       // testDetailElt.classList.remove('test-failed');
+       // testDetailElt.classList.add('test-passed');
         
-        //removeClass(nameElt, 'failed');
-        //removeClass(testDetailElt, 'test-failed');
-        //addClass(testDetailElt, 'test-passed');
+        removeClass(nameElt, 'failed');
+        removeClass(testDetailElt, 'test-failed');
+        addClass(testDetailElt, 'test-passed');
     }
     
     testDetailElt.style.display = 'block';
@@ -100,14 +104,17 @@ function passTest( test ){
         options;
         
     // createHTMLDocument is not well support below ie9
-	doc = document.implementation.createHTMLDocument("New Document");
-	node =  document.createElement('div');
-	node.innerHTML = test.html;
-	doc.body.appendChild(node);    
+	//doc = document.implementation.createHTMLDocument("New Document");
+	//node =  document.createElement('div');
+	//node.innerHTML = test.html;
+	//doc.body.appendChild(node);    
+    
+    var dom = new DOMParser();
+        doc = dom.parseFromString( test.html, 'text/html' );
     
     options ={
         'document': doc,
-        'node': node,
+        'node': doc,
         'baseUrl': 'http://example.com'
     };
     var mfJSON = Microformats.get( options );
@@ -190,7 +197,9 @@ function hasClass(node, className) {
 
 // Add a class to an node
 function addClass(node, className) {
-    if (hasClass(node, className)) node.className += " " + className;
+    if (!hasClass(node, className)) {
+        node.className += " " + className;
+    }
 };
 
 

@@ -16,15 +16,12 @@ helper.parseHTML = function( htmlFragment, baseUrl, umd){
 	if(umd !== undefined){
 		umd == false;
 	}
-
-	// createHTMLDocument is not well support below ie9
-	doc = document.implementation.createHTMLDocument("New Document");
-	node =  document.createElement('div');
-	node.innerHTML = htmlFragment;
-	doc.body.appendChild(node);
+	
+	var dom = new DOMParser();
+    doc = dom.parseFromString( htmlFragment, 'text/html' );
 
 	options = {
-		'node': node,
+		'node': doc,
 		'document': doc,
 		'baseUrl': baseUrl,
 	};

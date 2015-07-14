@@ -1,7 +1,7 @@
 /*
 Microformats Test Suite - Downloaded from github repo: glennjones/tests version v0.1.18 
 Mocha integration test from: microformats-v2/h-recipe/all
-The test was built on Thu Jul 02 2015 21:37:44 GMT+0100 (BST)
+The test was built on Tue Jul 14 2015 09:20:10 GMT+0100 (BST)
 */
 
 assert = chai.assert;
@@ -12,14 +12,11 @@ describe('h-recipe', function() {
    var expected = {"items":[{"type":["h-recipe"],"properties":{"name":["Yorkshire Puddings"],"summary":["Makes 6 good sized Yorkshire puddings, the way my mum taught me"],"yield":["6 good sized Yorkshire puddings"],"photo":["http://codebits.glennjones.net/semantic/yorkshire-puddings.jpg"],"review":[{"value":"4.5 stars out 5 based on \n            35 reviews","type":["h-review-aggregate"],"properties":{"rating":["4.5 stars out 5 based on"],"average":["4.5"],"count":["35"],"name":["4.5 stars out 5 based on \n            35 reviews"]}}],"ingredient":[{"value":"1 egg","html":"1 egg"},{"value":"75g plain flour","html":"75g plain flour"},{"value":"70ml milk","html":"70ml milk"},{"value":"60ml water","html":"60ml water"},{"value":"Pinch of salt","html":"Pinch of salt"}],"instructions":[{"value":"Pre-heat oven to 230C or gas mark 8. Pour the vegetable oil evenly into 2 x 4-hole \n            Yorkshire pudding tins and place in the oven to heat through. \n            \n            To make the batter, add all the flour into a bowl and beat in the eggs until smooth. \n            Gradually add the milk and water while beating the mixture. It should be smooth and \n            without lumps. Finally add a pinch of salt.\n            \n            Make sure the oil is piping hot before pouring the batter evenly into the tins. \n            Place in the oven for 20-25 minutes until pudding have risen and look golden brown","html":"\n        <ol>\n            <li>Pre-heat oven to 230C or gas mark 8. Pour the vegetable oil evenly into 2 x 4-hole \n            Yorkshire pudding tins and place in the oven to heat through.</li> \n            \n            <li>To make the batter, add all the flour into a bowl and beat in the eggs until smooth. \n            Gradually add the milk and water while beating the mixture. It should be smooth and \n            without lumps. Finally add a pinch of salt.</li>\n            \n            <li>Make sure the oil is piping hot before pouring the batter evenly into the tins. \n            Place in the oven for 20-25 minutes until pudding have risen and look golden brown</li>\n        </ol>\n    "}],"nutrition":["Calories: 125","Fat: 3.2g","Cholesterol: 77mg"],"published":["2011-10-27"],"author":[{"value":"Glenn Jones","type":["h-card"],"properties":{"name":["Glenn Jones"],"url":["http://glennjones.net"]}}],"url":["http://www.flickr.com/photos/dithie/4106528495/"]}}],"rels":{},"rel-urls":{}};
 
    it('all', function(){
-       var doc, node, options, parser, found;
-       doc = document.implementation.createHTMLDocument('New Document');
-       node =  document.createElement('div');
-       node.innerHTML = htmlFragment;
-       doc.body.appendChild(node);
-       options ={
+       var doc, dom, node, options, parser, found;
+       dom = new DOMParser();
+       doc = dom.parseFromString( htmlFragment, 'text/html' )       options ={
        		'document': doc,
-       		'node': node,
+       		'node': doc,
        		'baseUrl': 'http://example.com'
        };
        parser = new Modules.Parser();

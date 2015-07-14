@@ -1,7 +1,7 @@
 /*
 Microformats Test Suite - Downloaded from github repo: glennjones/tests version v0.1.18 
 Mocha integration test from: microformats-v2/rel/duplicate-rels
-The test was built on Thu Jul 02 2015 21:37:44 GMT+0100 (BST)
+The test was built on Tue Jul 14 2015 09:20:10 GMT+0100 (BST)
 */
 
 assert = chai.assert;
@@ -12,14 +12,11 @@ describe('rel', function() {
    var expected = {"rels":{"bookmark":["http://ma.tt/2015/05/beethoven-mozart-bach/","http://ma.tt/2015/06/jefferson-on-idleness/"],"category":["http://ma.tt/category/asides/"],"tag":["http://ma.tt/category/asides/"],"author":["http://ma.tt/author/saxmatt/"]},"items":[{"type":["h-card"],"properties":{"url":["http://ma.tt/author/saxmatt/"],"name":["Matt"]}},{"type":["h-card"],"properties":{"url":["http://ma.tt/author/saxmatt/"],"name":["Matt"]}}],"rel-urls":{"http://ma.tt/category/asides/":{"rels":["category","tag"],"text":"Asides"},"http://ma.tt/author/saxmatt/":{"rels":["author"],"text":"Matt","title":"View all posts by Matt"},"http://ma.tt/2015/05/beethoven-mozart-bach/":{"rels":["bookmark"],"text":"May 31, 2015","title":"Permalink to Beethoven, Mozart, Bach"},"http://ma.tt/2015/06/jefferson-on-idleness/":{"rels":["bookmark"],"text":"June 2, 2015","title":"Permalink to Jefferson on Idleness"}}};
 
    it('duplicate-rels', function(){
-       var doc, node, options, parser, found;
-       doc = document.implementation.createHTMLDocument('New Document');
-       node =  document.createElement('div');
-       node.innerHTML = htmlFragment;
-       doc.body.appendChild(node);
-       options ={
+       var doc, dom, node, options, parser, found;
+       dom = new DOMParser();
+       doc = dom.parseFromString( htmlFragment, 'text/html' )       options ={
        		'document': doc,
-       		'node': node,
+       		'node': doc,
        		'baseUrl': 'http://example.com'
        };
        parser = new Modules.Parser();

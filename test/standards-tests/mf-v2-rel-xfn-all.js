@@ -1,7 +1,7 @@
 /*
 Microformats Test Suite - Downloaded from github repo: glennjones/tests version v0.1.18 
 Mocha integration test from: microformats-v2/rel/xfn-all
-The test was built on Thu Jul 02 2015 21:37:44 GMT+0100 (BST)
+The test was built on Tue Jul 14 2015 09:20:10 GMT+0100 (BST)
 */
 
 assert = chai.assert;
@@ -12,14 +12,11 @@ describe('rel', function() {
    var expected = {"items":[],"rels":{"friend":["http://example.com/profile/jane"],"acquaintance":["http://example.com/profile/jeo"],"contact":["http://example.com/profile/lily"],"met":["http://example.com/profile/oliver"],"co-worker":["http://example.com/profile/emily"],"colleague":["http://example.com/profile/jack"],"neighbor":["http://example.com/profile/isabella"],"child":["http://example.com/profile/harry"],"parent":["http://example.com/profile/sophia"],"sibling":["http://example.com/profile/charlie"],"spouse":["http://example.com/profile/olivia"],"kin":["http://example.com/profile/james"],"muse":["http://example.com/profile/ava"],"crush":["http://example.com/profile/joshua"],"date":["http://example.com/profile/chloe"],"sweetheart":["http://example.com/profile/alfie"],"me":["http://example.com/profile/isla"]},"rel-urls":{"http://example.com/profile/jane":{"text":"jane","rels":["friend"]},"http://example.com/profile/jeo":{"text":"jeo","rels":["acquaintance"]},"http://example.com/profile/lily":{"text":"lily","rels":["contact"]},"http://example.com/profile/oliver":{"text":"oliver","rels":["met"]},"http://example.com/profile/emily":{"text":"emily","rels":["co-worker"]},"http://example.com/profile/jack":{"text":"jack","rels":["colleague"]},"http://example.com/profile/isabella":{"text":"isabella","rels":["neighbor"]},"http://example.com/profile/harry":{"text":"harry","rels":["child"]},"http://example.com/profile/sophia":{"text":"sophia","rels":["parent"]},"http://example.com/profile/charlie":{"text":"charlie","rels":["sibling"]},"http://example.com/profile/olivia":{"text":"olivia","rels":["spouse"]},"http://example.com/profile/james":{"text":"james","rels":["kin"]},"http://example.com/profile/ava":{"text":"ava","rels":["muse"]},"http://example.com/profile/joshua":{"text":"joshua","rels":["crush"]},"http://example.com/profile/chloe":{"text":"chloe","rels":["date"]},"http://example.com/profile/alfie":{"text":"alfie","rels":["sweetheart"]},"http://example.com/profile/isla":{"text":"isla","rels":["me"]}}};
 
    it('xfn-all', function(){
-       var doc, node, options, parser, found;
-       doc = document.implementation.createHTMLDocument('New Document');
-       node =  document.createElement('div');
-       node.innerHTML = htmlFragment;
-       doc.body.appendChild(node);
-       options ={
+       var doc, dom, node, options, parser, found;
+       dom = new DOMParser();
+       doc = dom.parseFromString( htmlFragment, 'text/html' )       options ={
        		'document': doc,
-       		'node': node,
+       		'node': doc,
        		'baseUrl': 'http://example.com'
        };
        parser = new Modules.Parser();

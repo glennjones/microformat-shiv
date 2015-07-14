@@ -40,17 +40,14 @@ window.onload = function() {
         dateformatElt = document.getElementById("dateformat");
         dateformat = dateformatElt.options[dateformatElt.selectedIndex].value;
         parserJSONElt = document.querySelector('#parser-json pre code')
-        
-        // createHTMLDocument is not support below ie9
-    	doc = document.implementation.createHTMLDocument("New Document");
-    	node =  document.createElement('div');
-    	node.innerHTML = html;
-    	doc.body.appendChild(node);    
+       
   
+        var dom = new DOMParser();
+        doc = dom.parseFromString( html, 'text/html' );
         
         options ={
             'document': doc,
-            'node': node,
+            'node': doc,
             'dateFormat': dateformat
         };
         if(baseUrl.trim() !== ''){
@@ -84,7 +81,7 @@ window.onload = function() {
         
         // format output
         parserJSONElt.innerHTML = htmlEscape( js_beautify( JSON.stringify(mfJSON) ) );
-        prettyPrint(); 
+        //prettyPrint(); 
         
     }
     
