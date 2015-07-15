@@ -1,6 +1,6 @@
 {
   "name": "microformat-shiv",
-  "version": "0.3.4",
+  "version": "1.0.0",
   "main": "microformat-shiv.js",
   "ignore": [
     "**/.*",
@@ -9,13 +9,16 @@
     "node_modules",
     "test",
     "umd",
+    "profiles",
+    ".git",
     ".gitignore",
     "Gruntfile.js",
     "package.json",
     "update-tests.js",
     "bower.json",
     "Makefile",
+    ".coveralls.yml",
     ".travis.yml",
-    "app"
+    "app.js"
   ]
 }

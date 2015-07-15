@@ -71,7 +71,6 @@ function buildTest( test ){
        diffElt.innerHTML = ''; 
     }
     
-    console.log(diff)
     
     if(diff !== undefined){
        // nameElt.classList.add('failed');

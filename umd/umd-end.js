@@ -49,7 +49,7 @@
 				parser.add([options.maps]);
 			}
 		}
-    };
+    }
     
     
     return Microformats;

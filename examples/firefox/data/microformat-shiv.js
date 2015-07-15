@@ -1,6 +1,6 @@
 /*
-   microformat-shiv - v0.3.4
-   Built: 2015-07-14 02:07 - http://microformat-shiv.com
+   microformat-shiv - v1.0.0
+   Built: 2015-07-15 01:07 - http://microformat-shiv.com
    Copyright (c) 2015 Glenn Jones
    Licensed MIT 
 */
@@ -21,7 +21,7 @@ var Microformats;
     var modules = {};
     
 
-	modules.version = '0.3.4';
+	modules.version = '1.0.0';
 	modules.livingStandard = '2015-07-14T08:11:14Z';
 
 	/**
@@ -67,7 +67,8 @@ var Microformats;
 				rels;
 	
 			this.init();
-		
+			options = (options)? options : {};
+			this.mergeOptions(options);
 			this.getDOMContext( options );
 				
 			// if we do not have any context create error
@@ -121,7 +122,9 @@ var Microformats;
 		 * @return {Object}
 		 */
 		getParent: function(node, options) {
+			this.init();
 			options = (options)? options : {};
+			
 			if(node && node.nodeType && node.nodeType === 1){
 				return this.getParentTreeWalk(node, options);
 			}else{
@@ -143,24 +146,26 @@ var Microformats;
 			
 			// recursive calls
 		    if (arguments.length === 2) {
-		        if (node.parentNode && node.nodeName !== "BODY")
+		        if (node.parentNode && node.nodeName !== 'BODY'){
 		            return this.getParentTreeWalk(node.parentNode, options, 1);
-		        else
+				}else{
 		            return this.formatEmpty();
+				}
 		    }
 		    if (node !== null && node !== undefined) {
 		        if (this.isMicroformat( node, options )) {
 					// if we have match return microformats
 					options.node = node;
 		            return this.get( options );
-		        } else {
+		        }else{
 					// no match keep looking there is no parent
-		            if (node.parentNode)
+		            if (node.parentNode){
 		                return this.getParentTreeWalk(node.parentNode, options, 1);
-		            else
+					}else{
 		                return this.formatEmpty();
+					}
 		        }
-		    } else {
+		    }else{
 		        return this.formatEmpty();
 		    }
 		},
@@ -173,12 +178,7 @@ var Microformats;
 		 * * @return {Boolean}
 		 */
 		getDOMContext: function( options ){
-			
-			var baseTag,
-				href;
 				
-			this.mergeOptions(options);
-			
 			// if a node is passed in options use it
 			if(options.node){
 				this.rootNode = options.node;
@@ -202,7 +202,8 @@ var Microformats;
 		
 		
 		perpareClonedDOM: function( options ){
-		
+			var baseTag,
+				href;
 				
 			// use current document to define baseUrl
 			if(!options.baseUrl && this.document && this.document.location){
@@ -272,7 +273,7 @@ var Microformats;
 				if(map && map.root && map.name && map.properties){
 				modules.maps[map.name] = JSON.parse(JSON.stringify(map));	
 				}
-			})
+			});
 		},
 
 		
@@ -883,7 +884,7 @@ var Microformats;
 						attr = modules.domUtils.getAttribute(nodes[i], attrName);
 						if(attr && attr !== '' && baseUrl !== '' && attr.indexOf(':') === -1) {
 							//attr = urlParser.resolve(baseUrl, attr);
-							attr = modules.domUtils.resolveUrl(attr, baseUrl);
+							attr = modules.url.resolve(attr, baseUrl);
 							modules.domUtils.setAttribute(nodes[i], attrName, attr);
 						}	
 					}catch(err){
@@ -934,7 +935,7 @@ var Microformats;
 	
 			// if we have no protocal separator, turn relative url to absolute ones
 			if(out && out !== '' && out.indexOf(':') === -1) {
-				out = modules.domUtils.resolveUrl(out, this.options.baseUrl);
+				out = modules.url.resolve(out, this.options.baseUrl);
 			}
 	
 			if(!out) {
@@ -1424,7 +1425,7 @@ var Microformats;
 						// this gives the orginal text
 						var href =  nodeList[i].getAttribute(attrName);
 						if(href.toLowerCase().indexOf('http') !== 0){
-							nodeList[i].setAttribute(attrName, modules.domUtils.resolveUrl(href, baseUrl));
+							nodeList[i].setAttribute(attrName, modules.url.resolve(href, baseUrl));
 						}
 					}
 				}
@@ -1556,7 +1557,7 @@ var Microformats;
 					if(value) {
 						// relative to absolute URL
 						if(value && value !== '' && this.options.baseUrl !== '' && value.indexOf(':') === -1) {
-							value = modules.domUtils.resolveUrl(value, this.options.baseUrl);
+							value = modules.url.resolve(value, this.options.baseUrl);
 						}
 						uf.properties.photo = [modules.utils.trim(value)];
 					}
@@ -1575,7 +1576,7 @@ var Microformats;
 					if(value) {
 						// relative to absolute URL
 						if(value && value !== '' && this.options.baseUrl !== '' && value.indexOf(':') === -1) {
-							value = modules.domUtils.resolveUrl(value, this.options.baseUrl);
+							value = modules.url.resolve(value, this.options.baseUrl);
 						}
 						uf.properties.url = [modules.utils.trim(value)];
 					}
@@ -1731,22 +1732,18 @@ var Microformats;
 		 */	
 		modules.Parser.prototype.impliedhFeedTitle = function(node, uf){
 			if(uf.type && uf.type.indexOf('h-feed') > -1){
-				
 				// has no name property
-				if(!uf.properties.name || uf.properties.name[0] === '' ){
-					
+				if(uf.properties.name === undefined || uf.properties.name[0] === '' ){
 					// use the text from title tag
 					var title = modules.domUtils.querySelector(this.document, 'title');
 					if(title){
-						uf.properties.name = [modules.text.parse(this.document, title, this.options.textFormat)];
+						uf.properties.name = [modules.domUtils.textContent(title)];
 					}
 				}
 				
 			}
 			return uf;
 		};
-		
-		
 		
 		
 	
@@ -1943,7 +1940,7 @@ var Microformats;
 	
 						if(typeof this.options.baseUrl === 'string' && typeof value === 'string') {
 					
-							var resolved = modules.domUtils.resolveUrl(value, this.options.baseUrl);
+							var resolved = modules.url.resolve(value, this.options.baseUrl);
 							// do not add duplicate rels - based on resolved URLs
 							if(out.rels[item].indexOf(resolved) === -1){
 								out.rels[item].push( resolved );
@@ -1957,7 +1954,7 @@ var Microformats;
 					if(modules.domUtils.hasAttribute(arr[x], 'href')){
 						url = modules.domUtils.getAttribute(arr[x], 'href');
 						if(url){
-							url = modules.domUtils.resolveUrl(url, this.options.baseUrl );
+							url = modules.url.resolve(url, this.options.baseUrl );
 						}
 					}
 	
@@ -2330,10 +2327,11 @@ var Microformats;
 		
 		
 		/**
-		 * does value exists as item
+		 * does an attribute contain a value
 		 *
 		 * @param  {DOM Node} node
 		 * @param  {String} attributeName
+		 * @param  {String} value
 		 * @return {Boolean}
 		 */
 		hasAttributeValue: function(node, attributeName, value) {
@@ -2420,20 +2418,6 @@ var Microformats;
 				}
 			}
 			return out;
-		},
-	
-	
-		/**
-		 * does an attribute contain a value
-		 *
-		 * @param  {DOM Node} node
-		 * @param  {String} attributeName
-		 * @param  {String} value
-		 * @return {Boolean}
-		 */
-		hasAttributeValue: function(node, attributeName, value) {
-			var attList = this.getAttributeList(node, attributeName);
-			return (attList.indexOf(value) > -1);
 		},
 	
 	
@@ -2621,30 +2605,6 @@ var Microformats;
 		
 		
 		/**
-		 * resolves url to absolute version using baseUrl
-		 *
-		 * @param  {String} url
-		 * @param  {String} baseUrl
-		 * @return {String}
-		 */
-		resolveUrl: function(url, baseUrl) {
-			// use modern URL web API where we can
-			if(modules.utils.isString(url) && modules.utils.isString(baseUrl) && url.indexOf(':') === -1){
-				try {
-					return new URL(url, baseUrl).toString();
-				}catch(e){
-					return URI.resolve(baseUrl, url);
-				}
-			}else{
-				if(modules.utils.isString(url)){
-					return url;
-				}
-				return '';
-			}
-		},
-		
-		
-		/**
 		 * gets the text of a node
 		 *
 		 * @param  {DOM Node} node
@@ -2713,7 +2673,7 @@ var Microformats;
 		
 	
 		/**
-		 * get a node's child index 
+		 * get a node's child index used to create node path 
 		 *
 		 *   @param  {DOM Node} node
 		 *   @return {Int}
@@ -2723,7 +2683,7 @@ var Microformats;
 		  		i = -1, 
 		  		child;
 	  		while (parent && (child = parent.childNodes[++i])){
-				 if (child == node){
+				 if (child === node){
 					 return i;
 				 } 
 			} 
@@ -2743,8 +2703,10 @@ var Microformats;
 			  	index = this.getChildIndex(node);
 				  
 		  if(parent && (path = this.getNodePath(parent))){
-			   index > -1 && path.push(index);
-		  };
+			   if(index > -1){
+				   path.push(index);
+			   }
+		  }
 		  return path;
 		},
 		
@@ -2759,7 +2721,7 @@ var Microformats;
 		  	var node = document.documentElement, 
 		  		i = 0, 
 		  		index;
-		  while ((index=path[++i]) > -1){
+		  while ((index = path[++i]) > -1){
 			  node = node.childNodes[index];
 		  } 
 		  return node;
@@ -2768,12 +2730,44 @@ var Microformats;
 
 	};
 
+
+	modules.url = {
+		
+		/**
+		 * resolves url to absolute version using baseUrl
+		 *
+		 * @param  {String} url
+		 * @param  {String} baseUrl
+		 * @return {String}
+		 */
+		resolve: function(url, baseUrl) {
+			// use modern URL web API where we can
+			if(modules.utils.isString(url) && modules.utils.isString(baseUrl) && url.indexOf(':') === -1){
+				// this try catch is need as IE has a URL object but no constuctor support
+				// http://glennjones.net/articles/the-problem-with-window-url
+				try {
+					return new URL(url, baseUrl).toString();
+				}catch(e){
+					// otherwise fallback to URI library
+					return URI.resolve(baseUrl, url);
+				}
+			}else{
+				if(modules.utils.isString(url)){
+					return url;
+				}
+				return '';
+			}
+		},
+		
+		
+	};
+	
 	
 
 
 
 
-
+/* jshint ignore:start */
 
 /*
  URI.js v2.0.0 (c) 2011 Gary Court. License: http://github.com/garycourt/uri-js
@@ -2791,6 +2785,8 @@ c.scheme=a.scheme);c.fragment=b.fragment;return c}var n=function(a){var b=f("[0-
 "g"),h:new RegExp(f("[^\\%\\/\\@]",d,"[\\!\\$\\&\\'\\(\\)\\*\\+\\,\\;\\=]"),"g"),i:new RegExp(f("[^\\%]",d,"[\\!\\$\\&\\'\\(\\)\\*\\+\\,\\;\\=]","[\\:\\@\\/\\?]",a?"[\\uE000-\\uF8FF]":"[]"),"g"),c:new RegExp(f("[^\\%]",d,"[\\!\\$\\&\\'\\(\\)\\*\\+\\,\\;\\=]","[\\:\\@\\/\\?]"),"g"),b:new RegExp(f("[^]",d,"[\\!\\$\\&\\'\\(\\)\\*\\+\\,\\;\\=]"),"g"),m:new RegExp(d,"g"),o:new RegExp(f("[^\\%]",d,f("[\\:\\/\\?\\#\\[\\]\\@]","[\\!\\$\\&\\'\\(\\)\\*\\+\\,\\;\\=]")),"g"),a:new RegExp("(?:"+("(?:"+("%[EFef]"+
 b+"%"+b+b+"%"+b+b)+")|"+("(?:"+("%[89A-Fa-f]"+b+"%"+b+b)+")")+"|"+("(?:"+("%"+b+b)+")"))+")","g")}}(!1),z=/^(?:([^:\/?#]+):)?(?:\/\/((?:([^\/?#@]*)@)?([^\/?#:]*)(?:\:(\d*))?))?([^?#]*)(?:\?([^#]*))?(?:#((?:.|\n)*))?/i,v=/^\.\.?\//,w=/^\/\.(\/|$)/,x=/^\/\.\.(\/|$)/,B=/^\/?(?:.|\n)*?(?=\/|$)/,A=void 0==="".match(/(){0}/)[1],r={};return{IRI_SUPPORT:!1,VALIDATE_SUPPORT:!1,pctEncChar:k,pctDecChars:p,SCHEMES:r,parse:h,_recomposeAuthority:u,removeDotSegments:l,serialize:g,resolveComponents:y,resolve:function(a,
 b,d){return g(y(h(a,d),h(b,d),d,!0),d)},normalize:function(a,b){"string"===typeof a?a=g(h(a,b),b):"object"===q(a)&&(a=h(g(a,b),b));return a},equal:function(a,b,d){"string"===typeof a?a=g(h(a,d),d):"object"===q(a)&&(a=g(a,d));"string"===typeof b?b=g(h(b,d),d):"object"===q(b)&&(b=g(b,d));return a===b},escapeComponent:function(a){return a&&a.toString().replace(n.b,k)},unescapeComponent:function(a){return a&&a.toString().replace(n.a,p)}}}();URI.SCHEMES.http=URI.SCHEMES.https={domainHost:!0,parse:function(f){f.host||(f.error=f.error||"HTTP URIs must have a host.");return f},serialize:function(f){if(f.port===("https"!==String(f.scheme).toLowerCase()?80:443)||""===f.port)f.port=void 0;f.path||(f.path="/");return f}};
+
+/* jshint ignore:end */
 
 
 	/**
@@ -4268,7 +4264,7 @@ b,d){return g(y(h(a,d),h(b,d),d,!0),d)},normalize:function(a,b){"string"===typeo
 				parser.add([options.maps]);
 			}
 		}
-    };
+    }
     
     
     return Microformats;

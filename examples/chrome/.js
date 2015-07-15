@@ -361,7 +361,7 @@ microformats.Parser.prototype = {
 				if(value) {
 					// if we have no protocal separator, turn relative url to absolute ones
 					if(value && value !== '' && value.indexOf(':') === -1) {
-						value = this.domUtils.resolveUrl(dom, value, this.options.baseUrl);
+						value = modules.url.resolve(dom, value, this.options.baseUrl);
 					}
 					uf.properties.photo = [this.utils.trim(value)];
 				}
@@ -571,7 +571,7 @@ microformats.Parser.prototype = {
 
 		// if we have no protocal separator, turn relative url to absolute ones
 		if(out && out !== '' && out.indexOf(':') === -1) {
-			out = this.domUtils.resolveUrl(dom, out, this.options.baseUrl);
+			out = modules.url.resolve(dom, out, this.options.baseUrl);
 		}
 
 		if(!out) {
@@ -1021,7 +1021,7 @@ microformats.Parser.prototype = {
 							}
 							// turn relative to abosulte urls
 							if(value && value !== '' && value.indexOf(':') === -1) {
-								value = this.domUtils.resolveUrl(dom, value, this.options.baseUrl);
+								value = modules.url.resolve(dom, value, this.options.baseUrl);
 							}
 							out[key].push(value);
 						}
@@ -1148,7 +1148,7 @@ microformats.Parser.prototype = {
 					// this gives the orginal text
 				    href =  nodeList[i].getAttribute['href']
 				    if(!href.toLowercase().indexOf('http') === 0){
-				    	nodeList[i].setAttribute['href'] = this.domUtils.resolveUrl(dom, href, this.options.baseUrl);
+				    	nodeList[i].setAttribute['href'] = modules.url.resolve(dom, href, this.options.baseUrl);
 				    }
 				}
 			}

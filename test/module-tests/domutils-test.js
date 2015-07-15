@@ -201,27 +201,10 @@ describe('Modules.domutils', function() {
        assert.equal( Modules.domUtils.clone( node ).outerHTML, '<div>text content</div>' );
    });
    
-   
-   it('resolveUrl', function(){
-       assert.equal( Modules.domUtils.resolveUrl( 'docs/index.html', 'http://example.org' ), 'http://example.org/docs/index.html' );
-       assert.equal( Modules.domUtils.resolveUrl( '../index.html', 'http://example.org/docs/' ), 'http://example.org/index.html' );
-       assert.equal( Modules.domUtils.resolveUrl( '/', 'http://example.org/' ), 'http://example.org/' );
-       assert.equal( Modules.domUtils.resolveUrl( 'http://glennjones.net/', 'http://example.org/' ), 'http://glennjones.net/' );
-       
-       assert.equal( Modules.domUtils.resolveUrl( undefined, 'http://example.org/' ), '' );
-       assert.equal( Modules.domUtils.resolveUrl( undefined, undefined ), '' );
-       assert.equal( Modules.domUtils.resolveUrl( 'http://glennjones.net/', undefined ), 'http://glennjones.net/' );
-   });
-   
-   
 
    it('getElementText', function(){
        assert.equal(  Modules.domUtils.getElementText( {} ), '' );
    });
-   
-
-
- 
    
    
 });

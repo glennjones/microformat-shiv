@@ -1,0 +1,43 @@
+<html>
+	<head>
+		<title>Mocha</title>
+			<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+			<link rel="stylesheet" href="../../node_modules/mocha/mocha.css" />
+			<link rel="stylesheet" href="../css/mocha-custom.css" />
+			
+			<script src="../../node_modules/chai/chai.js"></script>
+			<script src="../../node_modules/mocha/mocha.js"></script>
+			<script src="../../thirdparty/es5-shim.min.js"></script>
+			<script src="../javascript/DOMParser.js"></script>
+			
+			
+			<!-- loads modules -->
+			<script data-cover src="../../lib/utilities.js"></script>
+			<script data-cover src="../../lib/domutils.js"></script>
+			<script data-cover src="../../lib/url.js"></script>
+			<script data-cover src="../../lib/html.js"></script>
+			<script data-cover src="../../lib/text.js"></script>
+			<script data-cover src="../../lib/dates.js"></script>
+			<script data-cover src="../../lib/isodate.js"></script>
+			
+			
+			<script>mocha.setup("bdd")</script>
+			
+			
+			<script src="dates-test.js"></script>
+			<script src="domutils-test.js"></script>
+			<script src="html-test.js"></script>
+			<script src="isodate-test.js"></script>
+			<script src="text-test.js"></script>
+			<script src="url-test.js"></script>
+			<script src="utilities-test.js"></script>
+			
+			<script src="../node_modules/poncho/node_modules/blanket/dist/qunit/blanket.min.js"> </script>
+			<script src="../node_modules/poncho/node_modules/blanket/src/adapters/mocha-blanket.js"></script>
+
+	</head>
+<body>
+	<h3>Modules tests</h3>
+	<div id="mocha"></div>
+</body>
+</html>

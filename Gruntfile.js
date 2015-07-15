@@ -55,6 +55,7 @@ module.exports = function( grunt ) {
 						'lib/parser-rels.js', 
 						'lib/utilities.js', 
 						'lib/domutils.js',
+						'lib/url.js',
 						'lib/isodate.js',
 						'lib/dates.js',
 						'lib/text.js',
@@ -107,7 +108,7 @@ module.exports = function( grunt ) {
 				node: true,
 				quotmark: 'single',
 				moz: true,
-				predef: [ 'define', 'modules' ]
+				predef: [ 'Microformats', 'define', 'modules', 'URI' ]
 			},
 			globals: {}
 		},
