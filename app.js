@@ -87,6 +87,15 @@ server.route([{
 			listing: true,
 		}
 	}
+},{
+	method: 'GET',
+	path: '/performance/{path*}',
+	handler: {
+		directory: {
+			path: './performance',
+			listing: true,
+		}
+	}
 }]);
 
 

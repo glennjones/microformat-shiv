@@ -93,19 +93,6 @@ describe('Modules.domutils', function() {
        assert.isFalse( Modules.domUtils.hasAttributeValue( node, 'rel', 'previous' ) );
    });
    
-   /*
-   it('hasAttributeValueByPrefix', function(){
-       var node = document.createElement('a');
-           
-       node.className = 'p-location h-geo';
-       node.rel = 'next bookmark';
-       assert.isTrue( Modules.domUtils.hasAttributeValueByPrefix( node, 'class', 'p-' ) );
-       //assert.isTrue( Modules.domUtils.hasAttributeValueByPrefix( node, 'class', 'h-' ) );
-       //assert.isFalse( Modules.domUtils.hasAttributeValueByPrefix( node, 'class', 'u-' ) );
-       //assert.isFalse( Modules.domUtils.hasAttributeValue( node, 'rel', 'p-' ) );
-       //assert.isFalse( Modules.domUtils.hasAttributeValue( node, 'href', 'p-' ) );
-   });
-   */
    
    it('getNodesByAttribute', function(){
        var node = document.createElement('ul');
@@ -204,6 +191,15 @@ describe('Modules.domutils', function() {
 
    it('getElementText', function(){
        assert.equal(  Modules.domUtils.getElementText( {} ), '' );
+   });
+   
+   
+   it('getNodePath', function(){
+       var node = document.createElement('ul');
+       node.innerHTML = '<div><ul><li class="h-card">one</li><li>two</li><li class="h-card">three</li><li class="p-name">four</li></ul></div>';
+       var child = node.querySelector('.p-name');   
+             
+       assert.deepEqual( Modules.domUtils.getNodePath( child ), [0,0,3] );
    });
    
    

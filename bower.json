@@ -9,7 +9,7 @@
     "node_modules",
     "test",
     "umd",
-    "profiles",
+    "performance",
     ".git",
     ".gitignore",
     "Gruntfile.js",

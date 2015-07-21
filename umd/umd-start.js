@@ -1,4 +1,4 @@
-var Microformats;
+var Microformats; // jshint ignore:line
 
 (function (root, factory) {
     if (typeof define === 'function' && define.amd) {

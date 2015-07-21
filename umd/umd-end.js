@@ -1,40 +1,40 @@
 
 
-    var Microformats = {
+    var External = {
         version: modules.version,
         livingStandard: modules.livingStandard
     };
     
     
-    Microformats.get = function(options){
+    External.get = function(options){
     	var parser = new modules.Parser();
         addV1(parser, options);
     	return parser.get( options );
     };
     
     
-    Microformats.getParent = function(node, options){
+    External.getParent = function(node, options){
     	var parser = new modules.Parser();
         addV1(parser, options);
     	return parser.getParent( node, options );
     };
     
     
-    Microformats.count = function(options){
+    External.count = function(options){
     	var parser = new modules.Parser();
         addV1(parser, options);
     	return parser.count( options );
     };
     
     
-    Microformats.isMicroformat = function( node, options ){
+    External.isMicroformat = function( node, options ){
     	var parser = new modules.Parser();
         addV1(parser, options);
     	return parser.isMicroformat( node, options );
     };
     
     
-    Microformats.hasMicroformats = function( node, options ){
+    External.hasMicroformats = function( node, options ){
     	var parser = new modules.Parser();
         addV1(parser, options);
     	return parser.hasMicroformats( node, options );
@@ -52,7 +52,7 @@
     }
     
     
-    return Microformats;
+    return External;
     
     
 }));

@@ -85,9 +85,11 @@ describe('Microformat.count', function() {
        
        var result;
            
-        result = Microformats.count({});
-        assert.deepEqual( result, {'errors': ['No options.node to parser microformats from']} );
+       result = Microformats.count({});
+       assert.deepEqual( result, {} );
         
    });
+   
+  
    
  });

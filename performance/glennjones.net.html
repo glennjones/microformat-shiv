@@ -1,0 +1,2364 @@
+<script type="text/javascript" src="../microformat-shiv.js"></script>
+<script type="text/javascript">
+	var start,
+		end,
+    	data,
+		time,
+		node;
+	
+	window.onload = function(){
+		node = document.getElementById('performance-target');
+		start = new Date().getTime();
+		data = Microformats.getParent(node);
+		end = new Date().getTime();
+		time = end - start;
+		alert('Microformats parser took: ' + time + 'ms' );
+    	console.log(JSON.stringify(data));
+	}
+</script>
+
+
+<!doctype html>
+<html lang="en-GB">
+	<head>
+		<meta charset="UTF-8">
+		<title></title>
+		
+				
+		
+				<!-- device/os suuport -->
+				<meta name="HandheldFriendly" content="True">
+				<meta name="MobileOptimized" content="620">
+				<meta name="viewport" content="width=device-width">
+				<meta name="mobile-web-app-capable" content="yes" />
+		
+				<!-- js/css -->
+				<link href="//netdna.bootstrapcdn.com/font-awesome/4.0.3/css/font-awesome.css" rel="stylesheet">
+				<link rel="stylesheet" media="all" href="/css/site.css" type="text/css">
+				<script type="text/javascript" src="/javascript/site.js"></script>
+		
+				<!-- openid -->
+			    <link rel="openid2.provider" href="https://www.google.com/accounts/o8/ud?source=profiles" > 
+		        <link rel="openid2.local_id" href="http://www.google.com/profiles/glennjonesnet" > 
+		        
+		        <!-- feeds -->
+		        <link href="http://glennjones.net/articles/atom" rel="articles alternate" title="Articles" type="application/atom+xml" />
+		        <link href="http://glennjones.net/notes/atom" rel="notes alternate" title="Notes" type="application/atom+xml" />
+		
+		        <!-- icons -->
+		        <link rel="shortcut icon" href="http://glennjones.net/images/photo-small.png" />
+		        <link rel="shortcut icon" type="image/png" href="http://glennjones.net/images/photo-small.png">
+		        <link rel="apple-touch-icon-precomposed" href="http://glennjones.net/images/photo-small.png">
+		
+		        <!-- webmention -->
+		    	<link rel="webmention" href="webmention" />
+				<link rel="http://webmention.org/" href="webmention" />
+		
+				<!-- indieauth and micropub -->
+				<link rel="authorization_endpoint" href="https://indieauth.com/auth">
+				<link rel="token_endpoint" href="https://transmat.io/indieauth/token">
+				<link rel="micropub" href="https://transmat.io/glennjones/micropub">
+		
+				<!-- micropub-json -->
+				<link rel="micropub-json:note" href="https://transmat.io/glennjones/notes">
+				<link rel="micropub-json:photos" href="https://transmat.io/glennjones/photos">
+				<link rel="micropub-json:chcekins" href="https://transmat.io/glennjones/checkins">
+				<link rel="micropub-json:articles" href="https://transmat.io/glennjones/posts">
+	</head>
+	<body class="h-feed rwd-menu-push clearfix">
+ 
+
+		 		<nav class="rwd-menu rwd-menu-vertical rwd-menu-left" id="rwd-menu-s1">
+		
+					<span id="showLeftPush">
+						<span class="fa fa-stack">
+				          <i class="fa fa fa-square fa-stack-2x"></i>
+				          <i id="left-menu-tab" class="fa fa-chevron-right fa-stack-1x fa-inverse"></i>
+				        </span>
+				    </span>
+		
+		
+			        <ul class="content-menu">
+			        	<li><a href="/articles"><i class="fa fa-file"></i> Articles</a></li>
+			        	<li><a href="/notes"><i class="fa fa-comment"></i> Notes</a></li>
+			        	<!-- <li><a href="/code"><i class="fa fa-code"></i> Code</a></li> -->
+			        	<!-- <li><a href="/photos"><i class="fa fa-camera"></i> Photos</a></li> -->
+						<!-- <li><a href="/events"><i class="fa fa-calendar-o"></i> Events</a></li> -->
+		        		<!-- <li><a href="/checkins"><i class="fa fa-map-marker"></i> Checkins</a></li> -->
+					</ul>
+		
+		
+					<ul class="meta-menu">
+			        	<li><a href="/about">About</a></li>
+			        	<!-- <li><a href="/speaking">Speaking</a></li> -->
+			        	<li><a href="/projects">Projects</a></li>
+		<!-- 	        	<li><a href="/tools">Tools</a></li> -->
+			        	<li><a href="/">Home</a></li>
+					</ul>
+					
+				</nav>
+		<hgroup class="page-title">
+			<h1 class="p-name">Notes</h1>
+		</hgroup>
+
+		 <article class="h-entry h-as-note">
+
+
+		 	<!-- replies -->
+
+
+	
+
+				<!-- Content -->
+				<h2 class="p-name e-content">Cannot make in for hacking day of <a href="https://twitter.com/indiewebcamp" class="auto-link h-x-username">@indiewebcamp</a> brighton. Hope it goes well, would love to see a video of demos at the end of the day!</h2>
+
+				<!-- Date -->
+					<span class="dateline"><a class="u-url" href="/notes/2015-07-12"><time class="dt-published" datetime="2015-07-12T09:53:25.228Z">3 days ago &ndash; 12 July 2015</time></a></span>
+
+				<!-- Syndication -->
+
+					&dash; <a rel="syndication" class="u-syndication sync-link" href="https://twitter.com/glennjones/status/620169065026453504">On twitter</a>
+
+			      	<span class="syndication-interactions">
+			          <!-- Twitter actions -->
+			              &nbsp;|&nbsp;
+			                <span class="tweet-actions">
+			                  <action do="bookmark" with="https://glennjones.net/notes/2015-07-12">
+			                    <a href="https://twitter.com/intent/favorite?tweet_id=620169065026453504">Favourite</a>
+			                  </action> &nbsp;
+			                  <action do="post" with="https://glennjones.net/notes/2015-07-12">
+			                    <a href="https://twitter.com/intent/retweet?tweet_id=620169065026453504">Retweet</a>
+			                  </action> &nbsp;
+			                  <action do="reply" with="https://glennjones.net/notes/2015-07-12">
+			                    <a href="https://twitter.com/intent/tweet?in_reply_to=620169065026453504">Reply</a>
+			                  </action>
+			                </span>
+			     	</span>
+
+			    <!-- Location -->
+
+		
+			    
+		    	<!-- likes -->
+	            <div class="likes">Likes
+	              <ul>
+	                <li class="p-like h-entry">
+	                  <a class="p-author h-card" href="https://twitter.com/benjames_x">
+	                    <img class="u-photo p-name avatar avatar-icon" src="https://pbs.twimg.com/profile_images/2870689549/30282702a27e3821bff5d8c9805218e3_normal.jpeg" title="Ben James  (benjames_x) " alt="Ben James " />
+
+	                       <span class="p-nickname">benjames_x</span>
+
+	                  </a>
+	                  <a class="e-content p-name u-like u-like-of" href="https://twitter.com/glennjones/status/620169065026453504">favorited this</a>
+	                </li>
+	              </ul>
+	            </div>
+
+	
+			<!-- counts -->	
+			<div class="counts">
+				<a href="/notes/2015-07-12#likes">
+	    		Comments: 1
+	    		</a>
+    		</div>
+
+
+
+		
+		</article>  
+		 <article class="h-entry h-as-note">
+
+
+		 	<!-- replies -->
+
+
+	
+
+				<!-- Content -->
+				<h2 class="p-name e-content">Heading off to <a href="https://twitter.com/indiewebcamp" class="auto-link h-x-username">@indiewebcamp</a> <a class="auto-link" href="http://indiewebcamp.com/2015/Brighton">http://indiewebcamp.com/2015/Brighton</a></h2>
+
+				<!-- Date -->
+					<span class="dateline"><a class="u-url" id="performance-target" href="/notes/2015-07-11"><time class="dt-published" datetime="2015-07-11T08:21:23.137Z">4 days ago &ndash; 11 July 2015</time></a></span>
+
+				<!-- Syndication -->
+
+					&dash; <a rel="syndication" class="u-syndication sync-link" href="https://twitter.com/glennjones/status/619783530554490881">On twitter</a>
+
+			      	<span class="syndication-interactions">
+			          <!-- Twitter actions -->
+			              &nbsp;|&nbsp;
+			                <span class="tweet-actions">
+			                  <action do="bookmark" with="https://glennjones.net/notes/2015-07-11">
+			                    <a href="https://twitter.com/intent/favorite?tweet_id=619783530554490881">Favourite</a>
+			                  </action> &nbsp;
+			                  <action do="post" with="https://glennjones.net/notes/2015-07-11">
+			                    <a href="https://twitter.com/intent/retweet?tweet_id=619783530554490881">Retweet</a>
+			                  </action> &nbsp;
+			                  <action do="reply" with="https://glennjones.net/notes/2015-07-11">
+			                    <a href="https://twitter.com/intent/tweet?in_reply_to=619783530554490881">Reply</a>
+			                  </action>
+			                </span>
+			     	</span>
+
+			    <!-- Location -->
+
+		
+			    
+		    	<!-- likes -->
+	            <div class="likes">Likes
+	              <ul>
+	                <li class="p-like h-entry">
+	                  <a class="p-author h-card" href="https://twitter.com/fredericmarx">
+	                    <img class="u-photo p-name avatar avatar-icon" src="https://pbs.twimg.com/profile_images/3250283634/730d3898e0b5b87584fd699cd8ea44f9_normal.jpeg" title="Frederic Marx (fredericmarx) " alt="Frederic Marx" />
+
+	                       <span class="p-nickname">fredericmarx</span>
+
+	                  </a>
+	                  <a class="e-content p-name u-like u-like-of" href="https://twitter.com/glennjones/status/619783530554490881">favorited this</a>
+	                </li>
+	                <li class="p-like h-entry">
+	                  <a class="p-author h-card" href="https://twitter.com/jkphl">
+	                    <img class="u-photo p-name avatar avatar-icon" src="https://pbs.twimg.com/profile_images/478438764914565121/jF7tXwAH_normal.jpeg" title="Joschi Kuphal 吉 (jkphl) " alt="Joschi Kuphal 吉" />
+
+	                       <span class="p-nickname">jkphl</span>
+
+	                  </a>
+	                  <a class="e-content p-name u-like u-like-of" href="https://twitter.com/glennjones/status/619783530554490881">favorited this</a>
+	                </li>
+	              </ul>
+	            </div>
+
+	
+			<!-- counts -->	
+			<div class="counts">
+				<a href="/notes/2015-07-11#likes">
+	    		Comments: 1
+	    		</a>
+    		</div>
+
+
+
+		
+		</article>  
+		 <article class="h-entry h-as-note">
+
+
+		 	<!-- replies -->
+
+
+	
+
+				<!-- Content -->
+				<h2 class="p-name e-content">Now thinking I should have gone along to <a class="auto-link h-x-username" href="https://twitter.com/madgex">@madgex</a> courses product launch <a class="auto-link" href="https://twitter.com/brightonfood/status/618798808814755840">https://twitter.com/brightonfood/status/618798808814755840</a>…</h2>
+
+				<!-- Date -->
+					<span class="dateline"><a class="u-url" href="/notes/2015-07-08-1"><time class="dt-published" datetime="2015-07-08T15:26:03.000Z">7 days ago &ndash; 8 July 2015</time></a></span>
+
+				<!-- Syndication -->
+
+					&dash; <a rel="syndication" class="u-syndication sync-link" href="https://twitter.com/glennjones/status/618803238750564353">On twitter</a>
+
+			      	<span class="syndication-interactions">
+			          <!-- Twitter actions -->
+			              &nbsp;|&nbsp;
+			                <span class="tweet-actions">
+			                  <action do="bookmark" with="https://glennjones.net/notes/2015-07-08-1">
+			                    <a href="https://twitter.com/intent/favorite?tweet_id=618803238750564353">Favourite</a>
+			                  </action> &nbsp;
+			                  <action do="post" with="https://glennjones.net/notes/2015-07-08-1">
+			                    <a href="https://twitter.com/intent/retweet?tweet_id=618803238750564353">Retweet</a>
+			                  </action> &nbsp;
+			                  <action do="reply" with="https://glennjones.net/notes/2015-07-08-1">
+			                    <a href="https://twitter.com/intent/tweet?in_reply_to=618803238750564353">Reply</a>
+			                  </action>
+			                </span>
+			     	</span>
+
+			    <!-- Location -->
+
+		
+			    
+		    	<!-- likes -->
+	            <div class="likes">Likes
+	              <ul>
+	                <li class="p-like h-entry">
+	                  <a class="p-author h-card" href="https://twitter.com/madgex">
+	                    <img class="u-photo p-name avatar avatar-icon" src="https://pbs.twimg.com/profile_images/378800000119623577/0f5a0af7a048e45d1e6b28bcfb03a2aa_normal.png" title="Madgex (madgex) " alt="Madgex" />
+
+	                       <span class="p-nickname">madgex</span>
+
+	                  </a>
+	                  <a class="e-content p-name u-like u-like-of" href="https://twitter.com/glennjones/status/618803238750564353">favorited this</a>
+	                </li>
+	              </ul>
+	            </div>
+
+	
+			<!-- counts -->	
+			<div class="counts">
+				<a href="/notes/2015-07-08-1#likes">
+	    		Comments: 1
+	    		</a>
+    		</div>
+
+
+
+		
+		</article>  
+		 <article class="h-entry h-as-note">
+
+
+		 	<!-- replies -->
+	        <section class="reply-to">
+		        		<i class="fa fa-reply"></i>
+		          		Reply to a <a rel="in-reply-to" class="u-in-reply-to" href="https://twitter.com/tobie/status/618498336987967489">item on twitter</a>
+	        </section>
+
+
+	
+
+				<!-- Content -->
+				<h2 class="p-name e-content"><a class="auto-link h-x-username" href="https://twitter.com/tobie">@tobie</a> <a class="auto-link h-x-username" href="https://twitter.com/adrianba">@adrianba</a> <a class="auto-link h-x-username" href="https://twitter.com/w3ctag">@w3ctag</a> its an issue with API design, developer expectations and documentation. Wrote post: <a class="auto-link" href="http://bit.ly/1RkmWqP">http://bit.ly/1RkmWqP</a></h2>
+
+				<!-- Date -->
+					<span class="dateline"><a class="u-url" href="/notes/2015-07-08"><time class="dt-published" datetime="2015-07-08T13:09:06.000Z">7 days ago &ndash; 8 July 2015</time></a></span>
+
+				<!-- Syndication -->
+
+					&dash; <a rel="syndication" class="u-syndication sync-link" href="https://twitter.com/glennjones/status/618768775287017472">On twitter</a>
+
+			      	<span class="syndication-interactions">
+			          <!-- Twitter actions -->
+			              &nbsp;|&nbsp;
+			                <span class="tweet-actions">
+			                  <action do="bookmark" with="https://glennjones.net/notes/2015-07-08">
+			                    <a href="https://twitter.com/intent/favorite?tweet_id=618768775287017472">Favourite</a>
+			                  </action> &nbsp;
+			                  <action do="post" with="https://glennjones.net/notes/2015-07-08">
+			                    <a href="https://twitter.com/intent/retweet?tweet_id=618768775287017472">Retweet</a>
+			                  </action> &nbsp;
+			                  <action do="reply" with="https://glennjones.net/notes/2015-07-08">
+			                    <a href="https://twitter.com/intent/tweet?in_reply_to=618768775287017472">Reply</a>
+			                  </action>
+			                </span>
+			     	</span>
+
+			    <!-- Location -->
+
+		
+			    
+		    	<!-- likes -->
+	            <div class="likes">Likes
+	              <ul>
+	                <li class="p-like h-entry">
+	                  <a class="p-author h-card" href="https://twitter.com/tobie">
+	                    <img class="u-photo p-name avatar avatar-icon" src="https://pbs.twimg.com/profile_images/552829016365756416/5yTH9xSP_normal.jpeg" title="Tobie Langel (tobie) " alt="Tobie Langel" />
+
+	                       <span class="p-nickname">tobie</span>
+
+	                  </a>
+	                  <a class="e-content p-name u-like u-like-of" href="https://twitter.com/glennjones/status/618768775287017472">favorited this</a>
+	                </li>
+	                <li class="p-like h-entry">
+	                  <a class="p-author h-card" href="https://twitter.com/mixed80">
+	                    <img class="u-photo p-name avatar avatar-icon" src="https://pbs.twimg.com/profile_images/2290348784/9jqjdm6427kvpu17loqd_normal.jpeg" title="yong woo jeon(mixed) (mixed80) " alt="yong woo jeon(mixed)" />
+
+	                       <span class="p-nickname">mixed80</span>
+
+	                  </a>
+	                  <a class="e-content p-name u-like u-like-of" href="https://twitter.com/glennjones/status/618768775287017472">favorited this</a>
+	                </li>
+	              </ul>
+	            </div>
+
+	
+			<!-- counts -->	
+			<div class="counts">
+				<a href="/notes/2015-07-08#likes">
+	    		Comments: 3
+	    		</a>
+    		</div>
+
+
+
+		
+		</article>  
+		 <article class="h-entry h-as-note">
+
+
+		 	<!-- replies -->
+	        <section class="reply-to">
+		        		<i class="fa fa-reply"></i>
+		          		Reply to a <a rel="in-reply-to" class="u-in-reply-to" href="https://twitter.com/tobie/status/618498336987967489">item on twitter</a>
+	        </section>
+
+
+	
+
+				<!-- Content -->
+				<h2 class="p-name e-content"><a class="auto-link h-x-username" href="https://twitter.com/tobie">@tobie</a> <a class="auto-link h-x-username" href="https://twitter.com/adrianba">@adrianba</a> I don't known the history, but it does look like the URL object should not have been extended in this way, not a IE issue!</h2>
+
+				<!-- Date -->
+					<span class="dateline"><a class="u-url" href="/notes/2015-07-07"><time class="dt-published" datetime="2015-07-07T19:25:06.000Z">8 days ago &ndash; 7 July 2015</time></a></span>
+
+				<!-- Syndication -->
+
+					&dash; <a rel="syndication" class="u-syndication sync-link" href="https://twitter.com/glennjones/status/618501008998707201">On twitter</a>
+
+			      	<span class="syndication-interactions">
+			          <!-- Twitter actions -->
+			              &nbsp;|&nbsp;
+			                <span class="tweet-actions">
+			                  <action do="bookmark" with="https://glennjones.net/notes/2015-07-07">
+			                    <a href="https://twitter.com/intent/favorite?tweet_id=618501008998707201">Favourite</a>
+			                  </action> &nbsp;
+			                  <action do="post" with="https://glennjones.net/notes/2015-07-07">
+			                    <a href="https://twitter.com/intent/retweet?tweet_id=618501008998707201">Retweet</a>
+			                  </action> &nbsp;
+			                  <action do="reply" with="https://glennjones.net/notes/2015-07-07">
+			                    <a href="https://twitter.com/intent/tweet?in_reply_to=618501008998707201">Reply</a>
+			                  </action>
+			                </span>
+			     	</span>
+
+			    <!-- Location -->
+
+		
+			    
+		    	<!-- likes -->
+
+	
+			<!-- counts -->	
+			<div class="counts">
+				<a href="/notes/2015-07-07#likes">
+	    		Comments: 7
+	    		</a>
+    		</div>
+
+
+
+		
+		</article>  
+		 <article class="h-entry h-as-note">
+
+
+		 	<!-- replies -->
+	        <section class="reply-to">
+		        		<i class="fa fa-reply"></i>
+		          		Reply to a <a rel="in-reply-to" class="u-in-reply-to" href="https://twitter.com/tobie/status/618390860569427968">item on twitter</a>
+	        </section>
+
+
+	
+
+				<!-- Content -->
+				<h2 class="p-name e-content"><a class="auto-link h-x-username" href="https://twitter.com/tobie">@tobie</a> <a class="auto-link h-x-username" href="https://twitter.com/w3ctag">@w3ctag</a> its a hard problem, but when you start to see cross browser code examples like <a class="auto-link" href="https://developer.mozilla.org/en-US/docs/Web/API/DOMParser">https://developer.mozilla.org/en-US/docs/Web/API/DOMParser</a>… I do start to worry</h2>
+
+				<!-- Date -->
+					<span class="dateline"><a class="u-url" href="/notes/2015-07-07-2"><time class="dt-published" datetime="2015-07-07T12:37:59.000Z">8 days ago &ndash; 7 July 2015</time></a></span>
+
+				<!-- Syndication -->
+
+					&dash; <a rel="syndication" class="u-syndication sync-link" href="https://twitter.com/glennjones/status/618398554864926720">On twitter</a>
+
+			      	<span class="syndication-interactions">
+			          <!-- Twitter actions -->
+			              &nbsp;|&nbsp;
+			                <span class="tweet-actions">
+			                  <action do="bookmark" with="https://glennjones.net/notes/2015-07-07-2">
+			                    <a href="https://twitter.com/intent/favorite?tweet_id=618398554864926720">Favourite</a>
+			                  </action> &nbsp;
+			                  <action do="post" with="https://glennjones.net/notes/2015-07-07-2">
+			                    <a href="https://twitter.com/intent/retweet?tweet_id=618398554864926720">Retweet</a>
+			                  </action> &nbsp;
+			                  <action do="reply" with="https://glennjones.net/notes/2015-07-07-2">
+			                    <a href="https://twitter.com/intent/tweet?in_reply_to=618398554864926720">Reply</a>
+			                  </action>
+			                </span>
+			     	</span>
+
+			    <!-- Location -->
+
+		
+			    
+		    	<!-- likes -->
+	            <div class="likes">Likes
+	              <ul>
+	                <li class="p-like h-entry">
+	                  <a class="p-author h-card" href="https://twitter.com/tobie">
+	                    <img class="u-photo p-name avatar avatar-icon" src="https://pbs.twimg.com/profile_images/552829016365756416/5yTH9xSP_normal.jpeg" title="Tobie Langel (tobie) " alt="Tobie Langel" />
+
+	                       <span class="p-nickname">tobie</span>
+
+	                  </a>
+	                  <a class="e-content p-name u-like u-like-of" href="https://twitter.com/glennjones/status/618398554864926720">favorited this</a>
+	                </li>
+	              </ul>
+	            </div>
+
+	
+			<!-- counts -->	
+			<div class="counts">
+				<a href="/notes/2015-07-07-2#likes">
+	    		Comments: 1
+	    		</a>
+    		</div>
+
+
+
+		
+		</article>  
+		 <article class="h-entry h-as-note">
+
+
+		 	<!-- replies -->
+	        <section class="reply-to">
+		        		<i class="fa fa-reply"></i>
+		          		Reply to a <a rel="in-reply-to" class="u-in-reply-to" href="https://twitter.com/tobie/status/618385905645146112">item on twitter</a>
+	        </section>
+
+
+	
+
+				<!-- Content -->
+				<h2 class="p-name e-content"><a class="auto-link h-x-username" href="https://twitter.com/tobie">@tobie</a> the examples for URL and URLUtils polyfills are having to use try/catch to get around this. Similar issues with DOMParser</h2>
+
+				<!-- Date -->
+					<span class="dateline"><a class="u-url" href="/notes/2015-07-07-4"><time class="dt-published" datetime="2015-07-07T11:58:38.000Z">8 days ago &ndash; 7 July 2015</time></a></span>
+
+				<!-- Syndication -->
+
+					&dash; <a rel="syndication" class="u-syndication sync-link" href="https://twitter.com/glennjones/status/618388652960444416">On twitter</a>
+
+			      	<span class="syndication-interactions">
+			          <!-- Twitter actions -->
+			              &nbsp;|&nbsp;
+			                <span class="tweet-actions">
+			                  <action do="bookmark" with="https://glennjones.net/notes/2015-07-07-4">
+			                    <a href="https://twitter.com/intent/favorite?tweet_id=618388652960444416">Favourite</a>
+			                  </action> &nbsp;
+			                  <action do="post" with="https://glennjones.net/notes/2015-07-07-4">
+			                    <a href="https://twitter.com/intent/retweet?tweet_id=618388652960444416">Retweet</a>
+			                  </action> &nbsp;
+			                  <action do="reply" with="https://glennjones.net/notes/2015-07-07-4">
+			                    <a href="https://twitter.com/intent/tweet?in_reply_to=618388652960444416">Reply</a>
+			                  </action>
+			                </span>
+			     	</span>
+
+			    <!-- Location -->
+
+		
+			    
+		    	<!-- likes -->
+	            <div class="likes">Likes
+	              <ul>
+	                <li class="p-like h-entry">
+	                  <a class="p-author h-card" href="https://twitter.com/mozheykinanadya">
+	                    <img class="u-photo p-name avatar avatar-icon" src="https://pbs.twimg.com/profile_images/600402827756883968/oZDdf5_z_normal.jpg" title="Maria Maynard (mozheykinanadya) " alt="Maria Maynard" />
+
+	                       <span class="p-nickname">mozheykinanadya</span>
+
+	                  </a>
+	                  <a class="e-content p-name u-like u-like-of" href="https://twitter.com/glennjones/status/618388652960444416">favorited this</a>
+	                </li>
+	              </ul>
+	            </div>
+
+	
+			<!-- counts -->	
+
+
+
+		
+		</article>  
+		 <article class="h-entry h-as-note">
+
+
+		 	<!-- replies -->
+	        <section class="reply-to">
+		        		<i class="fa fa-reply"></i>
+		          		Reply to a <a rel="in-reply-to" class="u-in-reply-to" href="https://twitter.com/tobie/status/618385905645146112">item on twitter</a>
+	        </section>
+
+
+	
+
+				<!-- Content -->
+				<h2 class="p-name e-content"><a class="auto-link h-x-username" href="https://twitter.com/tobie">@tobie</a> just looking at URL and URLUtils the constructor of URL takes 2 arguments to resolve absolute URL, but the early IE version blows up</h2>
+
+				<!-- Date -->
+					<span class="dateline"><a class="u-url" href="/notes/2015-07-07-1"><time class="dt-published" datetime="2015-07-07T11:53:57.000Z">8 days ago &ndash; 7 July 2015</time></a></span>
+
+				<!-- Syndication -->
+
+					&dash; <a rel="syndication" class="u-syndication sync-link" href="https://twitter.com/glennjones/status/618387472817496064">On twitter</a>
+
+			      	<span class="syndication-interactions">
+			          <!-- Twitter actions -->
+			              &nbsp;|&nbsp;
+			                <span class="tweet-actions">
+			                  <action do="bookmark" with="https://glennjones.net/notes/2015-07-07-1">
+			                    <a href="https://twitter.com/intent/favorite?tweet_id=618387472817496064">Favourite</a>
+			                  </action> &nbsp;
+			                  <action do="post" with="https://glennjones.net/notes/2015-07-07-1">
+			                    <a href="https://twitter.com/intent/retweet?tweet_id=618387472817496064">Retweet</a>
+			                  </action> &nbsp;
+			                  <action do="reply" with="https://glennjones.net/notes/2015-07-07-1">
+			                    <a href="https://twitter.com/intent/tweet?in_reply_to=618387472817496064">Reply</a>
+			                  </action>
+			                </span>
+			     	</span>
+
+			    <!-- Location -->
+
+		
+			    
+		    	<!-- likes -->
+	            <div class="likes">Likes
+	              <ul>
+	                <li class="p-like h-entry">
+	                  <a class="p-author h-card" href="https://twitter.com/mozheykinanadya">
+	                    <img class="u-photo p-name avatar avatar-icon" src="https://pbs.twimg.com/profile_images/600402827756883968/oZDdf5_z_normal.jpg" title="Maria Maynard (mozheykinanadya) " alt="Maria Maynard" />
+
+	                       <span class="p-nickname">mozheykinanadya</span>
+
+	                  </a>
+	                  <a class="e-content p-name u-like u-like-of" href="https://twitter.com/glennjones/status/618387472817496064">favorited this</a>
+	                </li>
+	              </ul>
+	            </div>
+
+	
+			<!-- counts -->	
+			<div class="counts">
+				<a href="/notes/2015-07-07-1#likes">
+	    		Comments: 17
+	    		</a>
+    		</div>
+
+
+
+		
+		</article>  
+		 <article class="h-entry h-as-note">
+
+
+		 	<!-- replies -->
+
+
+	
+
+				<!-- Content -->
+				<h2 class="p-name e-content">Find it a little sad some of the browser APIs are introduced in such an incomplete state the only way to use them is in try/catch blocks</h2>
+
+				<!-- Date -->
+					<span class="dateline"><a class="u-url" href="/notes/2015-07-07-3"><time class="dt-published" datetime="2015-07-07T11:41:17.000Z">8 days ago &ndash; 7 July 2015</time></a></span>
+
+				<!-- Syndication -->
+
+					&dash; <a rel="syndication" class="u-syndication sync-link" href="https://twitter.com/glennjones/status/618384284932534273">On twitter</a>
+
+			      	<span class="syndication-interactions">
+			          <!-- Twitter actions -->
+			              &nbsp;|&nbsp;
+			                <span class="tweet-actions">
+			                  <action do="bookmark" with="https://glennjones.net/notes/2015-07-07-3">
+			                    <a href="https://twitter.com/intent/favorite?tweet_id=618384284932534273">Favourite</a>
+			                  </action> &nbsp;
+			                  <action do="post" with="https://glennjones.net/notes/2015-07-07-3">
+			                    <a href="https://twitter.com/intent/retweet?tweet_id=618384284932534273">Retweet</a>
+			                  </action> &nbsp;
+			                  <action do="reply" with="https://glennjones.net/notes/2015-07-07-3">
+			                    <a href="https://twitter.com/intent/tweet?in_reply_to=618384284932534273">Reply</a>
+			                  </action>
+			                </span>
+			     	</span>
+
+			    <!-- Location -->
+
+		
+			    
+		    	<!-- likes -->
+
+	
+			<!-- counts -->	
+			<div class="counts">
+				<a href="/notes/2015-07-07-3#likes">
+	    		Comments: 19
+	    		</a>
+    		</div>
+
+
+
+		
+		</article>  
+		 <article class="h-entry h-as-note">
+
+
+		 	<!-- replies -->
+
+
+	
+
+				<!-- Content -->
+				<h2 class="p-name e-content">Watching a captured swarm of bees walk into their new home. It's always interesting to see. <a class="auto-link u-photo" href="https://pic.twitter.com/nrxJ8RnHz4">pic.twitter.com/nrxJ8RnHz4</a></h2>
+
+				<!-- Date -->
+					<span class="dateline"><a class="u-url" href="/notes/2015-07-04"><time class="dt-published" datetime="2015-07-04T11:25:09.000Z">11 days ago &ndash; 4 July 2015</time></a></span>
+
+				<!-- Syndication -->
+
+					&dash; <a rel="syndication" class="u-syndication sync-link" href="https://twitter.com/glennjones/status/617293063367622656">On twitter</a>
+
+			      	<span class="syndication-interactions">
+			          <!-- Twitter actions -->
+			              &nbsp;|&nbsp;
+			                <span class="tweet-actions">
+			                  <action do="bookmark" with="https://glennjones.net/notes/2015-07-04">
+			                    <a href="https://twitter.com/intent/favorite?tweet_id=617293063367622656">Favourite</a>
+			                  </action> &nbsp;
+			                  <action do="post" with="https://glennjones.net/notes/2015-07-04">
+			                    <a href="https://twitter.com/intent/retweet?tweet_id=617293063367622656">Retweet</a>
+			                  </action> &nbsp;
+			                  <action do="reply" with="https://glennjones.net/notes/2015-07-04">
+			                    <a href="https://twitter.com/intent/tweet?in_reply_to=617293063367622656">Reply</a>
+			                  </action>
+			                </span>
+			     	</span>
+
+			    <!-- Location -->
+
+		
+			    
+		    	<!-- likes -->
+	            <div class="likes">Likes
+	              <ul>
+	                <li class="p-like h-entry">
+	                  <a class="p-author h-card" href="https://twitter.com/johannesdachsel">
+	                    <img class="u-photo p-name avatar avatar-icon" src="https://pbs.twimg.com/profile_images/568779438792273920/oWjKBvIc_normal.jpeg" title="Johannes Dachsel (johannesdachsel) " alt="Johannes Dachsel" />
+
+	                       <span class="p-nickname">johannesdachsel</span>
+
+	                  </a>
+	                  <a class="e-content p-name u-like u-like-of" href="https://twitter.com/glennjones/status/617293063367622656">favorited this</a>
+	                </li>
+	              </ul>
+	            </div>
+
+	
+			<!-- counts -->	
+
+
+
+		
+		</article>  
+		 <article class="h-entry h-as-note">
+
+
+		 	<!-- replies -->
+
+
+	
+
+				<!-- Content -->
+				<h2 class="p-name e-content">Too hot to think never mind code falling back to my default activity - off to the pub</h2>
+
+				<!-- Date -->
+					<span class="dateline"><a class="u-url" href="/notes/2015-07-03"><time class="dt-published" datetime="2015-07-03T15:49:20.000Z">12 days ago &ndash; 3 July 2015</time></a></span>
+
+				<!-- Syndication -->
+
+					&dash; <a rel="syndication" class="u-syndication sync-link" href="https://twitter.com/glennjones/status/616997159943176192">On twitter</a>
+
+			      	<span class="syndication-interactions">
+			          <!-- Twitter actions -->
+			              &nbsp;|&nbsp;
+			                <span class="tweet-actions">
+			                  <action do="bookmark" with="https://glennjones.net/notes/2015-07-03">
+			                    <a href="https://twitter.com/intent/favorite?tweet_id=616997159943176192">Favourite</a>
+			                  </action> &nbsp;
+			                  <action do="post" with="https://glennjones.net/notes/2015-07-03">
+			                    <a href="https://twitter.com/intent/retweet?tweet_id=616997159943176192">Retweet</a>
+			                  </action> &nbsp;
+			                  <action do="reply" with="https://glennjones.net/notes/2015-07-03">
+			                    <a href="https://twitter.com/intent/tweet?in_reply_to=616997159943176192">Reply</a>
+			                  </action>
+			                </span>
+			     	</span>
+
+			    <!-- Location -->
+
+		
+			    
+		    	<!-- likes -->
+	            <div class="likes">Likes
+	              <ul>
+	                <li class="p-like h-entry">
+	                  <a class="p-author h-card" href="https://twitter.com/mendthefrontend">
+	                    <img class="u-photo p-name avatar avatar-icon" src="https://pbs.twimg.com/profile_images/2534635392/lppxjtpdv26tg1tn7f8i_normal.jpeg" title="Neil Ross (mendthefrontend) " alt="Neil Ross" />
+
+	                       <span class="p-nickname">mendthefrontend</span>
+
+	                  </a>
+	                  <a class="e-content p-name u-like u-like-of" href="https://twitter.com/glennjones/status/616997159943176192">favorited this</a>
+	                </li>
+	                <li class="p-like h-entry">
+	                  <a class="p-author h-card" href="https://twitter.com/sjehay">
+	                    <img class="u-photo p-name avatar avatar-icon" src="https://pbs.twimg.com/profile_images/524860175/YN9Q1414_normal.jpg" title="Simon Hay (sjehay) " alt="Simon Hay" />
+
+	                       <span class="p-nickname">sjehay</span>
+
+	                  </a>
+	                  <a class="e-content p-name u-like u-like-of" href="https://twitter.com/glennjones/status/616997159943176192">favorited this</a>
+	                </li>
+	                <li class="p-like h-entry">
+	                  <a class="p-author h-card" href="https://twitter.com/itibz">
+	                    <img class="u-photo p-name avatar avatar-icon" src="https://pbs.twimg.com/profile_images/589025048259854336/TjzsSo7m_normal.jpg" title="Thibault Lemaitre (itibz) " alt="Thibault Lemaitre" />
+
+	                       <span class="p-nickname">itibz</span>
+
+	                  </a>
+	                  <a class="e-content p-name u-like u-like-of" href="https://twitter.com/glennjones/status/616997159943176192">favorited this</a>
+	                </li>
+	                <li class="p-like h-entry">
+	                  <a class="p-author h-card" href="https://twitter.com/beckerink">
+	                    <img class="u-photo p-name avatar avatar-icon" src="https://pbs.twimg.com/profile_images/474653516930117633/uHaqtkXx_normal.png" title="Becker (beckerink) " alt="Becker" />
+
+	                       <span class="p-nickname">beckerink</span>
+
+	                  </a>
+	                  <a class="e-content p-name u-like u-like-of" href="https://twitter.com/glennjones/status/616997159943176192">favorited this</a>
+	                </li>
+	                <li class="p-like h-entry">
+	                  <a class="p-author h-card" href="https://twitter.com/vickyjo">
+	                    <img class="u-photo p-name avatar avatar-icon" src="https://pbs.twimg.com/profile_images/63391227/vicky2_normal.jpg" title="Victoria Walberg (vickyjo) " alt="Victoria Walberg" />
+
+	                       <span class="p-nickname">vickyjo</span>
+
+	                  </a>
+	                  <a class="e-content p-name u-like u-like-of" href="https://twitter.com/glennjones/status/616997159943176192">favorited this</a>
+	                </li>
+	                <li class="p-like h-entry">
+	                  <a class="p-author h-card" href="https://twitter.com/andybudd">
+	                    <img class="u-photo p-name avatar avatar-icon" src="https://pbs.twimg.com/profile_images/538747669716279296/0AMp77pY_normal.jpeg" title="Andy Budd (andybudd) " alt="Andy Budd" />
+
+	                       <span class="p-nickname">andybudd</span>
+
+	                  </a>
+	                  <a class="e-content p-name u-like u-like-of" href="https://twitter.com/glennjones/status/616997159943176192">favorited this</a>
+	                </li>
+	                <li class="p-like h-entry">
+	                  <a class="p-author h-card" href="https://twitter.com/iainholder">
+	                    <img class="u-photo p-name avatar avatar-icon" src="https://pbs.twimg.com/profile_images/3747260146/0c732205e811eb455d44ca3ae03b6119_normal.jpeg" title="Iain Holder (iainholder) " alt="Iain Holder" />
+
+	                       <span class="p-nickname">iainholder</span>
+
+	                  </a>
+	                  <a class="e-content p-name u-like u-like-of" href="https://twitter.com/glennjones/status/616997159943176192">favorited this</a>
+	                </li>
+	              </ul>
+	            </div>
+
+	
+			<!-- counts -->	
+			<div class="counts">
+				<a href="/notes/2015-07-03#likes">
+	    		Comments: 1
+	    		</a>
+    		</div>
+
+
+
+		
+		</article>  
+		 <article class="h-entry h-as-note">
+
+
+		 	<!-- replies -->
+
+
+	
+
+				<!-- Content -->
+				<h2 class="p-name e-content">Proud to receive our top 100 exporters award at the Sunday Times SME Export Awards 2015 - number 46! <a class="auto-link hashtag" href="https://twitter.com/search?q=%23SMEexport100&src=hash">#SMEexport100</a> <a class="auto-link u-photo" href="https://pic.twitter.com/7CHGG8skxh">pic.twitter.com/7CHGG8skxh</a></h2>
+
+				<!-- Date -->
+					<span class="dateline"><a class="u-url" href="/notes/2015-07-02"><time class="dt-published" datetime="2015-07-02T13:56:25.000Z">13 days ago &ndash; 2 July 2015</time></a></span>
+
+				<!-- Syndication -->
+
+					&dash; <a rel="syndication" class="u-syndication sync-link" href="https://twitter.com/madgex/status/616606352941686784">On twitter</a>
+
+			      	<span class="syndication-interactions">
+			          <!-- Twitter actions -->
+			              &nbsp;|&nbsp;
+			                <span class="tweet-actions">
+			                  <action do="bookmark" with="https://glennjones.net/notes/2015-07-02">
+			                    <a href="https://twitter.com/intent/favorite?tweet_id=616606352941686784">Favourite</a>
+			                  </action> &nbsp;
+			                  <action do="post" with="https://glennjones.net/notes/2015-07-02">
+			                    <a href="https://twitter.com/intent/retweet?tweet_id=616606352941686784">Retweet</a>
+			                  </action> &nbsp;
+			                  <action do="reply" with="https://glennjones.net/notes/2015-07-02">
+			                    <a href="https://twitter.com/intent/tweet?in_reply_to=616606352941686784">Reply</a>
+			                  </action>
+			                </span>
+			     	</span>
+
+			    <!-- Location -->
+
+		
+			    
+		    	<!-- likes -->
+	            <div class="likes">Likes
+	              <ul>
+	                <li class="p-like h-entry">
+	                  <a class="p-author h-card" href="https://twitter.com/rebbiegang22673">
+	                    <img class="u-photo p-name avatar avatar-icon" src="https://pbs.twimg.com/profile_images/613575272495841282/dM4dYBx2_normal.jpg" title="shagansta&amp;#39; (rebbiegang22673) " alt="shagansta&amp;#39;" />
+
+	                       <span class="p-nickname">rebbiegang22673</span>
+
+	                  </a>
+	                  <a class="e-content p-name u-like u-like-of" href="https://twitter.com/madgex/status/616606352941686784">favorited this</a>
+	                </li>
+	                <li class="p-like h-entry">
+	                  <a class="p-author h-card" href="https://twitter.com/glennjones">
+	                    <img class="u-photo p-name avatar avatar-icon" src="https://pbs.twimg.com/profile_images/479275550754607108/Wd44l25r_normal.jpeg" title="Glenn Jones (glennjones) " alt="Glenn Jones" />
+
+	                       <span class="p-nickname">glennjones</span>
+
+	                  </a>
+	                  <a class="e-content p-name u-like u-like-of" href="https://twitter.com/madgex/status/616606352941686784">favorited this</a>
+	                </li>
+	              </ul>
+	            </div>
+
+	
+			<!-- counts -->	
+
+
+
+		
+		</article>  
+		 <article class="h-entry h-as-note">
+
+
+		 	<!-- replies -->
+
+
+	
+
+				<!-- Content -->
+				<h2 class="p-name e-content">At <a class="auto-link h-x-username" href="https://twitter.com/edgeconf">@edgeconf</a> looking forward to a full day of web tech conversations</h2>
+
+				<!-- Date -->
+					<span class="dateline"><a class="u-url" href="/notes/2015-06-27"><time class="dt-published" datetime="2015-06-27T07:48:51.000Z">18 days ago &ndash; 27 June 2015</time></a></span>
+
+				<!-- Syndication -->
+
+					&dash; <a rel="syndication" class="u-syndication sync-link" href="https://twitter.com/glennjones/status/614701914601746432">On twitter</a>
+
+			      	<span class="syndication-interactions">
+			          <!-- Twitter actions -->
+			              &nbsp;|&nbsp;
+			                <span class="tweet-actions">
+			                  <action do="bookmark" with="https://glennjones.net/notes/2015-06-27">
+			                    <a href="https://twitter.com/intent/favorite?tweet_id=614701914601746432">Favourite</a>
+			                  </action> &nbsp;
+			                  <action do="post" with="https://glennjones.net/notes/2015-06-27">
+			                    <a href="https://twitter.com/intent/retweet?tweet_id=614701914601746432">Retweet</a>
+			                  </action> &nbsp;
+			                  <action do="reply" with="https://glennjones.net/notes/2015-06-27">
+			                    <a href="https://twitter.com/intent/tweet?in_reply_to=614701914601746432">Reply</a>
+			                  </action>
+			                </span>
+			     	</span>
+
+			    <!-- Location -->
+
+		
+			    
+		    	<!-- likes -->
+	            <div class="likes">Likes
+	              <ul>
+	                <li class="p-like h-entry">
+	                  <a class="p-author h-card" href="https://twitter.com/jkphl">
+	                    <img class="u-photo p-name avatar avatar-icon" src="https://pbs.twimg.com/profile_images/478438764914565121/jF7tXwAH_normal.jpeg" title="Joschi Kuphal 吉 (jkphl) " alt="Joschi Kuphal 吉" />
+
+	                       <span class="p-nickname">jkphl</span>
+
+	                  </a>
+	                  <a class="e-content p-name u-like u-like-of" href="https://twitter.com/glennjones/status/614701914601746432">favorited this</a>
+	                </li>
+	              </ul>
+	            </div>
+
+	
+			<!-- counts -->	
+			<div class="counts">
+				<a href="/notes/2015-06-27#likes">
+	    		Comments: 1
+	    		</a>
+    		</div>
+
+
+
+		
+		</article>  
+		 <article class="h-entry h-as-note">
+
+
+		 	<!-- replies -->
+
+
+	
+
+				<!-- Content -->
+				<h2 class="p-name e-content">Its amusing with Javascript that we are using an increasingly complex and error proned toolset to try to stop our code having these traits</h2>
+
+				<!-- Date -->
+					<span class="dateline"><a class="u-url" href="/notes/2015-06-25"><time class="dt-published" datetime="2015-06-25T19:41:57.000Z">20 days ago &ndash; 25 June 2015</time></a></span>
+
+				<!-- Syndication -->
+
+					&dash; <a rel="syndication" class="u-syndication sync-link" href="https://twitter.com/glennjones/status/614156594687909888">On twitter</a>
+
+			      	<span class="syndication-interactions">
+			          <!-- Twitter actions -->
+			              &nbsp;|&nbsp;
+			                <span class="tweet-actions">
+			                  <action do="bookmark" with="https://glennjones.net/notes/2015-06-25">
+			                    <a href="https://twitter.com/intent/favorite?tweet_id=614156594687909888">Favourite</a>
+			                  </action> &nbsp;
+			                  <action do="post" with="https://glennjones.net/notes/2015-06-25">
+			                    <a href="https://twitter.com/intent/retweet?tweet_id=614156594687909888">Retweet</a>
+			                  </action> &nbsp;
+			                  <action do="reply" with="https://glennjones.net/notes/2015-06-25">
+			                    <a href="https://twitter.com/intent/tweet?in_reply_to=614156594687909888">Reply</a>
+			                  </action>
+			                </span>
+			     	</span>
+
+			    <!-- Location -->
+
+		
+			    
+		    	<!-- likes -->
+	            <div class="likes">Likes
+	              <ul>
+	                <li class="p-like h-entry">
+	                  <a class="p-author h-card" href="https://twitter.com/rovolutionary">
+	                    <img class="u-photo p-name avatar avatar-icon" src="https://pbs.twimg.com/profile_images/522582082879373312/cEjZebkJ_normal.jpeg" title="Rohit K (rovolutionary) " alt="Rohit K" />
+
+	                       <span class="p-nickname">rovolutionary</span>
+
+	                  </a>
+	                  <a class="e-content p-name u-like u-like-of" href="https://twitter.com/glennjones/status/614156594687909888">favorited this</a>
+	                </li>
+	                <li class="p-like h-entry">
+	                  <a class="p-author h-card" href="https://twitter.com/b_sted">
+	                    <img class="u-photo p-name avatar avatar-icon" src="https://pbs.twimg.com/profile_images/1668831885/robtyner_normal.jpg" title="Matthew Mirande (b_sted) " alt="Matthew Mirande" />
+
+	                       <span class="p-nickname">b_sted</span>
+
+	                  </a>
+	                  <a class="e-content p-name u-like u-like-of" href="https://twitter.com/glennjones/status/614156594687909888">favorited this</a>
+	                </li>
+	                <li class="p-like h-entry">
+	                  <a class="p-author h-card" href="https://twitter.com/fakebaldur">
+	                    <img class="u-photo p-name avatar avatar-icon" src="https://pbs.twimg.com/profile_images/547785097504493568/i-pfFJB2_normal.png" title="Baldur Bjarnason (fakebaldur) " alt="Baldur Bjarnason" />
+
+	                       <span class="p-nickname">fakebaldur</span>
+
+	                  </a>
+	                  <a class="e-content p-name u-like u-like-of" href="https://twitter.com/glennjones/status/614156594687909888">favorited this</a>
+	                </li>
+	                <li class="p-like h-entry">
+	                  <a class="p-author h-card" href="https://twitter.com/ilovecodingorg">
+	                    <img class="u-photo p-name avatar avatar-icon" src="https://pbs.twimg.com/profile_images/521485514621206528/kz7EJbd1_normal.png" title="iLoveCoding (ilovecodingorg) " alt="iLoveCoding" />
+
+	                       <span class="p-nickname">ilovecodingorg</span>
+
+	                  </a>
+	                  <a class="e-content p-name u-like u-like-of" href="https://twitter.com/glennjones/status/614156594687909888">favorited this</a>
+	                </li>
+	                <li class="p-like h-entry">
+	                  <a class="p-author h-card" href="https://twitter.com/iainholder">
+	                    <img class="u-photo p-name avatar avatar-icon" src="https://pbs.twimg.com/profile_images/3747260146/0c732205e811eb455d44ca3ae03b6119_normal.jpeg" title="Iain Holder (iainholder) " alt="Iain Holder" />
+
+	                       <span class="p-nickname">iainholder</span>
+
+	                  </a>
+	                  <a class="e-content p-name u-like u-like-of" href="https://twitter.com/glennjones/status/614156594687909888">favorited this</a>
+	                </li>
+	                <li class="p-like h-entry">
+	                  <a class="p-author h-card" href="https://twitter.com/danmactough">
+	                    <img class="u-photo p-name avatar avatar-icon" src="https://pbs.twimg.com/profile_images/572960076286017536/3LK-C5Ng_normal.png" title="Dan MacTough (danmactough) " alt="Dan MacTough" />
+
+	                       <span class="p-nickname">danmactough</span>
+
+	                  </a>
+	                  <a class="e-content p-name u-like u-like-of" href="https://twitter.com/glennjones/status/614156594687909888">favorited this</a>
+	                </li>
+	                <li class="p-like h-entry">
+	                  <a class="p-author h-card" href="https://twitter.com/digitalblissltd">
+	                    <img class="u-photo p-name avatar avatar-icon" src="https://pbs.twimg.com/profile_images/496576670015311873/vgPPK2TL_normal.png" title="Chris A. (digitalblissltd) " alt="Chris A." />
+
+	                       <span class="p-nickname">digitalblissltd</span>
+
+	                  </a>
+	                  <a class="e-content p-name u-like u-like-of" href="https://twitter.com/glennjones/status/614156594687909888">favorited this</a>
+	                </li>
+	                <li class="p-like h-entry">
+	                  <a class="p-author h-card" href="https://twitter.com/tommorris">
+	                    <img class="u-photo p-name avatar avatar-icon" src="https://pbs.twimg.com/profile_images/15251942/1175176388_m_normal.jpg" title="Tom Morris (tommorris) " alt="Tom Morris" />
+
+	                       <span class="p-nickname">tommorris</span>
+
+	                  </a>
+	                  <a class="e-content p-name u-like u-like-of" href="https://twitter.com/glennjones/status/614156594687909888">favorited this</a>
+	                </li>
+	              </ul>
+	            </div>
+
+	
+			<!-- counts -->	
+
+
+
+		
+		</article>  
+		 <article class="h-entry h-as-note">
+
+
+		 	<!-- replies -->
+
+
+	
+
+				<!-- Content -->
+				<h2 class="p-name e-content">On my way to <a href="https://twitter.com/search?q=%23responsivedayout&src=hash" class="auto-link hashtag">#responsivedayout</a> conference</h2>
+
+				<!-- Date -->
+					<span class="dateline"><a class="u-url" href="/notes/2015-06-19"><time class="dt-published" datetime="2015-06-19T08:35:47.382Z">a month ago &ndash; 19 June 2015</time></a></span>
+
+				<!-- Syndication -->
+
+			    <!-- Location -->
+
+		
+			    
+		    	<!-- likes -->
+
+	
+			<!-- counts -->	
+
+
+
+		
+		</article>  
+		 <article class="h-entry h-as-note">
+
+
+		 	<!-- replies -->
+
+
+	
+
+				<!-- Content -->
+				<h2 class="p-name e-content">Bit of saturday afternoon beekeeping with <a class="auto-link h-x-username" href="https://twitter.com/robert_nemeth">@robert_nemeth</a> <a class="auto-link u-photo" href="https://pic.twitter.com/7RnGt1MAfB">pic.twitter.com/7RnGt1MAfB</a></h2>
+
+				<!-- Date -->
+					<span class="dateline"><a class="u-url" href="/notes/2015-05-30-2"><time class="dt-published" datetime="2015-05-30T12:48:12.000Z">2 months ago &ndash; 30 May 2015</time></a></span>
+
+				<!-- Syndication -->
+
+					&dash; <a rel="syndication" class="u-syndication sync-link" href="https://twitter.com/glennjones/status/604630388531712000">On twitter</a>
+
+			      	<span class="syndication-interactions">
+			          <!-- Twitter actions -->
+			              &nbsp;|&nbsp;
+			                <span class="tweet-actions">
+			                  <action do="bookmark" with="https://glennjones.net/notes/2015-05-30-2">
+			                    <a href="https://twitter.com/intent/favorite?tweet_id=604630388531712000">Favourite</a>
+			                  </action> &nbsp;
+			                  <action do="post" with="https://glennjones.net/notes/2015-05-30-2">
+			                    <a href="https://twitter.com/intent/retweet?tweet_id=604630388531712000">Retweet</a>
+			                  </action> &nbsp;
+			                  <action do="reply" with="https://glennjones.net/notes/2015-05-30-2">
+			                    <a href="https://twitter.com/intent/tweet?in_reply_to=604630388531712000">Reply</a>
+			                  </action>
+			                </span>
+			     	</span>
+
+			    <!-- Location -->
+
+		
+			    
+		    	<!-- likes -->
+	            <div class="likes">Likes
+	              <ul>
+	                <li class="p-like h-entry">
+	                  <a class="p-author h-card" href="https://twitter.com/johannesdachsel">
+	                    <img class="u-photo p-name avatar avatar-icon" src="https://pbs.twimg.com/profile_images/568779438792273920/oWjKBvIc_normal.jpeg" title="Johannes Dachsel (johannesdachsel) " alt="Johannes Dachsel" />
+
+	                       <span class="p-nickname">johannesdachsel</span>
+
+	                  </a>
+	                  <a class="e-content p-name u-like u-like-of" href="https://twitter.com/glennjones/status/604630388531712000">favorited this</a>
+	                </li>
+	                <li class="p-like h-entry">
+	                  <a class="p-author h-card" href="https://twitter.com/barnabywalters">
+	                    <img class="u-photo p-name avatar avatar-icon" src="https://pbs.twimg.com/profile_images/378800000400393459/ef2c37bd2e96540516997986577e3011_normal.jpeg" title="Barnaby Walters (barnabywalters) " alt="Barnaby Walters" />
+
+	                       <span class="p-nickname">barnabywalters</span>
+
+	                  </a>
+	                  <a class="e-content p-name u-like u-like-of" href="https://twitter.com/glennjones/status/604630388531712000">favorited this</a>
+	                </li>
+	                <li class="p-like h-entry">
+	                  <a class="p-author h-card" href="https://twitter.com/jondwill">
+	                    <img class="u-photo p-name avatar avatar-icon" src="https://pbs.twimg.com/profile_images/441266754635837440/e24GYbOE_normal.jpeg" title="J Williams (jondwill) " alt="J Williams" />
+
+	                       <span class="p-nickname">jondwill</span>
+
+	                  </a>
+	                  <a class="e-content p-name u-like u-like-of" href="https://twitter.com/glennjones/status/604630388531712000">favorited this</a>
+	                </li>
+	                <li class="p-like h-entry">
+	                  <a class="p-author h-card" href="https://twitter.com/robert_nemeth">
+	                    <img class="u-photo p-name avatar avatar-icon" src="https://pbs.twimg.com/profile_images/616311137324400640/efHLvLI9_normal.jpg" title="Cllr Robert Nemeth (robert_nemeth) " alt="Cllr Robert Nemeth" />
+
+	                       <span class="p-nickname">robert_nemeth</span>
+
+	                  </a>
+	                  <a class="e-content p-name u-like u-like-of" href="https://twitter.com/glennjones/status/604630388531712000">favorited this</a>
+	                </li>
+	              </ul>
+	            </div>
+
+	
+			<!-- counts -->	
+
+
+
+		
+		</article>  
+		 <article class="h-entry h-as-note">
+
+
+		 	<!-- replies -->
+
+
+	
+
+				<!-- Content -->
+				<h2 class="p-name e-content"><a class="auto-link h-x-username" href="https://twitter.com/robert_nemeth">@robert_nemeth</a> collecting swarm in our garden <a class="auto-link u-photo" href="https://pic.twitter.com/6tvO52pzNc">pic.twitter.com/6tvO52pzNc</a></h2>
+
+				<!-- Date -->
+					<span class="dateline"><a class="u-url" href="/notes/2015-05-30"><time class="dt-published" datetime="2015-05-30T12:45:39.000Z">2 months ago &ndash; 30 May 2015</time></a></span>
+
+				<!-- Syndication -->
+
+					&dash; <a rel="syndication" class="u-syndication sync-link" href="https://twitter.com/glennjones/status/604629745020637184">On twitter</a>
+
+			      	<span class="syndication-interactions">
+			          <!-- Twitter actions -->
+			              &nbsp;|&nbsp;
+			                <span class="tweet-actions">
+			                  <action do="bookmark" with="https://glennjones.net/notes/2015-05-30">
+			                    <a href="https://twitter.com/intent/favorite?tweet_id=604629745020637184">Favourite</a>
+			                  </action> &nbsp;
+			                  <action do="post" with="https://glennjones.net/notes/2015-05-30">
+			                    <a href="https://twitter.com/intent/retweet?tweet_id=604629745020637184">Retweet</a>
+			                  </action> &nbsp;
+			                  <action do="reply" with="https://glennjones.net/notes/2015-05-30">
+			                    <a href="https://twitter.com/intent/tweet?in_reply_to=604629745020637184">Reply</a>
+			                  </action>
+			                </span>
+			     	</span>
+
+			    <!-- Location -->
+
+		
+			    
+		    	<!-- likes -->
+	            <div class="likes">Likes
+	              <ul>
+	                <li class="p-like h-entry">
+	                  <a class="p-author h-card" href="https://twitter.com/jondwill">
+	                    <img class="u-photo p-name avatar avatar-icon" src="https://pbs.twimg.com/profile_images/441266754635837440/e24GYbOE_normal.jpeg" title="J Williams (jondwill) " alt="J Williams" />
+
+	                       <span class="p-nickname">jondwill</span>
+
+	                  </a>
+	                  <a class="e-content p-name u-like u-like-of" href="https://twitter.com/glennjones/status/604629745020637184">favorited this</a>
+	                </li>
+	                <li class="p-like h-entry">
+	                  <a class="p-author h-card" href="https://twitter.com/robert_nemeth">
+	                    <img class="u-photo p-name avatar avatar-icon" src="https://pbs.twimg.com/profile_images/616311137324400640/efHLvLI9_normal.jpg" title="Cllr Robert Nemeth (robert_nemeth) " alt="Cllr Robert Nemeth" />
+
+	                       <span class="p-nickname">robert_nemeth</span>
+
+	                  </a>
+	                  <a class="e-content p-name u-like u-like-of" href="https://twitter.com/glennjones/status/604629745020637184">favorited this</a>
+	                </li>
+	              </ul>
+	            </div>
+
+	
+			<!-- counts -->	
+			<div class="counts">
+				<a href="/notes/2015-05-30#likes">
+	    		Comments: 1
+	    		</a>
+    		</div>
+
+
+
+		
+		</article>  
+		 <article class="h-entry h-as-note">
+
+
+		 	<!-- replies -->
+
+
+	
+
+				<!-- Content -->
+				<h2 class="p-name e-content">Incredible formation. Getting another swarm now with <a class="auto-link h-x-username" href="https://twitter.com/glennjones...">@glennjones...</a> <a class="auto-link hashtag" href="https://twitter.com/search?q=%23bees&src=hash">#bees</a> <a class="auto-link hashtag" href="https://twitter.com/search?q=%23Brighton&src=hash">#Brighton</a> <a class="auto-link u-photo" href="https://pic.twitter.com/bilNEaXaUn">pic.twitter.com/bilNEaXaUn</a></h2>
+
+				<!-- Date -->
+					<span class="dateline"><a class="u-url" href="/notes/2015-05-30-1"><time class="dt-published" datetime="2015-05-30T12:08:36.000Z">2 months ago &ndash; 30 May 2015</time></a></span>
+
+				<!-- Syndication -->
+
+					&dash; <a rel="syndication" class="u-syndication sync-link" href="https://twitter.com/robert_nemeth/status/604620422697635840">On twitter</a>
+
+			      	<span class="syndication-interactions">
+			          <!-- Twitter actions -->
+			              &nbsp;|&nbsp;
+			                <span class="tweet-actions">
+			                  <action do="bookmark" with="https://glennjones.net/notes/2015-05-30-1">
+			                    <a href="https://twitter.com/intent/favorite?tweet_id=604620422697635840">Favourite</a>
+			                  </action> &nbsp;
+			                  <action do="post" with="https://glennjones.net/notes/2015-05-30-1">
+			                    <a href="https://twitter.com/intent/retweet?tweet_id=604620422697635840">Retweet</a>
+			                  </action> &nbsp;
+			                  <action do="reply" with="https://glennjones.net/notes/2015-05-30-1">
+			                    <a href="https://twitter.com/intent/tweet?in_reply_to=604620422697635840">Reply</a>
+			                  </action>
+			                </span>
+			     	</span>
+
+			    <!-- Location -->
+
+		
+			    
+		    	<!-- likes -->
+	            <div class="likes">Likes
+	              <ul>
+	                <li class="p-like h-entry">
+	                  <a class="p-author h-card" href="https://twitter.com/nickiwinton1">
+	                    <img class="u-photo p-name avatar avatar-icon" src="https://pbs.twimg.com/profile_images/601365901586407424/TZj31czO_normal.jpg" title="hoveactually27 (nickiwinton1) " alt="hoveactually27" />
+
+	                       <span class="p-nickname">nickiwinton1</span>
+
+	                  </a>
+	                  <a class="e-content p-name u-like u-like-of" href="https://twitter.com/robert_nemeth/status/604620422697635840">favorited this</a>
+	                </li>
+	                <li class="p-like h-entry">
+	                  <a class="p-author h-card" href="https://twitter.com/norso">
+	                    <img class="u-photo p-name avatar avatar-icon" src="https://pbs.twimg.com/profile_images/378800000817142664/c9759fea236e8dae80602bc8d8f37a20_normal.jpeg" title="norso (norso) " alt="norso" />
+
+	                       <span class="p-nickname">norso</span>
+
+	                  </a>
+	                  <a class="e-content p-name u-like u-like-of" href="https://twitter.com/robert_nemeth/status/604620422697635840">favorited this</a>
+	                </li>
+	                <li class="p-like h-entry">
+	                  <a class="p-author h-card" href="https://twitter.com/ashers73">
+	                    <img class="u-photo p-name avatar avatar-icon" src="https://pbs.twimg.com/profile_images/618341995627548672/_ts05O5Z_normal.jpg" title="Ashley Deans (ashers73) " alt="Ashley Deans" />
+
+	                       <span class="p-nickname">ashers73</span>
+
+	                  </a>
+	                  <a class="e-content p-name u-like u-like-of" href="https://twitter.com/robert_nemeth/status/604620422697635840">favorited this</a>
+	                </li>
+	                <li class="p-like h-entry">
+	                  <a class="p-author h-card" href="https://twitter.com/jondwill">
+	                    <img class="u-photo p-name avatar avatar-icon" src="https://pbs.twimg.com/profile_images/441266754635837440/e24GYbOE_normal.jpeg" title="J Williams (jondwill) " alt="J Williams" />
+
+	                       <span class="p-nickname">jondwill</span>
+
+	                  </a>
+	                  <a class="e-content p-name u-like u-like-of" href="https://twitter.com/robert_nemeth/status/604620422697635840">favorited this</a>
+	                </li>
+	                <li class="p-like h-entry">
+	                  <a class="p-author h-card" href="https://twitter.com/goodbrightdog">
+	                    <img class="u-photo p-name avatar avatar-icon" src="https://pbs.twimg.com/profile_images/611525437102145536/PIdZLJpV_normal.jpg" title="Sarahsarasahra (goodbrightdog) " alt="Sarahsarasahra" />
+
+	                       <span class="p-nickname">goodbrightdog</span>
+
+	                  </a>
+	                  <a class="e-content p-name u-like u-like-of" href="https://twitter.com/robert_nemeth/status/604620422697635840">favorited this</a>
+	                </li>
+	                <li class="p-like h-entry">
+	                  <a class="p-author h-card" href="https://twitter.com/glennjones">
+	                    <img class="u-photo p-name avatar avatar-icon" src="https://pbs.twimg.com/profile_images/479275550754607108/Wd44l25r_normal.jpeg" title="Glenn Jones (glennjones) " alt="Glenn Jones" />
+
+	                       <span class="p-nickname">glennjones</span>
+
+	                  </a>
+	                  <a class="e-content p-name u-like u-like-of" href="https://twitter.com/robert_nemeth/status/604620422697635840">favorited this</a>
+	                </li>
+	              </ul>
+	            </div>
+
+	
+			<!-- counts -->	
+			<div class="counts">
+				<a href="/notes/2015-05-30-1#likes">
+	    		Comments: 1
+	    		</a>
+    		</div>
+
+
+
+		
+		</article>  
+		 <article class="h-entry h-as-note">
+
+
+		 	<!-- replies -->
+
+
+	
+
+				<!-- Content -->
+				<h2 class="p-name e-content">Had enough of the innards of HTML parsing for one day off to the pub to play pool</h2>
+
+				<!-- Date -->
+					<span class="dateline"><a class="u-url" href="/notes/2015-05-28-1"><time class="dt-published" datetime="2015-05-28T16:06:28.193Z">2 months ago &ndash; 28 May 2015</time></a></span>
+
+				<!-- Syndication -->
+
+					&dash; <a rel="syndication" class="u-syndication sync-link" href="https://twitter.com/glennjones/status/603955638897618944">On twitter</a>
+
+			      	<span class="syndication-interactions">
+			          <!-- Twitter actions -->
+			              &nbsp;|&nbsp;
+			                <span class="tweet-actions">
+			                  <action do="bookmark" with="https://glennjones.net/notes/2015-05-28-1">
+			                    <a href="https://twitter.com/intent/favorite?tweet_id=603955638897618944">Favourite</a>
+			                  </action> &nbsp;
+			                  <action do="post" with="https://glennjones.net/notes/2015-05-28-1">
+			                    <a href="https://twitter.com/intent/retweet?tweet_id=603955638897618944">Retweet</a>
+			                  </action> &nbsp;
+			                  <action do="reply" with="https://glennjones.net/notes/2015-05-28-1">
+			                    <a href="https://twitter.com/intent/tweet?in_reply_to=603955638897618944">Reply</a>
+			                  </action>
+			                </span>
+			     	</span>
+
+			    <!-- Location -->
+
+		
+			    
+		    	<!-- likes -->
+	            <div class="likes">Likes
+	              <ul>
+	                <li class="p-like h-entry">
+	                  <a class="p-author h-card" href="https://twitter.com/jaffathecake">
+	                    <img class="u-photo p-name avatar avatar-icon" src="https://pbs.twimg.com/profile_images/1695239906/me_normal.jpg" title="Jake Archibald (jaffathecake) " alt="Jake Archibald" />
+
+	                       <span class="p-nickname">jaffathecake</span>
+
+	                  </a>
+	                  <a class="e-content p-name u-like u-like-of" href="https://twitter.com/glennjones/status/603955638897618944">favorited this</a>
+	                </li>
+	                <li class="p-like h-entry">
+	                  <a class="p-author h-card" href="https://twitter.com/justinavery">
+	                    <img class="u-photo p-name avatar avatar-icon" src="https://pbs.twimg.com/profile_images/502475890182209537/UpxblQPC_normal.jpeg" title="justin avery (justinavery) " alt="justin avery" />
+
+	                       <span class="p-nickname">justinavery</span>
+
+	                  </a>
+	                  <a class="e-content p-name u-like u-like-of" href="https://twitter.com/glennjones/status/603955638897618944">favorited this</a>
+	                </li>
+	              </ul>
+	            </div>
+
+	
+			<!-- counts -->	
+
+
+
+		
+		</article>  
+		 <article class="h-entry h-as-note">
+
+
+		 	<!-- replies -->
+
+
+	
+
+				<!-- Content -->
+				<h2 class="p-name e-content">Today I will mainly be looking into the exciting area of whitespace collapsing or not when exacting text from html : )</h2>
+
+				<!-- Date -->
+					<span class="dateline"><a class="u-url" href="/notes/2015-05-28"><time class="dt-published" datetime="2015-05-28T08:24:23.000Z">2 months ago &ndash; 28 May 2015</time></a></span>
+
+				<!-- Syndication -->
+
+					&dash; <a rel="syndication" class="u-syndication sync-link" href="https://twitter.com/glennjones/status/603839219207938048">On twitter</a>
+
+			      	<span class="syndication-interactions">
+			          <!-- Twitter actions -->
+			              &nbsp;|&nbsp;
+			                <span class="tweet-actions">
+			                  <action do="bookmark" with="https://glennjones.net/notes/2015-05-28">
+			                    <a href="https://twitter.com/intent/favorite?tweet_id=603839219207938048">Favourite</a>
+			                  </action> &nbsp;
+			                  <action do="post" with="https://glennjones.net/notes/2015-05-28">
+			                    <a href="https://twitter.com/intent/retweet?tweet_id=603839219207938048">Retweet</a>
+			                  </action> &nbsp;
+			                  <action do="reply" with="https://glennjones.net/notes/2015-05-28">
+			                    <a href="https://twitter.com/intent/tweet?in_reply_to=603839219207938048">Reply</a>
+			                  </action>
+			                </span>
+			     	</span>
+
+			    <!-- Location -->
+
+		
+			    
+		    	<!-- likes -->
+	            <div class="likes">Likes
+	              <ul>
+	                <li class="p-like h-entry">
+	                  <a class="p-author h-card" href="https://twitter.com/eebrah">
+	                    <img class="u-photo p-name avatar avatar-icon" src="https://pbs.twimg.com/profile_images/1938925608/anonymous_mask_128_normal.png" title="o Tubarão (eebrah) " alt="o Tubarão" />
+
+	                       <span class="p-nickname">eebrah</span>
+
+	                  </a>
+	                  <a class="e-content p-name u-like u-like-of" href="https://twitter.com/glennjones/status/603839219207938048">favorited this</a>
+	                </li>
+	              </ul>
+	            </div>
+
+	
+			<!-- counts -->	
+			<div class="counts">
+				<a href="/notes/2015-05-28#likes">
+	    		Comments: 1
+	    		</a>
+    		</div>
+
+
+
+		
+		</article>  
+		 <article class="h-entry h-as-note">
+
+
+		 	<!-- replies -->
+
+
+	
+
+				<!-- Content -->
+				<h2 class="p-name e-content">Hot on the heals of the Times export award, first of what will hopefully be many large German job sites for Madgex <a class="auto-link" href="https://twitter.com/RGreenWork/status/601754404648194049">https://twitter.com/RGreenWork/status/601754404648194049</a>…</h2>
+
+				<!-- Date -->
+					<span class="dateline"><a class="u-url" href="/notes/2015-05-22"><time class="dt-published" datetime="2015-05-22T16:01:34.000Z">2 months ago &ndash; 22 May 2015</time></a></span>
+
+				<!-- Syndication -->
+
+					&dash; <a rel="syndication" class="u-syndication sync-link" href="https://twitter.com/glennjones/status/601779945929633792">On twitter</a>
+
+			      	<span class="syndication-interactions">
+			          <!-- Twitter actions -->
+			              &nbsp;|&nbsp;
+			                <span class="tweet-actions">
+			                  <action do="bookmark" with="https://glennjones.net/notes/2015-05-22">
+			                    <a href="https://twitter.com/intent/favorite?tweet_id=601779945929633792">Favourite</a>
+			                  </action> &nbsp;
+			                  <action do="post" with="https://glennjones.net/notes/2015-05-22">
+			                    <a href="https://twitter.com/intent/retweet?tweet_id=601779945929633792">Retweet</a>
+			                  </action> &nbsp;
+			                  <action do="reply" with="https://glennjones.net/notes/2015-05-22">
+			                    <a href="https://twitter.com/intent/tweet?in_reply_to=601779945929633792">Reply</a>
+			                  </action>
+			                </span>
+			     	</span>
+
+			    <!-- Location -->
+
+		
+			    
+		    	<!-- likes -->
+	            <div class="likes">Likes
+	              <ul>
+	                <li class="p-like h-entry">
+	                  <a class="p-author h-card" href="https://twitter.com/vickyjo">
+	                    <img class="u-photo p-name avatar avatar-icon" src="https://pbs.twimg.com/profile_images/63391227/vicky2_normal.jpg" title="Victoria Walberg (vickyjo) " alt="Victoria Walberg" />
+
+	                       <span class="p-nickname">vickyjo</span>
+
+	                  </a>
+	                  <a class="e-content p-name u-like u-like-of" href="https://twitter.com/glennjones/status/601779945929633792">favorited this</a>
+	                </li>
+	              </ul>
+	            </div>
+
+	
+			<!-- counts -->	
+
+
+
+		
+		</article>  
+		 <article class="h-entry h-as-note">
+
+
+		 	<!-- replies -->
+
+
+	
+
+				<!-- Content -->
+				<h2 class="p-name e-content">Just handed over captured swarm to a new beekeeper. Feels good to help someone else start</h2>
+
+				<!-- Date -->
+					<span class="dateline"><a class="u-url" href="/notes/2015-05-18-1"><time class="dt-published" datetime="2015-05-18T09:06:08.722Z">2 months ago &ndash; 18 May 2015</time></a></span>
+
+				<!-- Syndication -->
+
+					&dash; <a rel="syndication" class="u-syndication sync-link" href="https://twitter.com/glennjones/status/600225849921675265">On twitter</a>
+
+			      	<span class="syndication-interactions">
+			          <!-- Twitter actions -->
+			              &nbsp;|&nbsp;
+			                <span class="tweet-actions">
+			                  <action do="bookmark" with="https://glennjones.net/notes/2015-05-18-1">
+			                    <a href="https://twitter.com/intent/favorite?tweet_id=600225849921675265">Favourite</a>
+			                  </action> &nbsp;
+			                  <action do="post" with="https://glennjones.net/notes/2015-05-18-1">
+			                    <a href="https://twitter.com/intent/retweet?tweet_id=600225849921675265">Retweet</a>
+			                  </action> &nbsp;
+			                  <action do="reply" with="https://glennjones.net/notes/2015-05-18-1">
+			                    <a href="https://twitter.com/intent/tweet?in_reply_to=600225849921675265">Reply</a>
+			                  </action>
+			                </span>
+			     	</span>
+
+			    <!-- Location -->
+
+		
+			    
+		    	<!-- likes -->
+	            <div class="likes">Likes
+	              <ul>
+	                <li class="p-like h-entry">
+	                  <a class="p-author h-card" href="https://twitter.com/bastianallgeier">
+	                    <img class="u-photo p-name avatar avatar-icon" src="https://pbs.twimg.com/profile_images/477358069387522048/nQPiYWh7_normal.jpeg" title="Bastian Allgeier (bastianallgeier) " alt="Bastian Allgeier" />
+
+	                       <span class="p-nickname">bastianallgeier</span>
+
+	                  </a>
+	                  <a class="e-content p-name u-like u-like-of" href="https://twitter.com/glennjones/status/600225849921675265">favorited this</a>
+	                </li>
+	                <li class="p-like h-entry">
+	                  <a class="p-author h-card" href="https://twitter.com/jkphl">
+	                    <img class="u-photo p-name avatar avatar-icon" src="https://pbs.twimg.com/profile_images/478438764914565121/jF7tXwAH_normal.jpeg" title="Joschi Kuphal 吉 (jkphl) " alt="Joschi Kuphal 吉" />
+
+	                       <span class="p-nickname">jkphl</span>
+
+	                  </a>
+	                  <a class="e-content p-name u-like u-like-of" href="https://twitter.com/glennjones/status/600225849921675265">favorited this</a>
+	                </li>
+	              </ul>
+	            </div>
+
+	
+			<!-- counts -->	
+
+
+
+		
+		</article>  
+		 <article class="h-entry h-as-note">
+
+
+		 	<!-- replies -->
+
+
+	
+
+				<!-- Content -->
+				<h2 class="p-name e-content">Nice to see <a href="https://twitter.com/madgex" class="auto-link h-x-username">@madgex</a> make the The Sunday Times SME Export 100 list <a class="auto-link" href="http://bit.ly/1F1Ub7R">http://bit.ly/1F1Ub7R</a></h2>
+
+				<!-- Date -->
+					<span class="dateline"><a class="u-url" href="/notes/2015-05-18"><time class="dt-published" datetime="2015-05-18T08:16:57.045Z">2 months ago &ndash; 18 May 2015</time></a></span>
+
+				<!-- Syndication -->
+
+					&dash; <a rel="syndication" class="u-syndication sync-link" href="https://twitter.com/glennjones/status/600214619576213504">On twitter</a>
+
+			      	<span class="syndication-interactions">
+			          <!-- Twitter actions -->
+			              &nbsp;|&nbsp;
+			                <span class="tweet-actions">
+			                  <action do="bookmark" with="https://glennjones.net/notes/2015-05-18">
+			                    <a href="https://twitter.com/intent/favorite?tweet_id=600214619576213504">Favourite</a>
+			                  </action> &nbsp;
+			                  <action do="post" with="https://glennjones.net/notes/2015-05-18">
+			                    <a href="https://twitter.com/intent/retweet?tweet_id=600214619576213504">Retweet</a>
+			                  </action> &nbsp;
+			                  <action do="reply" with="https://glennjones.net/notes/2015-05-18">
+			                    <a href="https://twitter.com/intent/tweet?in_reply_to=600214619576213504">Reply</a>
+			                  </action>
+			                </span>
+			     	</span>
+
+			    <!-- Location -->
+
+		
+			    
+		    	<!-- likes -->
+	            <div class="likes">Likes
+	              <ul>
+	                <li class="p-like h-entry">
+	                  <a class="p-author h-card" href="https://twitter.com/madgex">
+	                    <img class="u-photo p-name avatar avatar-icon" src="https://pbs.twimg.com/profile_images/378800000119623577/0f5a0af7a048e45d1e6b28bcfb03a2aa_normal.png" title="Madgex (madgex) " alt="Madgex" />
+
+	                       <span class="p-nickname">madgex</span>
+
+	                  </a>
+	                  <a class="e-content p-name u-like u-like-of" href="https://twitter.com/glennjones/status/600214619576213504">favorited this</a>
+	                </li>
+	              </ul>
+	            </div>
+
+	
+			<!-- counts -->	
+
+
+
+		
+		</article>  
+		 <article class="h-entry h-as-note">
+
+
+		 	<!-- replies -->
+
+
+	
+
+				<!-- Content -->
+				<h2 class="p-name e-content">Was very impressed with <a class="auto-link" href="http://beyondtellerrand.com/">http://beyondtellerrand.com/</a> high quality talks in a relaxed and friendly atmosphere. Thanks to <a class="auto-link h-x-username" href="https://twitter.com/marcthiele">@marcthiele</a></h2>
+
+				<!-- Date -->
+					<span class="dateline"><a class="u-url" href="/notes/2015-05-14-1"><time class="dt-published" datetime="2015-05-14T12:03:25.248Z">2 months ago &ndash; 14 May 2015</time></a></span>
+
+				<!-- Syndication -->
+
+					&dash; <a rel="syndication" class="u-syndication sync-link" href="https://twitter.com/glennjones/status/598820912155230209">On twitter</a>
+
+			      	<span class="syndication-interactions">
+			          <!-- Twitter actions -->
+			              &nbsp;|&nbsp;
+			                <span class="tweet-actions">
+			                  <action do="bookmark" with="https://glennjones.net/notes/2015-05-14-1">
+			                    <a href="https://twitter.com/intent/favorite?tweet_id=598820912155230209">Favourite</a>
+			                  </action> &nbsp;
+			                  <action do="post" with="https://glennjones.net/notes/2015-05-14-1">
+			                    <a href="https://twitter.com/intent/retweet?tweet_id=598820912155230209">Retweet</a>
+			                  </action> &nbsp;
+			                  <action do="reply" with="https://glennjones.net/notes/2015-05-14-1">
+			                    <a href="https://twitter.com/intent/tweet?in_reply_to=598820912155230209">Reply</a>
+			                  </action>
+			                </span>
+			     	</span>
+
+			    <!-- Location -->
+
+		
+			    
+		    	<!-- likes -->
+	            <div class="likes">Likes
+	              <ul>
+	                <li class="p-like h-entry">
+	                  <a class="p-author h-card" href="https://twitter.com/marcthiele">
+	                    <img class="u-photo p-name avatar avatar-icon" src="https://pbs.twimg.com/profile_images/509335821988929536/TTqoxDUs_normal.jpeg" title="marc thiele (marcthiele) " alt="marc thiele" />
+
+	                       <span class="p-nickname">marcthiele</span>
+
+	                  </a>
+	                  <a class="e-content p-name u-like u-like-of" href="https://twitter.com/glennjones/status/598820912155230209">favorited this</a>
+	                </li>
+	                <li class="p-like h-entry">
+	                  <a class="p-author h-card" href="https://twitter.com/btconf">
+	                    <img class="u-photo p-name avatar avatar-icon" src="https://pbs.twimg.com/profile_images/478502156589617152/7WDu9XsV_normal.jpeg" title="beyond tellerrand (btconf) " alt="beyond tellerrand" />
+
+	                       <span class="p-nickname">btconf</span>
+
+	                  </a>
+	                  <a class="e-content p-name u-like u-like-of" href="https://twitter.com/glennjones/status/598820912155230209">favorited this</a>
+	                </li>
+	                <li class="p-like h-entry">
+	                  <a class="p-author h-card" href="https://twitter.com/odlnuremberg">
+	                    <img class="u-photo p-name avatar avatar-icon" src="https://pbs.twimg.com/profile_images/3353854722/4529cb57b02a688ce30ad61af9bd147c_normal.png" title="Open Device Lab NBG (odlnuremberg) " alt="Open Device Lab NBG" />
+
+	                       <span class="p-nickname">odlnuremberg</span>
+
+	                  </a>
+	                  <a class="e-content p-name u-like u-like-of" href="https://twitter.com/glennjones/status/598820912155230209">favorited this</a>
+	                </li>
+	              </ul>
+	            </div>
+
+	
+			<!-- counts -->	
+
+
+
+		
+		</article>  
+		 <article class="h-entry h-as-note">
+
+
+		 	<!-- replies -->
+
+
+	
+
+				<!-- Content -->
+				<h2 class="p-name e-content">Back after 5 days at <a class="auto-link h-x-username" href="https://twitter.com/indiewebcamp">@indiewebcamp</a> and <a class="auto-link h-x-username" href="https://twitter.com/btconf">@btconf</a> in Düsseldorf. Events made so much better by a great crowd of friendly and welcoming people</h2>
+
+				<!-- Date -->
+					<span class="dateline"><a class="u-url" href="/notes/2015-05-14"><time class="dt-published" datetime="2015-05-14T12:01:38.183Z">2 months ago &ndash; 14 May 2015</time></a></span>
+
+				<!-- Syndication -->
+
+					&dash; <a rel="syndication" class="u-syndication sync-link" href="https://twitter.com/glennjones/status/598820466678210560">On twitter</a>
+
+			      	<span class="syndication-interactions">
+			          <!-- Twitter actions -->
+			              &nbsp;|&nbsp;
+			                <span class="tweet-actions">
+			                  <action do="bookmark" with="https://glennjones.net/notes/2015-05-14">
+			                    <a href="https://twitter.com/intent/favorite?tweet_id=598820466678210560">Favourite</a>
+			                  </action> &nbsp;
+			                  <action do="post" with="https://glennjones.net/notes/2015-05-14">
+			                    <a href="https://twitter.com/intent/retweet?tweet_id=598820466678210560">Retweet</a>
+			                  </action> &nbsp;
+			                  <action do="reply" with="https://glennjones.net/notes/2015-05-14">
+			                    <a href="https://twitter.com/intent/tweet?in_reply_to=598820466678210560">Reply</a>
+			                  </action>
+			                </span>
+			     	</span>
+
+			    <!-- Location -->
+
+		
+			    
+		    	<!-- likes -->
+	            <div class="likes">Likes
+	              <ul>
+	                <li class="p-like h-entry">
+	                  <a class="p-author h-card" href="https://twitter.com/btconf">
+	                    <img class="u-photo p-name avatar avatar-icon" src="https://pbs.twimg.com/profile_images/478502156589617152/7WDu9XsV_normal.jpeg" title="beyond tellerrand (btconf) " alt="beyond tellerrand" />
+
+	                       <span class="p-nickname">btconf</span>
+
+	                  </a>
+	                  <a class="e-content p-name u-like u-like-of" href="https://twitter.com/glennjones/status/598820466678210560">favorited this</a>
+	                </li>
+	                <li class="p-like h-entry">
+	                  <a class="p-author h-card" href="https://twitter.com/odlnuremberg">
+	                    <img class="u-photo p-name avatar avatar-icon" src="https://pbs.twimg.com/profile_images/3353854722/4529cb57b02a688ce30ad61af9bd147c_normal.png" title="Open Device Lab NBG (odlnuremberg) " alt="Open Device Lab NBG" />
+
+	                       <span class="p-nickname">odlnuremberg</span>
+
+	                  </a>
+	                  <a class="e-content p-name u-like u-like-of" href="https://twitter.com/glennjones/status/598820466678210560">favorited this</a>
+	                </li>
+	              </ul>
+	            </div>
+
+	
+			<!-- counts -->	
+			<div class="counts">
+				<a href="/notes/2015-05-14#likes">
+	    		Comments: 1
+	    		</a>
+    		</div>
+
+
+
+		
+		</article>  
+		 <article class="h-entry h-as-note">
+
+
+		 	<!-- replies -->
+
+
+	
+
+				<!-- Content -->
+				<h2 class="p-name e-content"><a class="auto-link h-x-username" href="https://twitter.com/justinavery">@justinavery</a> you still at venue or have you moved on</h2>
+
+				<!-- Date -->
+					<span class="dateline"><a class="u-url" href="/notes/2015-05-11"><time class="dt-published" datetime="2015-05-11T16:40:33.000Z">2 months ago &ndash; 11 May 2015</time></a></span>
+
+				<!-- Syndication -->
+
+					&dash; <a rel="syndication" class="u-syndication sync-link" href="https://twitter.com/glennjones/status/597803492644913152">On twitter</a>
+
+			      	<span class="syndication-interactions">
+			          <!-- Twitter actions -->
+			              &nbsp;|&nbsp;
+			                <span class="tweet-actions">
+			                  <action do="bookmark" with="https://glennjones.net/notes/2015-05-11">
+			                    <a href="https://twitter.com/intent/favorite?tweet_id=597803492644913152">Favourite</a>
+			                  </action> &nbsp;
+			                  <action do="post" with="https://glennjones.net/notes/2015-05-11">
+			                    <a href="https://twitter.com/intent/retweet?tweet_id=597803492644913152">Retweet</a>
+			                  </action> &nbsp;
+			                  <action do="reply" with="https://glennjones.net/notes/2015-05-11">
+			                    <a href="https://twitter.com/intent/tweet?in_reply_to=597803492644913152">Reply</a>
+			                  </action>
+			                </span>
+			     	</span>
+
+			    <!-- Location -->
+
+		
+			    
+		    	<!-- likes -->
+	            <div class="likes">Likes
+	              <ul>
+	                <li class="p-like h-entry">
+	                  <a class="p-author h-card" href="https://twitter.com/justinavery">
+	                    <img class="u-photo p-name avatar avatar-icon" src="https://pbs.twimg.com/profile_images/502475890182209537/UpxblQPC_normal.jpeg" title="justin avery (justinavery) " alt="justin avery" />
+
+	                       <span class="p-nickname">justinavery</span>
+
+	                  </a>
+	                  <a class="e-content p-name u-like u-like-of" href="https://twitter.com/glennjones/status/597803492644913152">favorited this</a>
+	                </li>
+	              </ul>
+	            </div>
+
+	
+			<!-- counts -->	
+
+
+
+		
+		</article>  
+		 <article class="h-entry h-as-note">
+
+
+		 	<!-- replies -->
+	        <section class="reply-to">
+		        		<i class="fa fa-reply"></i>
+		          		Reply to a <a rel="in-reply-to" class="u-in-reply-to" href="https://twitter.com/tristanbailey/status/597020172319326208">item on twitter</a>
+	        </section>
+
+
+	
+
+				<!-- Content -->
+				<h2 class="p-name e-content"><a class="auto-link h-x-username" href="https://twitter.com/tristanbailey">@tristanbailey</a> <a class="auto-link h-x-username" href="https://twitter.com/adactio">@adactio</a> yes <a class="auto-link h-x-username" href="https://twitter.com/indiewebcamp">@indiewebcamp</a> going well, now on second day in dusseldorf. Adding lots of new features to our web sites</h2>
+
+				<!-- Date -->
+					<span class="dateline"><a class="u-url" href="/notes/2015-05-10"><time class="dt-published" datetime="2015-05-10T11:16:18.000Z">2 months ago &ndash; 10 May 2015</time></a></span>
+
+				<!-- Syndication -->
+
+					&dash; <a rel="syndication" class="u-syndication sync-link" href="https://twitter.com/glennjones/status/597359500719448064">On twitter</a>
+
+			      	<span class="syndication-interactions">
+			          <!-- Twitter actions -->
+			              &nbsp;|&nbsp;
+			                <span class="tweet-actions">
+			                  <action do="bookmark" with="https://glennjones.net/notes/2015-05-10">
+			                    <a href="https://twitter.com/intent/favorite?tweet_id=597359500719448064">Favourite</a>
+			                  </action> &nbsp;
+			                  <action do="post" with="https://glennjones.net/notes/2015-05-10">
+			                    <a href="https://twitter.com/intent/retweet?tweet_id=597359500719448064">Retweet</a>
+			                  </action> &nbsp;
+			                  <action do="reply" with="https://glennjones.net/notes/2015-05-10">
+			                    <a href="https://twitter.com/intent/tweet?in_reply_to=597359500719448064">Reply</a>
+			                  </action>
+			                </span>
+			     	</span>
+
+			    <!-- Location -->
+
+		
+			    
+		    	<!-- likes -->
+
+	
+			<!-- counts -->	
+			<div class="counts">
+				<a href="/notes/2015-05-10#likes">
+	    		Comments: 1
+	    		</a>
+    		</div>
+
+
+
+		
+		</article>  
+		 <article class="h-entry h-as-note">
+
+
+		 	<!-- replies -->
+
+
+	
+
+				<!-- Content -->
+				<h2 class="p-name e-content">So the <a href="https://twitter.com/indiewebcamp" class="auto-link h-x-username">@indiewebcamp</a> sessions start: markup, webmentions, offline, micropub, ui design</h2>
+
+				<!-- Date -->
+					<span class="dateline"><a class="u-url" href="/notes/2015-05-09"><time class="dt-published" datetime="2015-05-09T09:38:58.186Z">2 months ago &ndash; 9 May 2015</time></a></span>
+
+				<!-- Syndication -->
+
+					&dash; <a rel="syndication" class="u-syndication sync-link" href="https://twitter.com/glennjones/status/596972622967103488">On twitter</a>
+
+			      	<span class="syndication-interactions">
+			          <!-- Twitter actions -->
+			              &nbsp;|&nbsp;
+			                <span class="tweet-actions">
+			                  <action do="bookmark" with="https://glennjones.net/notes/2015-05-09">
+			                    <a href="https://twitter.com/intent/favorite?tweet_id=596972622967103488">Favourite</a>
+			                  </action> &nbsp;
+			                  <action do="post" with="https://glennjones.net/notes/2015-05-09">
+			                    <a href="https://twitter.com/intent/retweet?tweet_id=596972622967103488">Retweet</a>
+			                  </action> &nbsp;
+			                  <action do="reply" with="https://glennjones.net/notes/2015-05-09">
+			                    <a href="https://twitter.com/intent/tweet?in_reply_to=596972622967103488">Reply</a>
+			                  </action>
+			                </span>
+			     	</span>
+
+			    <!-- Location -->
+
+		
+			    
+		    	<!-- likes -->
+	            <div class="likes">Likes
+	              <ul>
+	                <li class="p-like h-entry">
+	                  <a class="p-author h-card" href="https://twitter.com/barnabywalters">
+	                    <img class="u-photo p-name avatar avatar-icon" src="https://pbs.twimg.com/profile_images/378800000400393459/ef2c37bd2e96540516997986577e3011_normal.jpeg" title="Barnaby Walters (barnabywalters) " alt="Barnaby Walters" />
+
+	                       <span class="p-nickname">barnabywalters</span>
+
+	                  </a>
+	                  <a class="e-content p-name u-like u-like-of" href="https://twitter.com/glennjones/status/596972622967103488">favorited this</a>
+	                </li>
+	                <li class="p-like h-entry">
+	                  <a class="p-author h-card" href="https://twitter.com/t">
+	                    <img class="u-photo p-name avatar avatar-icon" src="https://pbs.twimg.com/profile_images/423350922408767488/nlA_m2WH_normal.jpeg" title="Tantek Çelik (t) " alt="Tantek Çelik" />
+
+	                       <span class="p-nickname">t</span>
+
+	                  </a>
+	                  <a class="e-content p-name u-like u-like-of" href="https://twitter.com/glennjones/status/596972622967103488">favorited this</a>
+	                </li>
+	              </ul>
+	            </div>
+
+	
+			<!-- counts -->	
+
+
+
+		
+		</article>  
+		 <article class="h-entry h-as-note">
+
+
+		 	<!-- replies -->
+
+
+	
+
+				<!-- Content -->
+				<h2 class="p-name e-content">In Düsseldorf for <a href="https://twitter.com/indiewebcamp" class="auto-link h-x-username">@indiewebcamp</a> and <a href="https://twitter.com/" class="auto-link h-x-username">@btconf</a> looking forward to 4 days of all things web</h2>
+
+				<!-- Date -->
+					<span class="dateline"><a class="u-url" href="/notes/2015-05-08"><time class="dt-published" datetime="2015-05-08T18:07:28.709Z">2 months ago &ndash; 8 May 2015</time></a></span>
+
+				<!-- Syndication -->
+
+					&dash; <a rel="syndication" class="u-syndication sync-link" href="https://twitter.com/glennjones/status/596738190079328256">On twitter</a>
+
+			      	<span class="syndication-interactions">
+			          <!-- Twitter actions -->
+			              &nbsp;|&nbsp;
+			                <span class="tweet-actions">
+			                  <action do="bookmark" with="https://glennjones.net/notes/2015-05-08">
+			                    <a href="https://twitter.com/intent/favorite?tweet_id=596738190079328256">Favourite</a>
+			                  </action> &nbsp;
+			                  <action do="post" with="https://glennjones.net/notes/2015-05-08">
+			                    <a href="https://twitter.com/intent/retweet?tweet_id=596738190079328256">Retweet</a>
+			                  </action> &nbsp;
+			                  <action do="reply" with="https://glennjones.net/notes/2015-05-08">
+			                    <a href="https://twitter.com/intent/tweet?in_reply_to=596738190079328256">Reply</a>
+			                  </action>
+			                </span>
+			     	</span>
+
+			    <!-- Location -->
+
+		
+			    
+		    	<!-- likes -->
+	            <div class="likes">Likes
+	              <ul>
+	                <li class="p-like h-entry">
+	                  <a class="p-author h-card" href="https://twitter.com/btconf">
+	                    <img class="u-photo p-name avatar avatar-icon" src="https://pbs.twimg.com/profile_images/478502156589617152/7WDu9XsV_normal.jpeg" title="beyond tellerrand (btconf) " alt="beyond tellerrand" />
+
+	                       <span class="p-nickname">btconf</span>
+
+	                  </a>
+	                  <a class="e-content p-name u-like u-like-of" href="https://twitter.com/glennjones/status/596738190079328256">favorited this</a>
+	                </li>
+	                <li class="p-like h-entry">
+	                  <a class="p-author h-card" href="https://twitter.com/aaronpk">
+	                    <img class="u-photo p-name avatar avatar-icon" src="https://pbs.twimg.com/profile_images/3657148842/934fb225b84b8fd3effe5ab95bb18005_normal.jpeg" title="Aaron Parecki (aaronpk) " alt="Aaron Parecki" />
+
+	                       <span class="p-nickname">aaronpk</span>
+
+	                  </a>
+	                  <a class="e-content p-name u-like u-like-of" href="https://twitter.com/glennjones/status/596738190079328256">favorited this</a>
+	                </li>
+	              </ul>
+	            </div>
+
+	
+			<!-- counts -->	
+			<div class="counts">
+				<a href="/notes/2015-05-08#likes">
+	    		Comments: 1
+	    		</a>
+    		</div>
+
+
+
+		
+		</article>  
+		 <article class="h-entry h-as-note">
+
+
+		 	<!-- replies -->
+
+
+	
+
+				<!-- Content -->
+				<h2 class="p-name e-content">I spend a quite a bit time now removing jQuery from old frontend code, where its just not needed any more</h2>
+
+				<!-- Date -->
+					<span class="dateline"><a class="u-url" href="/notes/2015-05-07"><time class="dt-published" datetime="2015-05-07T14:34:30.115Z">2 months ago &ndash; 7 May 2015</time></a></span>
+
+				<!-- Syndication -->
+
+					&dash; <a rel="syndication" class="u-syndication sync-link" href="https://twitter.com/glennjones/status/596322218168180736">On twitter</a>
+
+			      	<span class="syndication-interactions">
+			          <!-- Twitter actions -->
+			              &nbsp;|&nbsp;
+			                <span class="tweet-actions">
+			                  <action do="bookmark" with="https://glennjones.net/notes/2015-05-07">
+			                    <a href="https://twitter.com/intent/favorite?tweet_id=596322218168180736">Favourite</a>
+			                  </action> &nbsp;
+			                  <action do="post" with="https://glennjones.net/notes/2015-05-07">
+			                    <a href="https://twitter.com/intent/retweet?tweet_id=596322218168180736">Retweet</a>
+			                  </action> &nbsp;
+			                  <action do="reply" with="https://glennjones.net/notes/2015-05-07">
+			                    <a href="https://twitter.com/intent/tweet?in_reply_to=596322218168180736">Reply</a>
+			                  </action>
+			                </span>
+			     	</span>
+
+			    <!-- Location -->
+
+		
+			    
+		    	<!-- likes -->
+	            <div class="likes">Likes
+	              <ul>
+	                <li class="p-like h-entry">
+	                  <a class="p-author h-card" href="https://twitter.com/pborreli">
+	                    <img class="u-photo p-name avatar avatar-icon" src="https://pbs.twimg.com/profile_images/575027613640458241/Ruk_AdLi_normal.jpeg" title="℗ascal ℬorreli Ⓜ️ (pborreli) " alt="℗ascal ℬorreli Ⓜ️" />
+
+	                       <span class="p-nickname">pborreli</span>
+
+	                  </a>
+	                  <a class="e-content p-name u-like u-like-of" href="https://twitter.com/glennjones/status/596322218168180736">favorited this</a>
+	                </li>
+	                <li class="p-like h-entry">
+	                  <a class="p-author h-card" href="https://twitter.com/parito">
+	                    <img class="u-photo p-name avatar avatar-icon" src="https://pbs.twimg.com/profile_images/581693213460725760/jt9M-WBV_normal.jpg" title="Par Trivedi (parito) " alt="Par Trivedi" />
+
+	                       <span class="p-nickname">parito</span>
+
+	                  </a>
+	                  <a class="e-content p-name u-like u-like-of" href="https://twitter.com/glennjones/status/596322218168180736">favorited this</a>
+	                </li>
+	              </ul>
+	            </div>
+
+	
+			<!-- counts -->	
+			<div class="counts">
+				<a href="/notes/2015-05-07#likes">
+	    		Comments: 1
+	    		</a>
+    		</div>
+
+
+
+		
+		</article>  
+		 <article class="h-entry h-as-note">
+
+
+		 	<!-- replies -->
+
+
+	
+
+				<!-- Content -->
+				<h2 class="p-name e-content"></h2>
+
+				<!-- Date -->
+
+				<!-- Syndication -->
+
+			    <!-- Location -->
+
+		
+			    
+		    	<!-- likes -->
+
+	
+			<!-- counts -->	
+
+
+
+		
+		</article>  
+		 <article class="h-entry h-as-note">
+
+
+		 	<!-- replies -->
+
+
+	
+
+				<!-- Content -->
+				<h2 class="p-name e-content"></h2>
+
+				<!-- Date -->
+
+				<!-- Syndication -->
+
+			    <!-- Location -->
+
+		
+			    
+		    	<!-- likes -->
+
+	
+			<!-- counts -->	
+
+
+
+		
+		</article>  
+
+
+			<section class="h-paging">
+				<p>Page: <span class="p-page">1</span> of <span class="p-page-count">77</span></p>
+				<a href="/notes/2">
+					<h2>more<br /><i class="icon-chevron-down"></i></h2>
+				</a>
+			
+			</section>
+		
+	 			
+	 	
+	 	
+	 	
+	 			<footer class="clearfix" role="contentinfo">
+	 	
+	 				<section class="p-author h-card">
+	 					<img class="u-photo avatar" src="/images/photo-small.png" />
+	 					<p>
+	 						<a class="u-url p-name name" rel="me" href="http://glennjones.net/about/">Glenn Jones</a> 
+	 						<span class="p-note strapline">Exploring semantic mark-up and data portability.</span>
+	 					</p>
+	 	
+	 					<ul>
+	 						<li><a class="u-url" rel="me" href="https://twitter.com/glennjones">twitter</a> (glennjones)</li>
+	 						<li><a class="u-url" rel="me" href="https://github.com/glennjones">github</a> (glennjones)</li>
+	 						<li><a class="u-url" rel="me" href="http://delicious.com/glennjonesnet/">delicious</a> (glennjonesnet)</li>
+	 						<li><a class="u-url" rel="me" href="http://lanyrd.com/people/glennjones/">lanyrd</a> (glennjones)</li>
+	 						<li><a class="u-url" rel="me" href="https://plus.google.com/u/0/105161464208920272734/about">google+</a> (105161464208920272734)</li>
+	 						<li><a class="u-url" rel="me" href="http://www.linkedin.com/in/glennjones">linkedin</a> (glennjones)</li>
+	 						<li><a class="u-url" rel="me" href="http://www.slideshare.net/glennjones/presentations">slideshare</a> (glennjones)</li>
+	 						<!-- <li><a class="u-url" rel="me" href="http://www.flickr.com/photos/glennjonesnet/">flickr</a> (glennjonesnet)</li></ul> -->
+	 					</ul>
+	 				</section>
+	 	
+	 	
+	 	
+	 				<section class="licenses">	
+	 					<p>
+	 						<span>&copy; 2015 Glenn Jones.</span> 
+	 						<span>The text and photo's in this blog are licensed under a <a rel="license" href="http://creativecommons.org/licenses/by-nc/3.0/deed.en_US">Creative Commons Attribution-NonCommercial 3.0 Unported License</a>.</span> 
+	 						<span>The code examples are licensed under a <a rel="license" href="/license-mit">MIT License</a>. <a href="/colophon">Colophon</a> &dash; <a href="/redirects" rel="nofollow">Redirects</a></span>
+	 					</p>
+	 				</section>
+	 	
+	 				<p class="mention-support">Article and Notes section of this site supports <a href="http://indiewebify.me/#send-webmentions">webmentions</a>.<a href="http:///webmention" rel="webmention" /></a></p>
+	 			</footer>
+	 	
+	 	
+	 			<script>
+	 			  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+	 			  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+	 			  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+	 			  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+	 	
+	 			  ga('create', 'UA-3021774-2', 'glennjones.net');
+	 			  ga('send', 'pageview');
+	 			</script>		 
+		 
+				<p class="h-event page-created">
+	            	<span class="p-name">Page created</span>: 
+	            	<time class="dt-start" datetime="2015-07-15T10:22:41.269Z">15 July 2015 10:22 AM</time>
+          		</p>
+
+
+	</body>	
+</html>
+
+
