@@ -1,0 +1,1535 @@
+<script type="text/javascript" src="../microformat-shiv.js"></script>
+<script type="text/javascript">
+	var start,
+		end,
+    	data,
+		time,
+		node;
+	
+	window.onload = function(){
+		node = document.getElementById('performance-target');
+		start = new Date().getTime();
+		data = Microformats.getParent(node);
+		end = new Date().getTime();
+		time = end - start;
+		alert('Microformats parser took: ' + time + 'ms' );
+    	console.log(JSON.stringify(data));
+	}
+</script>
+
+
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<title>Tantek &#xC7;elik</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<link rel="icon" href="logo.jpg"/>
+<link rel="apple-touch-icon-precomposed" href="logo.jpg"/>
+<meta name="mobile-web-app-capable" content="yes"/>
+<link rel="webmention" href="http://webmention.io/tantek.com/webmention"/>
+<link rel="hub" href="https://pubsubhubbub.superfeedr.com/"/>
+<link rel="self" href="http://tantek.com/"/>
+<link rel="openid.delegate" href="http://tantek.com/"/>
+<link rel="openid.server" href="https://indieauth.com/openid">
+
+<link rel="alternate" type="application/atom+xml" href="updates.atom">
+<!-- only for legacy feed file consuming code/services. do not bother publishing such unless you have a specific concrete use-case you must support with it. -->
+<style type="text/css">/**/ 
+/* ---------------------------------------------------------------- */
+/*                                                                  */
+/* My HTML5+CSS is a work in progress. Copy paste AT YOUR OWN RISK! */
+/*                                                                  */
+/* ---------------------------------------------------------------- */
+
+@import "2015/simple.css?";
+h2{font-size:1em}
+
+body { 
+  margin:auto;
+  padding:1.5em;
+  max-width:940px;
+}
+
+iframe {
+  max-width:100%;
+}
+
+.header {
+ border-bottom:solid 1px #666;
+ margin-bottom:4em;
+}
+
+.header h1 { 
+  margin:0;
+  padding:5px 0 0;
+  font-size:3em;
+  line-height:1.3;
+  font-weight:bold;
+  white-space:nowrap;
+}
+.header h2 {
+  font-size:1.5em;
+  font-weight:normal;
+  line-height:1em;
+  min-width:20em;
+  min-height:3em;
+  margin:0;
+}
+
+.aside dt, .aside dd {margin:0;padding:0}
+.aside dt { margin-top:.77em; color:#666; }
+.aside dd { color:#000}
+
+form.search {
+  clear: both;
+  text-align: right;
+  margin-bottom: 1em;
+  white-space: nowrap; 
+  font-size: 1.3em;
+}
+
+.stream>ol {
+  margin:0; padding:0;
+}
+
+/*
+@media screen and (min-width:30em) and (min-height: 30em) { }
+*/
+@media screen and (min-width:40em) {
+/* progress enhancement for wider screens */
+
+body {
+  padding:2em;
+}
+
+.header {
+ height:90px;
+}
+
+form.search { 
+  margin-top: -3.9em; 
+  width: 34%;
+  float: right; 
+}
+
+.stream {
+  clear:left;
+  float:left;
+  width:62%;
+  margin-right:4%;
+}
+
+.stream>ol {
+  margin-right:3em;
+}
+
+.hentry ol, .hentry ul {
+  margin-left:30px;
+}
+
+.aside {
+  float:left;
+  width:33%;
+}
+
+.footer .section {
+  float:left;
+  width:30%;
+  margin-right:3%;
+}
+
+
+}
+/* end larger screen enhancements */
+
+
+.photo { 
+  width:73px; 
+  float:left;
+  margin:0 20px 0 0;
+}
+
+form.search input[type=search] { 
+  width:62%; 
+}
+
+form.search input, form.search button {
+  font-size:1em;
+  height:1.7em;
+  -moz-box-sizing: border-box;
+  box-sizing: border-box;
+  margin:0;
+  vertical-align:bottom;
+}
+
+.stream>ol {
+  list-style:none;
+}
+
+.aside h2,.footer h2 {
+  font-size: 1.3em;
+  text-transform:uppercase;
+  line-height:1.25;  
+  margin:0 0 1em;
+}
+
+.aside .section {
+  margin-top:2em;
+}
+.aside .section.hello {
+  margin-top:0;
+}
+
+.aside .section h2 {
+  margin-bottom:0.5em;
+}
+
+.aside p,.aside li,.aside dl,.footer p,.footer li {
+  font-size:1.3em;
+  line-height:1.54;
+  margin:0;
+  color:#666;
+  list-style:none;
+}
+.hello p {
+  color:#000;
+}
+.elsewhere img {
+  vertical-align:bottom;
+  padding-bottom:.2em;
+}
+.aside h2 {
+  font-size:1.4em;
+  line-height:1.43;
+  font-weight:bold;
+}
+
+div.footer {
+  margin-left:1em;
+  clear:both;
+  margin-top:1em;
+  padding-top:5em;
+}
+.footer address {   white-space:nowrap; }
+
+.footer p {
+  margin-top:1em;
+}
+.footer .section li { list-style:disc inside; }
+
+address {
+  font-style:normal;
+  text-align:center;
+  clear:both;
+  margin:1em 5%;
+  padding:3em;
+}
+
+ul.nav,.nav li,ul.offsite{list-style:none}
+ul.nav{float:right; margin-right: 5%}
+ul.offsite,.offsite li,.nav li { list-style:inline; display:inline }
+a:link{color:#2240C0}
+a:link:hover{color:#22B040}
+a:visited:hover{color:#118020}
+
+/* events */
+li.vevent {list-style:none;margin-top:1em}
+abbr.location { display:block;text-align:center;text-transform:uppercase; font-weight:bold;font-size:2em;word-spacing:-.1em; font-size:1.5em}
+li.vevent a { display:block; width:167px; border:2px solid #000; padding:2px 1px 0 1px; text-align:center}
+a.fabw { background: url(http://www.stuffandnonsense.co.uk/build/fabw/img/body.jpg) maroon; color:#fff }
+li.vevent object,.vevent img { max-width:160px }
+li.vevent .with { display:block }
+.subhead { display:block }
+.fabw .location { white-space:normal }
+.supernova a { background:#522381;color:#fff }
+.html5 { color:#3C790A;font-family: Helvetica, sans-serif;font-size: 27px; font-weight: 900; display:block; line-height:.7em; padding-top:3px}
+.html5 span { display:block;font-size:66%;line-height:1em; text-transform:capitalize }
+.vevent a:visited:hover{color:#66F}
+.vevent a:link:hover{color:#33F}
+input,button { font-size:1em }
+button { margin: 0 0.5em 0 0; padding:0 0.5em }
+/**/</style>
+</head>
+<body class="h-card vcard">
+<header><div class="header">
+<img class="photo u-photo" src="photo.jpg" alt=""/><a class="u-url u-uid" rel="author" href=""></a>
+<div class="hgroup">
+<h1 class="p-name fn">Tantek &#xC7;elik</h1>
+<h2 class="p-role role p-summary">
+<span class="p-category category">Inventor</span>, <span class="p-category category">writer</span>, <span class="p-category category">teacher</span>, <span class="p-category category">runner</span>, <span class="p-category category">indieweb</span> <span class="p-category category">coder</span>
+</h2>
+</div>
+<form class="search" action="http://www.google.com/search" method="get"><div>
+<input type="hidden" name="as_sitesearch" value="tantek.com"/>
+<input type="hidden" name="tbs" value="sbd:1,cdr:1,cd_min:1/1/1970"/>
+<input type="search" name="q"/>
+<button type="submit">Search</button>
+</div></form>
+</div></header>
+
+<div class="h-feed section stream" id="updates">
+<span class="p-name"></span><ol>
+<li class="h-entry hentry as-note">
+<p class="p-name entry-title e-content entry-content article">Amazing weekend #IndieWebCamp with these independents <a class="auto-link figure" href="http://aaronparecki.com/notes/2015/07/13/3/files/photo.jpg"><img class="auto-embed" alt="a photo" src="http://aaronparecki.com/notes/2015/07/13/3/files/photo.jpg"/></a>
+photo <a class="auto-link" href="https://aaronparecki.com/notes/2015/07/13/3/indiewebcamp">https://aaronparecki.com/notes/2015/07/13/3/indiewebcamp</a> by <a class="auto-link h-x-username" href="https://twitter.com/aaronpk">@aaronpk</a></p>
+<span class="info footer"><a href="2015/194/t6/amazing-indiewebcamp-independents" class="dt-published published dt-updated updated u-url u-uid"><time class="value" datetime="22:24-0700">22:24</time> on <time class="value">2015-07-13</time></a></span>
+</li>
+<li class="h-entry hentry as-note">
+<p class="p-name entry-title e-content entry-content article"><a class="auto-link h-x-username" href="https://twitter.com/helloerica">@helloerica</a> tomorrow morning!</p>
+<span class="info footer"><a href="2015/194/t5/tomorrow-morning" class="dt-published published dt-updated updated u-url u-uid"><time class="value" datetime="17:44-0700">17:44</time> on <time class="value">2015-07-13</time></a></span>
+</li>
+<li class="h-entry hentry as-note">
+<p class="p-name entry-title e-content entry-content article">Dear Portland friends, who&rsquo;s around and up for a drink or eats tonight? Thinking of getting a bowl at Prasad soon.</p>
+<span class="info footer"><a href="2015/194/t4/portland-drink-eats-tonight-prasad" class="dt-published published dt-updated updated u-url u-uid"><time class="value" datetime="17:36-0700">17:36</time> on <time class="value">2015-07-13</time></a></span>
+</li>
+<li class="h-entry hentry as-note">
+<p class="p-name entry-title e-content entry-content article">going to Homebrew Website Club 17:30 <a class="auto-link h-x-username" href="https://twitter.com/MozSF">@MozSF</a> 2015-07-15!
+Indie event <a class="auto-link" href="http://kylewm.com/2015/07/homebrew-website-club">kylewm.com/2015/07/homebrew-website-club</a>
+silo <a class="auto-link" href="http://fb.com/events/106407686370243/">fb.com/events/106407686370243/</a></p>
+<span class="info footer"><a href="2015/194/t3/homebrew-website-club-mozsf" class="dt-published published dt-updated updated u-url u-uid"><time class="value" datetime="16:20-0700">16:20</time> on <time class="value">2015-07-13</time></a></span>
+</li>
+<li class="h-entry hentry as-note">
+<p class="p-name entry-title e-content entry-content article">Precisely <a class="auto-link h-x-username" href="https://twitter.com/dietrich">@dietrich</a>. Tweet copies have a link at the end only when there&rsquo;s more. E.g. links for prev: 
+* <a class="auto-link" href="https://indiewebcamp.com/comment-presentation#How_to_markup">https://indiewebcamp.com/comment-presentation#How_to_markup</a>
+* <a class="auto-link" href="https://indiewebcamp.com/custom_post_style">https://indiewebcamp.com/custom_post_style</a>
+* <a class="auto-link" href="https://indiewebcamp.com/mobile">https://indiewebcamp.com/mobile</a></p>
+<span class="info footer"><a href="2015/194/t2/copies-link-only-when-more" class="dt-published published dt-updated updated u-url u-uid"><time class="value" datetime="09:00-0700">09:00</time> on <time class="value">2015-07-13</time></a></span>
+</li>
+<li class="h-entry hentry as-note">
+<p class="p-name entry-title e-content entry-content article">Yesterday <a class="auto-link h-x-username" href="https://twitter.com/IndieWebCamp">@IndieWebCamp</a> I did
+* &ldquo;how to&rdquo; comments markup
+* cross-browser per post styles
+* mobile friendlier home page</p>
+<span class="info footer"><a href="2015/194/t1/indiewebcamp-comments-post-styles-mobile" class="dt-published published dt-updated updated u-url u-uid"><time class="value" datetime="08:35-0700">08:35</time> on <time class="value">2015-07-13</time></a></span>
+</li>
+<li>
+<p><span class="h-entry article"><span class="p-name">likes <a class="u-like-of" href="https://ben.thatmustbe.me/photo/2015/7/12/9/">Ben Roberts&rsquo;s photo: <span class="figure" style="text-align:left"><img class="auto-embed" alt="a photo" src="https://ben.thatmustbe.me/upload/photo/1436743674955.jpg"></span></a></span> <a class="u-url" href="2015/192/f2">at <time class="dt-published" datetime="2015-07-11T20:55-0700">20:55</time></a></span> and <span class="h-entry article"><abbr class="p-name" title="likes Ben Roberts&rsquo;s photo: https://ben.thatmustbe.me/upload/photo/1436735226741.jpg"><a class="u-like-of" href="https://ben.thatmustbe.me/photo/2015/7/12/7/">photo: <span class="figure" style="text-align:left"><img class="auto-embed" alt="a photo" src="https://ben.thatmustbe.me/upload/photo/1436735226741.jpg"></span></a></abbr> <a class="u-url" href="2015/192/f1">at <time class="dt-published" datetime="2015-07-11T20:53-0700">20:53</time></a></span></p>
+<span class="info footer"><a href="2015/192/f">on <time>2015-07-11</time></a></span>
+</li>
+<li class="h-entry hentry as-note">
+<p class="p-name entry-title e-content entry-content article">User flow and permalinks from <a class="auto-link h-x-username" href="https://twitter.com/dissolve33">@dissolve33</a> <a class="auto-link h-x-username" href="https://twitter.com/aaronpk">@aaronpk</a> <a class="auto-link h-x-username" href="https://twitter.com/kevinmarks">@kevinmarks</a> <a class="auto-link h-x-username" href="https://twitter.com/kylewmahan">@kylewmahan</a>&rsquo;s #IndieWeb #SWAT0 achievement: <a class="auto-link" href="http://tantek.com/2015/193/t1/congratulations-first-indieweb-swat0">http://tantek.com/2015/193/t1/congratulations-first-indieweb-swat0</a>
+
+Players A, B, C as summarized on <a class="auto-link" href="http://tantek.com/2015/029/t1/swat0-posts-tags-mobile-photo-comment:">tantek.com/2015/029/t1/swat0-posts-tags-mobile-photo-comment:</a>
+
+Player A: Ben Roberts (<a class="auto-link" href="http://ben.thatmustbe.me">ben.thatmustbe.me</a>)
+Player B: Aaron Parecki (<a class="auto-link" href="http://aaronparecki.com">aaronparecki.com</a>)
+Player C1: Kevin Marks (<a class="auto-link" href="http://known.kevinmarks.com">known.kevinmarks.com</a> using <a class="auto-link" href="http://reader.kylewm.com">reader.kylewm.com</a>)
+Player C2: Kyle Mahan (<a class="auto-link" href="http://kylewm.com">kylewm.com</a> using <a class="auto-link" href="http://reader.kylewm.com">reader.kylewm.com</a>)
+
+Following the same steps as documented at: <a class="auto-link" href="https://indiewebcamp.com/SWAT0#Brainstorming">https://indiewebcamp.com/SWAT0#Brainstorming</a>
+
+I&rsquo;ve added (parenthetical) remarks for additional informative details, and [bracketed] comments for aspects that may be different than expected.
+
+
+1. With his phone, <a class="auto-link" href="http://ben.thatmustbe.me">ben.thatmustbe.me</a> (in Boston) takes a photo of <a class="auto-link" href="http://aaronparecki.com">aaronparecki.com</a> (in Portland) [on a live broadcast], tags him in the photo, and posts it to his site:
+
+Photo permalink on:
+* <a class="auto-link" href="https://ben.thatmustbe.me/photo/2015/7/12/9/">https://ben.thatmustbe.me/photo/2015/7/12/9/</a>
+<a class="auto-link figure" href="https://ben.thatmustbe.me/upload/photo/1436743674955.jpg"><img class="auto-embed" alt="a photo" src="https://ben.thatmustbe.me/upload/photo/1436743674955.jpg"/></a>
+
+
+2. <a class="auto-link" href="http://aaronparecki.com">aaronparecki.com</a> gets a notification [on his phone!] that he&rsquo;s been tagged in a photo.
+
+Screenshot from Aaron Parecki&rsquo;s phone:
+<a class="auto-link figure" href="https://aaronparecki.com/notes/2015/07/12/4/files/photo.jpg"><img class="auto-embed" alt="a photo" src="https://aaronparecki.com/notes/2015/07/12/4/files/photo.jpg"/></a> <a class="auto-link" href="https://aaronparecki.com/notes/2015/07/12/4/swat0">https://aaronparecki.com/notes/2015/07/12/4/swat0</a>
+
+
+3. <a class="auto-link" href="http://known.kevinmarks.com">known.kevinmarks.com</a> [and <a class="auto-link" href="http://kylewm.com">kylewm.com</a>] (both of whom are in the San Francisco Bay Area) who are subscribed to <a class="auto-link" href="http://ben.thatmustbe.me">ben.thatmustbe.me</a> [on the reading service <a class="auto-link" href="http://reader.kylewm.com">reader.kylewm.com</a>], sees the photo in his reader UI
+
+<a class="auto-link" href="https://reader.kylewm.com/">https://reader.kylewm.com/</a> as shown in this Chrome/iOS screenshot:
+<a class="auto-link figure" href="https://aaronparecki.com/notes/2015/07/12/6/files/photo.jpg"><img class="auto-embed" alt="a photo" src="https://aaronparecki.com/notes/2015/07/12/6/files/photo.jpg"/></a>
+<a class="auto-link" href="https://aaronparecki.com/notes/2015/07/12/6/swat0-indiewebcamp">https://aaronparecki.com/notes/2015/07/12/6/swat0-indiewebcamp</a>
+
+
+4. <a class="auto-link" href="http://known.kevinmarks.com">known.kevinmarks.com</a> [and <a class="auto-link" href="http://kylewm.com">kylewm.com</a>] posts a reply to the photo from this UI, the reply is posted to his site.
+
+Comment permalinks on:
+* <a class="auto-link" href="http://known.kevinmarks.com/2015/aaron-is-now-demoing-swat0-replies">http://known.kevinmarks.com/2015/aaron-is-now-demoing-swat0-replies</a>
+* <a class="auto-link" href="https://kylewm.com/2015/07/much-better-photo-very-handsome-not-so-sleepy">https://kylewm.com/2015/07/much-better-photo-very-handsome-not-so-sleepy</a>
+
+
+5. <a class="auto-link" href="http://aaronparecki.com">aaronparecki.com</a> and <a class="auto-link" href="http://ben.thatmustbe.me">ben.thatmustbe.me</a> receive notifications that <a class="auto-link" href="http://known.kevinmarks.com">known.kevinmarks.com</a> [and <a class="auto-link" href="http://kylewm.com">kylewm.com</a>] has commented on the photo. 
+
+Screenshot from Aaron Parecki&rsquo;s phone:
+<a class="auto-link figure" href="https://aaronparecki.com/notes/2015/07/12/5/files/photo.jpg"><img class="auto-embed" alt="a photo" src="https://aaronparecki.com/notes/2015/07/12/5/files/photo.jpg"/></a> <a class="auto-link" href="https://aaronparecki.com/notes/2015/07/12/5/swat0-indiewebcamp">https://aaronparecki.com/notes/2015/07/12/5/swat0-indiewebcamp</a>
+
+Screenshot from Ben Roberts&rsquo;s computer receiving notification via Chrome:
+<a class="auto-link figure" href="https://ben.thatmustbe.me/image/uploaded/notification.png"><img class="auto-embed" alt="a png" src="https://ben.thatmustbe.me/image/uploaded/notification.png"/></a>
+When he clicks that it loads his notifications page: <a class="auto-link" href="https://ben.thatmustbe.me/activity">https://ben.thatmustbe.me/activity</a> which shows more information:
+<a class="auto-link figure" href="https://ben.thatmustbe.me/image/uploaded/swat0-notification.png"><img class="auto-embed" alt="a png" src="https://ben.thatmustbe.me/image/uploaded/swat0-notification.png"/></a>
+including receiving comments on his photo in the same minute from both Kevin Marks and Kyle Mahan.
+
+Requirements from SWAT0 description:
+
+* users are on at least 2 (ideally 3) different services
+ A. <a class="auto-link" href="http://ben.thatmustbe.me">ben.thatmustbe.me</a>
+ B. <a class="auto-link" href="http://aaronparecki.com">aaronparecki.com</a>
+ C. <a class="auto-link" href="http://reader.kylewm.com">reader.kylewm.com</a> + <a class="auto-link" href="http://known.kevinmarks.com">known.kevinmarks.com</a> [+ <a class="auto-link" href="http://kylewm.com">kylewm.com</a>]
+
+* each of which is built with a different code base
+ A. Mobilepub + Postly
+  * <a class="auto-link" href="https://github.com/dissolve/mobilepub">https://github.com/dissolve/mobilepub</a>
+  * <a class="auto-link" href="https://github.com/dissolve/postly">https://github.com/dissolve/postly</a>
+ B. P3K + Prowl
+  * <a class="auto-link" href="http://indiewebcamp.com/p3k">http://indiewebcamp.com/p3k</a>
+  * <a class="auto-link" href="http://prowlapp.com/">http://prowlapp.com/</a>
+ C. Woodwind + Known [+ Red Wind]
+  * <a class="auto-link" href="https://github.com/kylewm/woodwind">https://github.com/kylewm/woodwind</a>
+  * <a class="auto-link" href="https://withknown.com/">https://withknown.com/</a>
+  * <a class="auto-link" href="https://github.com/kylewm/redwind">https://github.com/kylewm/redwind</a>
+  
+This demo was also all recorded on live video as well during today&rsquo;s IndieWebCamp 2015 Portland demos. Video link to follow.
+
+Update 2015-07-14: Video: <a class="auto-link" href="https://aaronparecki.com/notes/2015/07/14/1/swat0">https://aaronparecki.com/notes/2015/07/14/1/swat0</a></p>
+<span class="info footer"><a href="2015/193/t2/user-flow-permalinks-indieweb-swat0" class="dt-published published dt-updated updated u-url u-uid"><time class="value" datetime="20:48-0700">20:48</time> on <time class="value">2015-07-12</time></a></span>
+</li>
+<li class="h-entry hentry as-note">
+<p class="p-name entry-title e-content entry-content article">Congratulations <a class="auto-link h-x-username" href="https://twitter.com/dissolve33">@dissolve33</a> <a class="auto-link h-x-username" href="https://twitter.com/aaronpk">@aaronpk</a> <a class="auto-link h-x-username" href="https://twitter.com/kevinmarks">@kevinmarks</a> <a class="auto-link h-x-username" href="https://twitter.com/kylewmahan">@kylewmahan</a> for the first #indieweb #SWAT0 demo!! Previously: <a class="auto-link" href="http://tantek.com/2015/029/t1/swat0-posts-tags-mobile-photo-comment">http://tantek.com/2015/029/t1/swat0-posts-tags-mobile-photo-comment</a>
+
+This is a huge milestone. 
+
+The Social Web Acid Test Level 0 (SWAT0) was proposed nearly 5 years ago at the first Federated Social Web Summit: <a class="auto-link" href="http://tantek.com/2010/199/t3/fsws-social-web-acid-test-swat-v0">tantek.com/2010/199/t3/fsws-social-web-acid-test-swat-v0</a>
+
+There was previously only *one* demo of SWAT0, using Statusnet and Cliqset, captured only on video. The permalinks from Statusnet are gone. And Cliqset itself shutdown less than a year later.
+
+Today is the first time SWAT0 has been done with:
+
+* 3 people
+ * Ben Roberts, Aaron Parecki, Kevin Marks - and same time:
+ * Ben Roberts, Aaron Parecki, Kyle Mahan
+
+* 3 different sites
+ * <a class="auto-link" href="http://ben.thatmustbe.me">ben.thatmustbe.me</a>, <a class="auto-link" href="http://aaronparecki.com">aaronparecki.com</a>, <a class="auto-link" href="http://reader.kylewm.com">reader.kylewm.com</a>
+
+* 3 different implementations
+ * Mobilepub, P3k+Prowl, Woodwind + (Known | Red Wind)
+
+And as a bonus:
+
+* from 3 different geographical locations
+ * Boston, Portland, SF Bay Area
+* in 2 different programming languages
+ * PHP, Python
+
+And last but not least, the combination of Ben Roberts, Aaron Parecki, Kyle Mahan achieving SWAT0 is a HUGE breakthrough for the web since they all did it:
+* on their own sites
+* with software they personally wrote
+
+Boom.
+
+Update: See <a class="auto-link" href="http://tantek.com/2015/193/t2/user-flow-permalinks-indieweb-swat0">http://tantek.com/2015/193/t2/user-flow-permalinks-indieweb-swat0</a> for specific user flow, permalinks, and screenshots.</p>
+<span class="info footer"><a href="2015/193/t1/congratulations-first-indieweb-swat0" class="dt-published published dt-updated updated u-url u-uid"><time class="value" datetime="17:27-0700">17:27</time> on <time class="value">2015-07-12</time></a></span>
+</li>
+<li class="h-entry hentry as-note">
+<p class="p-name entry-title e-content entry-content article"><a class="auto-link h-x-username" href="https://twitter.com/aaronpk">@aaronpk</a> re: <a class="auto-link" href="https://aaronparecki.com/notes/2015/07/11/1/indiewebcamp">https://aaronparecki.com/notes/2015/07/11/1/indiewebcamp</a>
+And here&rsquo;s a reply to your post. Let&rsquo;s see if it shows up on your post.</p>
+<span class="info footer"><a href="2015/192/t1/reply-post" class="dt-published published dt-updated updated u-url u-uid"><time class="value" datetime="12:56-0700">12:56</time> on <time class="value">2015-07-11</time></a></span>
+</li>
+<li>
+<p><span class="h-entry article"><span class="p-name">likes <a class="u-like-of" href="http://werd.io/2015/two-years-of-being-on-the-indieweb">Ben Werdmuller&rsquo;s article &ldquo;Two years of being on the #indieweb&rdquo;</a></span> <a class="u-url" href="2015/192/f4">at <time class="dt-published" datetime="2015-07-11T11:39-0700">11:39</time></a></span>, <span class="h-entry article"><abbr class="p-name" title="likes Jeena's photo https://jeena.net/system/photos/photos/000/000/156/big/1436637143047-14574263.jpg"><a class="u-like-of" href="https://jeena.net/photos/156">Jeena's photo <span class="figure" style="text-align:left"><img class="auto-embed" alt="a photo" src="https://jeena.net/system/photos/photos/000/000/156/big/1436637143047-14574263.jpg"></span></a></abbr> <a class="u-url" href="2015/192/f3">at <time class="dt-published" datetime="2015-07-11T11:06-0700">11:06</time></a></span>, <span class="h-entry article"><abbr class="p-name" title="likes Julie Logan&rsquo;s animated gif"><a class="u-like-of" href="https://twitter.com/thejulielogan/status/619624231316291589">Julie Logan&rsquo;s animated gif</a></abbr> <a class="u-url" href="2015/192/f2">at <time class="dt-published" datetime="2015-07-11T00:25-0700">00:25</time></a></span>, and <span class="h-entry article"><abbr class="p-name" title="likes Eric Meyer&rsquo;s tweet"><a class="u-like-of" href="https://twitter.com/meyerweb/status/619168981132259329">Eric Meyer&rsquo;s tweet</a></abbr> <a class="u-url" href="2015/192/f1">at <time class="dt-published" datetime="2015-07-11T00:20-0700">00:20</time></a></span></p>
+<span class="info footer"><a href="2015/192/f">on <time>2015-07-11</time></a></span>
+</li>
+<li class="h-entry hentry as-note">
+<p class="p-name entry-title e-content entry-content article">going to and at IndieWebCamp Pre-Party <a class="auto-link h-x-username" href="https://twitter.com/pintsbrewing">@pintsbrewing</a> now!
+<a class="auto-link" href="http://aaronparecki.com/events/2015/07/10/1/indiewebcamp-pre-party">aaronparecki.com/events/2015/07/10/1/indiewebcamp-pre-party</a>
+silo <a class="auto-link" href="http://fb.com/events/1007859082588398">fb.com/events/1007859082588398</a></p>
+<span class="info footer"><a href="2015/191/t1/indiewebcamp-pre-party" class="dt-published published dt-updated updated u-url u-uid"><time class="value" datetime="16:58-0700">16:58</time> on <time class="value">2015-07-10</time></a></span>
+</li>
+<li class="h-entry hentry as-note">
+<p class="p-name entry-title e-content entry-content article"><a class="auto-link h-x-username" href="https://twitter.com/kevinmarks">@kevinmarks</a> <a class="auto-link h-x-username" href="https://twitter.com/grorgwork">@grorgwork</a> +1 &lt;style scoped&gt; &#x2014; strong #indieweb use-case: custom post style: <a class="auto-link" href="http://tantek.com/2015/185/t1/coded-per-post-styling-style-scoped">tantek.com/2015/185/t1/coded-per-post-styling-style-scoped</a></p>
+<span class="info footer"><a href="2015/190/t1/style-scoped-indieweb-use-case" class="dt-published published dt-updated updated u-url u-uid"><time class="value" datetime="16:53-0700">16:53</time> on <time class="value">2015-07-09</time></a></span>
+</li>
+<li class="h-entry hentry as-article">
+<div class="article">
+<a href="2015/190/b1/blinking-fever" rel="bookmark" class="u-url u-uid"><h1 class="entry-title">
+Blinking Fever
+</h1></a><div class="entry-content">
+<p>
+Not until my hand brushed up against you did I realize something was wrong. You were warm, too warm. Despite closing your lids last night you hadn&rsquo;t slept. That morning you were a pale shade of gray, unresponsive, staring blankly and blinking.
+</p>
+<p>
+I hoped it was temporary, yet I knew it might be your time. Looking up your symptoms I found you weren&rsquo;t the first to have this blinking fever. You finally relaxed and stopped blinking when I held your primary pressure point for a few seconds. I let your heat dissipate while I read what to try next.
+</p>
+<p>
+Despite being with you for years I was only now learning you could repair yourself if I pressed a few more of your buttons. You told me you were ok.
+</p>
+<p>
+When you awoke on the train you froze, gave me the weirdest panicked look, and told me as much in so many languages I didn&rsquo;t understand. I held your primary pressure point again and let you rest til we got home. You were always easy to carry.
+</p>
+<p>
+I stopped by the bookstore and picked up a couple of volumes from fans of yours and your kind &#x2014; they&rsquo;d written so much about you collectively over the years.
+</p>
+<p>
+That evening I woke you up again after letting you sleep the afternoon away and there it was again, that blank pale gray stare, blinking an empty question. 
+</p>
+<p>
+I tried having you repair yourself again, and again you said you were ok. Maybe you were at least in mind, maybe it was only your body failing you. So I did the only thing I could do and ordered a replacement. I knew you couldn&rsquo;t be upset about it though I suspected.
+</p>
+<p>
+The next day I transferred your mind to a conduit and the morning after that your new body arrived. It took less than half an hour for it to absorb you from the conduit, but were you really all there?
+</p>
+<p>
+You seemed happy and responsive, up for anything. You&rsquo;d forgotten a few things; I had to give you another key to the house. I confess your new body was smoother, more beckoning to the touch. Your expressions were brighter, more colorful. You spoke more crisply. Enough differences to notice, but you were still you.
+</p>
+<p>
+I kept your old body on life support, just in case there was something else I had to ask your old self that your new self had forgotten. You didn&rsquo;t even notice your old self until the house told you to pick a new name and you took a number. I knew other parts of you depended on your name so I renamed your old self instead. You were you again.
+</p>
+<p>
+It&rsquo;s been less than 24 hours and I&rsquo;ve only noticed a few more things that didn&rsquo;t make it through the conduit. You forgot some of your preferences I knew by heart so I reminded you. 
+</p>
+<p>
+You forgot how to check yourself before going out in public; that will take me longer to teach you, as it was a friend of mine that taught you that last time and I still don&rsquo;t know how he did it.
+</p>
+<p>
+Your old body lasted about four years. Four years together, traveling across continents and more time zones than I remember. Four years of keeping up with me, even if I was running, jumping, or sometimes even climbing. I couldn&rsquo;t help but hear the words echoing &ldquo;Four year lifespan&rdquo; yet I knew that was a quote from a movie. Just a coincidence I&rsquo;m sure.
+</p>
+<p>
+I&rsquo;m getting used to the new you. You seem to be ok with it too. I&rsquo;m sure there will be more we&rsquo;ll have to figure out together but isn&rsquo;t that how it always is?
+</p>
+<p style="text-align:center">
+<img style="max-width:100%" src="http://i.stack.imgur.com/hmRFH.jpg" alt="Blinking folder on a pale gray background"/>
+</p>
+<h2>Also On</h2>
+<ul>
+<li><a class="u-syndication" href="https://www.facebook.com/tantek.celik/posts/10101774253488583">Facebook</a></li>
+<li><a class="u-syndication" href="https://twitter.com/t/status/619227497071276032">Twitter</a></li>
+</ul>
+
+<h2 id="blinking-fever-comments">Comments</h2>
+<p class="u-comment h-cite">
+<a class="u-author h-card" href="https://kylewm.com/">Kyle Mahan</a>:
+<span class="p-content p-name">
+I dig it. Kind of a cyberpunk version of &ldquo;I Used to Love H.E.R.&rdquo;
+</span>
+<a class="u-url" href="https://kylewm.com/2015/07/tantek-i-dig-it-kind-of-a-cyberpunk-version-of-i"><time class="dt-published">2015-07-09 13:22:56-07:00</time></a>
+</p>
+
+<p class="u-comment h-cite">
+<a class="u-author h-card" href="https://adactio.com/">Jeremy Keith</a>:
+<span class="p-content p-name">
+A heartbreaking tale of companionship, memory and loss.
+</span>
+<a class="u-url" href="https://adactio.com/links/9234"><time class="dt-published">2015-07-09 22:46:06</time></a>
+</p>
+
+</div>
+</div>
+<span class="info footer"><a href="2015/190/b1/blinking-fever" class="dt-published published dt-updated updated u-url u-uid"><time class="value" datetime="12:31-0700">12:31</time> on <time class="value">2015-07-09</time></a></span>
+</li>
+<li class="h-entry hentry as-note">
+<p class="p-name entry-title e-content entry-content article">Slowly crunching down various queues after transferring primary cyberspace deck to new hardware. #timemachineislossy</p>
+<span class="info footer"><a href="2015/190/t1/crunching-queues-cyberspace-deck-new-hardware" class="dt-published published dt-updated updated u-url u-uid"><time class="value" datetime="00:46-0700">00:46</time> on <time class="value">2015-07-09</time></a></span>
+</li>
+<li class="h-entry hentry as-article">
+<div class="article">
+<a href="2015/189/b1/css-basic-user-interface-level-3" rel="bookmark" class="u-url u-uid"><h1 class="entry-title">
+CSS Basic User Interface Module Level 3 Candidate Recommendation Published
+</h1></a><div class="entry-content">
+<p>
+The CSS WG has published a second Candidate Recommendation of <a href="http://www.w3.org/TR/css-ui-3/">CSS Basic User Interface Module Level 3</a>. This specification describes user interface related properties and values that are proposed for CSS level 3, incorporating such features from CSS level 2 revision 1, and extending them with both new values and new properties.
+</p>
+<h2>Call for Implementations</h2>
+<p>
+<a href="https://lists.w3.org/Archives/Public/www-style/2015Jul/0096.html">This notice</a> serves as a call for implementations of all CSS-UI-3
+features, new properties, values, and fixes/details of existing
+features. Implementor feedback is strongly encouraged.
+</p>
+<p>
+Thorough review is particularly encouraged of the following features
+new in level 3:
+</p>
+<ul>
+<li><a href="http://www.w3.org/TR/css-ui-3/#box-sizing">box-sizing</a></li>
+<li><a href="http://www.w3.org/TR/css-ui-3/#outline-offset">outline-offset</a></li>
+<li><a href="http://www.w3.org/TR/css-ui-3/#resize">resize</a></li>
+<li><a href="http://www.w3.org/TR/css-ui-3/#text-overflow">text-overflow</a></li>
+<li><a href="http://www.w3.org/TR/css-ui-3/#caret-color">caret-color</a></li>
+<li><a href="http://www.w3.org/TR/css-ui-3/#nav-dir">nav-up, nav-right, nav-down, nav-left</a></li>
+</ul>
+<h2>Significant Changes</h2>
+<p>
+Significant changes since the previous 2012 LCWD are listed in the <a href="http://www.w3.org/TR/2015/CR-css-ui-3-20150707/#changes">Changes section</a>.
+</p>
+<p>
+This CR has an informative "<a href="http://www.w3.org/TR/css-ui-3/#security-privacy-considerations">Considerations for Security and Privacy</a>" section with answers to the "<a href="https://w3ctag.github.io/security-questionnaire/">Self-Review Questionnaire: Security and Privacy</a>" document being developed by the W3C TAG.
+</p>
+<h2>Feedback</h2>
+<p>
+Please send feedback to the (<a href="http://lists.w3.org/Archives/Public/www-style/">archived</a>) public mailing list 
+<a href="mailto:www-style@w3.org?Subject=%5Bcss-ui-3%5D%20PUT%20SUBJECT%20HERE">www-style@w3.org</a> 
+with the spec code (<code>[css-ui-3]</code>) 
+and your comment topic in the subject line. 
+(Alternatively, you can email one of the editors and ask them to forward your comment.)
+</p>
+
+<h2>See Also</h2>
+<ul>
+<li class="h-cite">
+<time class="dt-published">2015-07-07</time> <span class="p-publisher">W3C</span>: <cite><a class="u-url p-name" href="http://www.w3.org/blog/news/archives/4800">W3C Invites Implementations of CSS Basic User Interface Module Level 3 (CSS3 UI)</a></cite>
+</li>
+</ul>
+
+<h2>Previously</h2>
+<ul>
+<li class="h-cite">
+<time class="dt-published">2004-05-12</time> <cite><a class="u-url p-name" href="http://tantek.com/log/2004/05.html#d12t0424">CSS3 Basic User Interface Module Candidate Recommendation</a></cite>
+</li>
+</ul>
+
+<p>
+Also syndicated to CSS WG Blog: <a class="u-syndication" href="http://www.w3.org/blog/CSS/2015/07/09/css-basic-user-interface-module-level-3-candidate-recommendation-published/">CSS Basic User Interface Module Level 3 Candidate Recommendation Published</a>.
+</p>
+</div>
+</div>
+<span class="info footer"><a href="2015/189/b1/css-basic-user-interface-level-3" class="dt-published published dt-updated updated u-url u-uid"><time class="value" datetime="23:57-0700">23:57</time> on <time class="value">2015-07-08</time></a></span>
+</li>
+<li class="h-entry hentry as-note">
+<p class="p-name entry-title e-content entry-content article">Ran a 7:23 timed mile at #NPSF #trackattack this morning. 57 seconds faster than my previous PR 98 days ago: <a class="auto-link" href="http://tantek.com/2015/090/t1/timed-mile-track-get-better">http://tantek.com/2015/090/t1/timed-mile-track-get-better</a>
+
+<a class="auto-link figure" href="https://igcdn-photos-e-a.akamaihd.net/hphotos-ak-xaf1/t51.2885-15/11378599_482568281905532_1851793367_n.jpg"><img class="auto-embed" alt="a photo" src="https://igcdn-photos-e-a.akamaihd.net/hphotos-ak-xaf1/t51.2885-15/11378599_482568281905532_1851793367_n.jpg"/></a> <a class="auto-link" href="https://instagram.com/p/42Awb3A9cr">https://instagram.com/p/42Awb3A9cr</a>
+
+And another personal achievement unlocked as well:
+* Run a timed mile faster than my plank time
+<a class="auto-link" href="http://tantek.com/2015/091/t1/plank-pr-plankoff-new-goal">http://tantek.com/2015/091/t1/plank-pr-plankoff-new-goal</a></p>
+<span class="info footer"><a href="2015/188/t1/timed-mile-npsf-trackattack-faster-pr" class="dt-published published dt-updated updated u-url u-uid"><time class="value" datetime="11:12-0700">11:12</time> on <time class="value">2015-07-07</time></a></span>
+</li>
+<li class="h-entry hentry as-note">
+<p class="p-name entry-title e-content entry-content article">coded per post styling, e.g.: <a class="auto-link" href="http://tantek.com/2015/178/t1/lovewins-css3-pride-rainbow-background">tantek.com/2015/178/t1/lovewins-css3-pride-rainbow-background</a> and in homepage stream with HTML5 &lt;style scoped&gt; &#x2014; supported currently only on Firefox (desktop, Android, or FirefoxOS).
+
+Other browsers:
+* Chrome
+ * has experimental support: <a class="auto-link" href="https://developers.google.com/web/updates/2012/03/A-New-Experimental-Feature-style-scoped">https://developers.google.com/web/updates/2012/03/A-New-Experimental-Feature-style-scoped</a>
+ * bug: <a class="auto-link" href="https://code.google.com/p/chromium/issues/detail?id=130673">https://code.google.com/p/chromium/issues/detail?id=130673</a>
+* Safari (WebKit) <a class="auto-link" href="https://bugs.webkit.org/show_bug.cgi?id=49142">https://bugs.webkit.org/show_bug.cgi?id=49142</a>
+
+More on custom post styles:
+* <a class="auto-link" href="https://indiewebcamp.com/custom_post_style">https://indiewebcamp.com/custom_post_style</a>
+
+Previously:
+* <a class="auto-link" href="http://tantek.com/2015/181/t2/indiewebcamp-per-post-styling">tantek.com/2015/181/t2/indiewebcamp-per-post-styling</a></p>
+<span class="info footer"><a href="2015/185/t1/coded-per-post-styling-style-scoped" class="dt-published published dt-updated updated u-url u-uid"><time class="value" datetime="20:31-0700">20:31</time> on <time class="value">2015-07-04</time></a></span>
+</li>
+<li class="h-entry hentry as-note">
+<p class="p-name entry-title e-content entry-content article"><a class="auto-link h-x-username" href="https://twitter.com/UserOnboard">@UserOnboard</a> appreciate follow-up!
+Firefox 39(beta)/MacOSX 10.7.5, noscript by default
+Good to know it was unintended!</p>
+<span class="info footer"><a href="2015/183/t3/appreciate-follow-up" class="dt-published published dt-updated updated u-url u-uid"><time class="value" datetime="16:53-0700">16:53</time> on <time class="value">2015-07-02</time></a></span>
+</li>
+<li class="h-entry hentry as-note">
+<p class="p-name entry-title e-content entry-content article">How not to onboard users, as shown by <a class="auto-link h-x-username" href="https://twitter.com/UserOnboard">@UserOnboard</a>:
+* Block content with a &ldquo;Your email&rdquo; form overlay
+* Misleading copy: &ldquo;Without further ado, here is...&rdquo; [actually with one further &ldquo;ado&rdquo; &#x2014; please give us your email address first]
+* Mocking copy: &ldquo;Thanks for reading!&rdquo; blocks content to be read
+* Creepy first-person copy: &ldquo;&#x2026; because I know you&rsquo;re busy&rdquo; &#x2014; &lsquo;I&rsquo; who? Is <a class="auto-link h-x-username" href="https://twitter.com/UserOnboard">@UserOnboard</a> claiming to be a self-aware AI?
+
+Screenshot: <a class="auto-link figure" href="https://indiewebcamp.com/images/b/b3/2015-183-useronboard-form-block.png"><img class="auto-embed" alt="a png" src="https://indiewebcamp.com/images/b/b3/2015-183-useronboard-form-block.png"/></a>
+of <a class="auto-link" href="https://www.useronboard.com/how-applemusic-onboards-new-users/">https://www.useronboard.com/how-applemusic-onboards-new-users/</a> &#x2014; article via <a class="auto-link h-x-username" href="https://twitter.com/KevinMarks">@KevinMarks</a>.</p>
+<span class="info footer"><a href="2015/183/t2/how-not-onboard-useronboard-block" class="dt-published published dt-updated updated u-url u-uid"><time class="value" datetime="16:24-0700">16:24</time> on <time class="value">2015-07-02</time></a></span>
+</li>
+<li class="h-entry hentry as-note">
+<p class="p-name entry-title e-content entry-content article">Today&rsquo;s the humpday of year.
+182 days before, 182 days after today.
+Happy Third New Sunday! <a class="auto-link" href="http://newcal.org/#fiveSunrevolutionsyncdays">newcal.org/#fiveSunrevolutionsyncdays</a></p>
+<span class="info footer"><a href="2015/183/t1/humpday-year-happy-new-sunday" class="dt-published published dt-updated updated u-url u-uid"><time class="value" datetime="15:38-0700">15:38</time> on <time class="value">2015-07-02</time></a></span>
+</li>
+<li class="h-entry hentry as-note">
+<p class="p-name entry-title e-content entry-content article">2 years since Google Reader died.
+Miss it? Why? No? What do you use instead?
+Discuss tonight: <a class="auto-link" href="https://indiewebcamp.com/next-hwc">https://indiewebcamp.com/next-hwc</a></p>
+<span class="info footer"><a href="2015/182/t1/google-reader-died-miss-why-no" class="dt-published published dt-updated updated u-url u-uid"><time class="value" datetime="16:22-0700">16:22</time> on <time class="value">2015-07-01</time></a></span>
+</li>
+<li class="h-entry hentry as-note">
+<p class="p-name entry-title e-content entry-content article">Today was the last day of my first term <a class="auto-link h-x-username" href="https://twitter.com/W3CAB">@W3CAB</a>. As promised, new W3C license: <a class="auto-link" href="http://www.w3.org/Consortium/Legal/2015/copyright-software-and-document">http://www.w3.org/Consortium/Legal/2015/copyright-software-and-document</a>
+News: <a class="auto-link" href="http://www.w3.org/blog/news/archives/4743">http://www.w3.org/blog/news/archives/4743</a>
+
+It&rsquo;s a huge improvement over the previous W3C Document License, but we still have work to do to get to CC0.
+
+Howver, this license is sufficiently flexible/liberal that hopefully it will help grow broader web community experience with such liberal &amp; forkable licenses.
+
+Previously: <a class="auto-link" href="http://tantek.com/2015/150/t1/running-for-w3cab-again">tantek.com/2015/150/t1/running-for-w3cab-again</a></p>
+<span class="info footer"><a href="2015/181/t4/first-term-w3cab-new-w3c-license" class="dt-published published dt-updated updated u-url u-uid"><time class="value" datetime="23:12-0700">23:12</time> on <time class="value">2015-06-30</time></a></span>
+</li>
+<li class="h-entry hentry as-note">
+<p class="p-name entry-title e-content entry-content article">Emotionally intense yoga class (because I saw Inside Out last night?) Afterwards I did my first headstand! Positioning myself at the base of the wall helped me get my form right. Held it for 10 seconds without touching the wall.</p>
+<span class="info footer"><a href="2015/181/t3/emotionally-intense-yoga-first-headstand" class="dt-published published dt-updated updated u-url u-uid"><time class="value" datetime="20:51-0700">20:51</time> on <time class="value">2015-06-30</time></a></span>
+</li>
+<li class="h-entry hentry as-note">
+<p class="p-name entry-title e-content entry-content article">Wanting to keep CSS Pride bg live on its post, asked #indiewebcamp; two have per post styling: <a class="auto-link" href="https://indiewebcamp.com/custom_post_style">https://indiewebcamp.com/custom_post_style</a></p>
+<span class="info footer"><a href="2015/181/t2/indiewebcamp-per-post-styling" class="dt-published published dt-updated updated u-url u-uid"><time class="value" datetime="15:54-0700">15:54</time> on <time class="value">2015-06-30</time></a></span>
+</li>
+<li class="h-entry hentry as-note">
+<p class="p-name entry-title e-content entry-content article">#track today: Yasso 800s
+I did: 5 x 800 sub-4-min, 4 min cooldown between, and a 400 sprint at ~1:43, unofficially my fastest lap ever.
+
+<a class="auto-link figure" href="https://igcdn-photos-a-a.akamaihd.net/hphotos-ak-xaf1/t51.2885-15/11377776_114066302265152_499668026_n.jpg"><img class="auto-embed" alt="a photo" src="https://igcdn-photos-a-a.akamaihd.net/hphotos-ak-xaf1/t51.2885-15/11377776_114066302265152_499668026_n.jpg"/></a> <a class="auto-link" href="https://instagram.com/p/4joT1ug9TQ">https://instagram.com/p/4joT1ug9TQ</a>
+
+Five is only half the ten Yasso 800s you&rsquo;re supposed to do if you&rsquo;re training/timing for a full marathon. However, I did sub-4-min 800s which if I'd done 10 of it would mean I should be able to sub-4-hour marathon. Does doing half that mean I should be able to do a sub-2-hour half marathon? Going to keep training hard &amp; smart and bring everything I&rsquo;ve got at next month's SF Half Marathon (second half). I should at least be able to beat my 2:18 PR from Surf City.
+
+Previously: 
+* <a class="auto-link" href="http://tantek.com/2015/161/t1/track-yesterday-did">tantek.com/2015/161/t1/track-yesterday-did</a>
+* <a class="auto-link" href="http://tantek.com/2015/032/t2/finished-surfcity-half-marathon-pr">tantek.com/2015/032/t2/finished-surfcity-half-marathon-pr</a></p>
+<span class="info footer"><a href="2015/181/t1/track-yasso-800s-fastest-lap" class="dt-published published dt-updated updated u-url u-uid"><time class="value" datetime="08:30-0700">08:30</time> on <time class="value">2015-06-30</time></a></span>
+</li>
+<li class="h-entry hentry as-note">
+<p class="p-name entry-title e-content entry-content article">Nevermind #Y2K #Y2038 #Y2100, are you ready for #UTC235960?
+The next #leapsecond is 2015-06-30 <a class="auto-link" href="https://en.wikipedia.org/wiki/Leap_second#Insertion_of_leap_seconds">https://en.wikipedia.org/wiki/Leap_second#Insertion_of_leap_seconds</a></p>
+<span class="info footer"><a href="2015/180/t1/ready-utc235960-leapsecond" class="dt-published published dt-updated updated u-url u-uid"><time class="value" datetime="09:52-0700">09:52</time> on <time class="value">2015-06-29</time></a></span>
+</li>
+<li class="h-entry hentry as-note">
+<p class="p-name entry-title e-content entry-content article">Facebook sponsors SF #Pride, can rainbow your icon, yet disallows use of post-transition name: <a class="auto-link" href="https://medium.com/@zip/my-name-is-only-real-enough-to-work-at-facebook-not-to-use-on-the-site-c37daf3f4b03">https://medium.com/@zip/my-name-is-only-real-enough-to-work-at-facebook-not-to-use-on-the-site-c37daf3f4b03</a></p>
+<span class="info footer"><a href="2015/179/t1/facebook-disallows-post-transition-name" class="dt-published published dt-updated updated u-url u-uid"><time class="value" datetime="12:42-0700">12:42</time> on <time class="value">2015-06-28</time></a></span>
+</li>
+<li id="d178t1" class="h-entry hentry as-note">
+<style scoped="scoped" class="p-x-style"> /**/ /* CSS Pride rainbow background by Tantek &#xC7;elik. CC0: share freely. */
+.h-entry#d178t1 { background: linear-gradient(180deg, #f00000, #f00000 16.67%, #ff8000 16.67%, #ff8000 33.33%, #ffff00 33.33%, #ffff00 50%, #007940 50%, #007940 66.67%, #4040ff 66.67%, #4040ff 83.33%, #a000c0 83.33%, #a000c0) fixed; }
+.h-entry#d178t1 .dt-published { color:#000 } /**/ </style>
+<p class="p-name entry-title e-content entry-content article">Because #lovewins: here&rsquo;s a simple #CSS3 trick for a #pride #rainbow website background:
+
+Add this style element right before your closing &lt;/head&gt; tag:
+
+&lt;style&gt; /* CSS Pride rainbow bg by Tantek &#xC7;elik. CC0: share freely. */
+body { background: linear-gradient(180deg, #f00000, #f00000 16.67%, #ff8000 16.67%, #ff8000 33.33%, #ffff00 33.33%, #ffff00 50%, #007940 50%, #007940 66.67%, #4040ff 66.67%, #4040ff 83.33%, #a000c0 83.33%, #a000c0) fixed; }
+&lt;/style&gt;
+
+Or copy paste the body {...} rule into your main CSS file.
+
+<a class="auto-link figure" href="https://scontent.cdninstagram.com/hphotos-xfa1/t51.2885-15/11420738_425867917615828_488783301_n.jpg"><img class="auto-embed" alt="a photo" src="https://scontent.cdninstagram.com/hphotos-xfa1/t51.2885-15/11420738_425867917615828_488783301_n.jpg"/></a>
+<a class="auto-link" href="https://instagram.com/p/4cnmPhA9Qk/">https://instagram.com/p/4cnmPhA9Qk/</a>
+
+Try it out and let me know how it works with your site, theme, blog, framework etc.
+
+References:
+* colors from <a class="auto-link" href="https://commons.wikimedia.org/wiki/File:Gay_flag.svg">https://commons.wikimedia.org/wiki/File:Gay_flag.svg</a>
+* CSS3 linear-gradient documentation: <a class="auto-link" href="https://developer.mozilla.org/en-US/docs/Web/CSS/linear-gradient">https://developer.mozilla.org/en-US/docs/Web/CSS/linear-gradient</a>
+
+Update 2015-06-30:
+After some searching I found some similar prior art from Greg Doolittle in 2011!
+* <a class="auto-link" href="http://gregdoolittle.com/blog/2011/12/15/css3-rainbow-flag/">http://gregdoolittle.com/blog/2011/12/15/css3-rainbow-flag/</a>
+With a few differences: 
+* colors are similar, but not same as the Wikipedia reference
+* 18% instead of 16.67% (and other integer vs decimal %s)
+* has -o- -moz- -webkit- -ms- prefixed versions as well as the old -webkit-gradient syntax
+
+Also apparently there&rsquo;s a bug in *both* Mobile Webkit and Mobile Chrome, likely with the combination of a linear-gradient background-image and background-attachment:fixed.
+
+Both stretch the gradient to the entire canvas of the document, instead of the viewport like they're supposed to. Works fine when you resize desktop Safari or Chrome windows to the size of an equivalent mobile screen, so it&rsquo;s only their mobile variants that appear to be buggy. Also works fine in desktop Firefox, Android Firefox, and FirefoxOS.</p>
+<span class="info footer"><a href="2015/178/t1/lovewins-css3-pride-rainbow-background" class="dt-published published dt-updated updated u-url u-uid"><time class="value" datetime="13:39-0700">13:39</time> on <time class="value">2015-06-27</time></a></span>
+</li>
+<li class="h-entry hentry as-note">
+<p class="p-name entry-title e-content entry-content article">going to Homebrew Website Club 17:30 <a class="auto-link h-x-username" href="https://twitter.com/MozSF">@MozSF</a> 2015-07-01.
+Indie event <a class="auto-link" href="http://kylewm.com/2015/06/homebrew-website-club-1">kylewm.com/2015/06/homebrew-website-club-1</a>
+silo <a class="auto-link" href="http://fb.com/events/703707653108150">fb.com/events/703707653108150</a></p>
+<span class="info footer"><a href="2015/177/t2/homebrew-website-club-mozsf" class="dt-published published dt-updated updated u-url u-uid"><time class="value" datetime="17:42-0700">17:42</time> on <time class="value">2015-06-26</time></a></span>
+</li>
+<li class="h-entry hentry as-note">
+<p class="p-name entry-title e-content entry-content article">#lovewins
+
+In a technical meeting at #mozwww on JS tech debt; getting misty eyed reading the #marriageequality news.</p>
+<span class="info footer"><a href="2015/177/t1/lovewins-marriageequality" class="dt-published published dt-updated updated u-url u-uid"><time class="value" datetime="11:08-0700">11:08</time> on <time class="value">2015-06-26</time></a></span>
+</li>
+<li class="h-entry hentry as-note">
+<p class="p-name entry-title e-content entry-content article"><a id="performance-target" class="auto-link h-x-username" href="https://twitter.com/benwerd">@benwerd</a> great post, disagree with opening para. Facebook grew with selfdogfooding &amp; good UX, not &ldquo;making money&rdquo;, not until much much later.
+
+I think this is an important distinction because the internet archive is littered with startups that pursued &ldquo;making money&rdquo; first, or that made beautiful UX for *someone else*, unused by the creators/founders, and ignored by others too.
+
+Weinberger&rsquo;s article has a lot of good food for thought. The general message that we cannot assume decentralized determinism is a good one.
+
+Independence isn&rsquo;t inevitable. Independence, like freedom, requires eternal vigilance.
+
+Re: CloudFlare &#x2014; you met someone that works there at a recent Homebrew Website Club meetup at The Creamery:
+
+<a class="auto-link" href="https://indiewebcamp.com/events/2015-04-08-homebrew-website-club">https://indiewebcamp.com/events/2015-04-08-homebrew-website-club</a>
+
+She said they want to work to help indieweb efforts, maybe even help host future meetups or IndieWebCamps.
+
+The rest of your post, I agree completely, and very well written.
+
+&ldquo;technostalgia&rdquo; is an amazing portmanteau.
+
+Totally agreed about the merits (not criticisms) of using open source software to build a business, to make a profit, to pay yourself to live, and to also create something sustainable.
+
+Looking forward to spending more time working together pushing this all forward at IndieWebCamp 2015 in just over two weeks! <a class="auto-link" href="https://indiewebcamp.com/2015">https://indiewebcamp.com/2015</a></p>
+<span class="info footer"><a href="2015/175/t1/great-post-grew-with-selfdogfooding-ux" class="dt-published published dt-updated updated u-url u-uid"><time class="value" datetime="15:47-0700">15:47</time> on <time class="value">2015-06-24</time></a></span>
+</li>
+<li class="h-entry hentry as-note">
+<p class="p-name entry-title e-content entry-content article"><a class="auto-link h-x-username" href="https://twitter.com/benwerd">@benwerd</a> as <a class="auto-link h-x-username" href="https://twitter.com/aaronpk">@aaronpk</a> noted, Homebrew Website Club is indieweb for anyone interested &amp; passionate. As a HWC participant and co-organizer, help us make them more approachable &amp; inclusive so they can be &ldquo;indieweb for the rest of us&rdquo; in practice!</p>
+<span class="info footer"><a href="2015/174/t1/homebrew-website-club-indieweb" class="dt-published published dt-updated updated u-url u-uid"><time class="value" datetime="23:55-0700">23:55</time> on <time class="value">2015-06-23</time></a></span>
+</li>
+<li class="h-entry hentry as-note">
+<p class="p-name entry-title e-content entry-content article"><a class="auto-link h-x-username" href="https://twitter.com/nerdyc">@nerdyc</a> <a class="auto-link" href="http://tantek.com/t4bn4">tantek.com/t4bn4</a>
+<a class="auto-link h-x-username" href="https://twitter.com/mediajunkie">@mediajunkie</a> yes. need a term.
+<a class="auto-link h-x-username" href="https://twitter.com/toddbarnard">@toddbarnard</a> Like X-Men? Or:
+
+&ldquo;We meet next weekend.&rdquo; &#x2014; knowledge of an inevitable future.
+&ldquo;I met her next weekend.&rdquo; &#x2014; first person past, yet current timeline future. Possibly only applicable to time travelers.
+
+Possible scifi source material for more examples:
+* Minority Report
+* Fringe
+* X-Men: Days of Future Past</p>
+<span class="info footer"><a href="2015/172/t5/yes-need-term-next" class="dt-published published dt-updated updated u-url u-uid"><time class="value" datetime="16:38-0700">16:38</time> on <time class="value">2015-06-21</time></a></span>
+</li>
+<li class="h-entry hentry as-note">
+<p class="p-name entry-title e-content entry-content article"><a class="auto-link h-x-username" href="https://twitter.com/potch">@potch</a> future perfect is close, looking for more inevitable:
+&ldquo;Happy about the pizza I ate later today&rdquo; or
+&ldquo;Tomorrow we looked at today through yesterday&rsquo;s mirror.&rdquo;</p>
+<span class="info footer"><a href="2015/172/t4/future-perfect-looking-more-inevitable" class="dt-published published dt-updated updated u-url u-uid"><time class="value" datetime="16:07-0700">16:07</time> on <time class="value">2015-06-21</time></a></span>
+</li>
+<li class="h-entry hentry as-note">
+<p class="p-name entry-title e-content entry-content article">Is there a past-tense-like verb tense for talking about likely/inevitable future events as if they&rsquo;d already happened?</p>
+<span class="info footer"><a href="2015/172/t3/past-verb-tense-future-happened" class="dt-published published dt-updated updated u-url u-uid"><time class="value" datetime="15:45-0700">15:45</time> on <time class="value">2015-06-21</time></a></span>
+</li>
+<li class="h-entry hentry as-note">
+<p class="p-name entry-title e-content entry-content article"><a class="auto-link h-x-username" href="https://twitter.com/NikeSupport">@NikeSupport</a>: would be awesome if friends could record #nikeplus congrats for each other; hear them among celebrities.</p>
+<span class="info footer"><a href="2015/172/t2/friends-record-nikeplus-congrats" class="dt-published published dt-updated updated u-url u-uid"><time class="value" datetime="09:30-0700">09:30</time> on <time class="value">2015-06-21</time></a></span>
+</li>
+<li class="h-entry hentry as-note">
+<p class="p-name entry-title e-content entry-content article">Sometimes I&rsquo;ll run 3 days in a row b/c <a class="auto-link h-x-username" href="https://twitter.com/shalaneflanagan">@shalaneflanagan</a> might give congrats after on #nikeplus: &ldquo;Wow. That&rsquo;s three days in a row. Boom.&rdquo;</p>
+<span class="info footer"><a href="2015/172/t1/run-days-congrats-nikeplus" class="dt-published published dt-updated updated u-url u-uid"><time class="value" datetime="09:25-0700">09:25</time> on <time class="value">2015-06-21</time></a></span>
+</li>
+<li class="h-entry hentry as-note">
+<p class="p-name entry-title e-content entry-content article">Today is the 10th anniversary of <a class="auto-link" href="http://microformats.org">microformats.org</a>.
+Great progress in 6+ years of #microformats2: 
+
+In particular an increasingly detailed generic vocabulary-independent parsing specification: <a class="auto-link" href="http://microformats.org/wiki/microformats2-parsing">microformats.org/wiki/microformats2-parsing</a>
+
+The parsing spec is stable, and yet living and updated via:
+* explicit documentation of issues and brainstorms on the wiki
+* consensus among parser developers
+* updated when proven with running code
+* backed with open test cases in a test suite
+
+The number of open source parsers across a variety of languages continues to increase, the latest being a Go parser and an early-stage Java parser:
+* <a class="auto-link" href="http://microformats.org/wiki/microformats2#Parsers">microformats.org/wiki/microformats2#Parsers</a>
+
+microformats vocabularies such as h-entry continue to also evolve based on minimal proposals to address real-world use-cases, evaluated with personal publishing experience across mutiple sites, confirmed by consuming code demonstrating live use-case functionality.
+
+* <a class="auto-link" href="http://microformats.org/wiki/h-entry">microformats.org/wiki/h-entry</a>
+
+Year 10 has been perhaps the most pragmatically focused yet, and beyond progress on microformats specifications, we have continued to iterate the methodologies and processes that keep microformats simpler and focused on solving the real-world needs of the open web, setting an example for a minimum viable web platform.
+
+Related:
+* <a class="auto-link" href="http://tantek.com/2015/068/b1/security-towards-minimum-viable-web-platform">tantek.com/2015/068/b1/security-towards-minimum-viable-web-platform</a>
+
+Previously:
+* <a class="auto-link" href="http://tantek.com/2014/171/b1/microformats-org-turns-nine">tantek.com/2014/171/b1/microformats-org-turns-nine</a></p>
+<span class="info footer"><a href="2015/171/t1/10th-anniversary-microformats" class="dt-published published dt-updated updated u-url u-uid"><time class="value" datetime="19:34-0700">19:34</time> on <time class="value">2015-06-20</time></a></span>
+</li>
+<li class="h-entry hentry as-note">
+<p class="p-name entry-title e-content entry-content article"><a class="auto-link figure" href="https://scontent-lax1-1.cdninstagram.com/hphotos-xfa1/t51.2885-15/11380796_449488105212580_1860535373_n.jpg"><img class="auto-embed" alt="a photo" src="https://scontent-lax1-1.cdninstagram.com/hphotos-xfa1/t51.2885-15/11380796_449488105212580_1860535373_n.jpg"/></a> <a class="auto-link" href="https://instagram.com/p/4IqhR6A9Ze">https://instagram.com/p/4IqhR6A9Ze</a>
+
+#yxyy003 #unbagging after the fact and reflecting
+
+One week ago I arrived at my third #yxyy. From the very beginning, checking in at the Ace, I faced decisions that had rational choices and instinctual choices. 
+
+I trusted my instinct and used empathy &amp; reason to guide the details.
+
+This year was different in many ways.
+
+Instead of room sharing, I got my own room.
+
+I knew fewer people going, so I ended up reaching out more and getting to know more people. 
+
+Instead of escaping with people I knew, I jumped into the first night's activities. Instead of conserving my drink tickets, I used them all the first night.
+
+Instead of worrying if the people I were with were having a good time, I chose to have a good time and listen to those around me, what they were saying and otherwise expressing, rather than worrying.
+
+Instead of organizing more than one thing, I organized just one thing ahead of time. Everything else was spontaneous or word of mouth or both.
+
+When I was asked to take time out of the pool and do an interview I said yes.
+
+Instead of signing up myself in advance, I spontaneously reached out to a friend to volunteer together, side-by-side, at the Advice Booth.
+
+Instead of worrying about going to bed in time to run the next morning, I said yes to staying up late deep in conversations until the pool closed and then dared to set an alarm for 90 minutes later, to run before sunrise, trusting my future self to decide when the time came.
+
+Instead of hesitating I told people when I appreciated meeting them and would love to chat more.
+
+Instead of skipping yoga, I went both Saturday and Sunday mornings. When asked spontaneously to lead &amp; instruct my fellow yoga class attendees how to step-by-step get into an arm balance, I said yes.
+
+When asked to join in sharing a floating pretzel pool toy that could only fit two, I said yes.
+
+Thank you <a class="auto-link h-x-username" href="https://twitter.com/amylola">@amylola</a> <a class="auto-link h-x-username" href="https://twitter.com/debs">@debs</a> <a class="auto-link h-x-username" href="https://twitter.com/hillary">@hillary</a> <a class="auto-link h-x-username" href="https://twitter.com/sanfranannie">@sanfranannie</a> <a class="auto-link h-x-username" href="https://twitter.com/willolovesyou">@willolovesyou</a> for everything you do and say. Thank you especially for listening, sympathizing, reflecting what needed to be said, and most of all, being encouraging.</p>
+<span class="info footer"><a href="2015/170/t1/yxyy003-unbagging-reflecting" class="dt-published published dt-updated updated u-url u-uid"><time class="value" datetime="20:35-0700">20:35</time> on <time class="value">2015-06-19</time></a></span>
+</li>
+<li>
+<p><span class="h-entry article"><span class="p-name">likes <a class="u-like-of" href="https://kylewm.com/2015/05/new-goal-instead-of-trying-to-lose-weight-i-just">Kyle Mahan&rsquo;s note</a></span> <a class="u-url" href="2015/169/f2">at <time class="dt-published" datetime="2015-06-18T15:34-0700">15:34</time></a></span> and <span class="h-entry article"><abbr class="p-name" title="likes Kyle Mahan&rsquo;s note"><a class="u-like-of" href="https://kylewm.com/2015/06/yes-https-is-more-work-to-support-than-http-so-let">note</a></abbr> <a class="u-url" href="2015/169/f1">at <time class="dt-published" datetime="2015-06-18T11:22-0700">11:22</time></a></span></p>
+<span class="info footer"><a href="2015/169/f">on <time>2015-06-18</time></a></span>
+</li>
+<li class="h-entry hentry as-like">
+<p class="p-name entry-title e-content entry-content article">likes <a class="u-like-of" href="http://werd.io/2015/if-you-care-about-owning-your-own-space-on-the">Ben Werdm&uuml;ller&rsquo;s note</a></p>
+<span class="info footer"><a href="2015/168/f1" class="dt-published published dt-updated updated u-url u-uid"><time class="value" datetime="19:40-0700">19:40</time> on <time class="value">2015-06-17</time></a></span>
+</li>
+<li class="h-entry hentry as-note">
+<p class="p-name entry-title e-content entry-content article">The 5 words followed by an #indieweb URL that make a silo post:
+&ldquo;This post originally appeared on&rdquo;
+
+Original: <a class="auto-link" href="http://alexandrasamuel.com/world/why-and-how-to-yes-and-yes-yes">http://alexandrasamuel.com/world/why-and-how-to-yes-and-yes-yes</a>
+
+Silo copy: (scroll to the bottom of the article text) <a class="auto-link" href="https://medium.com/@awsamuel/why-i-keep-saying-yes-to-yxyy-18bb6509fd35">https://medium.com/@awsamuel/why-i-keep-saying-yes-to-yxyy-18bb6509fd35</a></p>
+<span class="info footer"><a href="2015/168/t2/five-words-permalink-that-make-silo-post" class="dt-published published dt-updated updated u-url u-uid"><time class="value" datetime="15:24-0700">15:24</time> on <time class="value">2015-06-17</time></a></span>
+</li>
+<li class="h-entry hentry as-note">
+<p class="p-name entry-title e-content entry-content article">Inspiring <a class="auto-link h-x-username" href="https://twitter.com/yxyy">@yxyy</a> with creatives, running with dad Tue, #NP_LAX today.
+Returning to emails of so many standards screwups</p>
+<span class="info footer"><a href="2015/168/t1/inspiring-yxyy-creatives-running" class="dt-published published dt-updated updated u-url u-uid"><time class="value" datetime="15:15-0700">15:15</time> on <time class="value">2015-06-17</time></a></span>
+</li>
+<li class="h-entry hentry as-like">
+<p class="p-name entry-title e-content entry-content article">likes <a class="u-like-of" href="http://werd.io/2015/t-likewise-thank-you-being-kind-to-yourself-is-a">benwerd&rsquo;s reply</a></p>
+<span class="info footer"><a href="2015/167/f1" class="dt-published published dt-updated updated u-url u-uid"><time class="value" datetime="00:23-0700">00:23</time> on <time class="value">2015-06-16</time></a></span>
+</li>
+<li class="h-entry hentry as-note">
+<p class="p-name entry-title e-content entry-content article">Yesterday morning <a class="auto-link h-x-username" href="https://twitter.com/jessdandy">@jessdandy</a> led #YxYY yoga practice. She had <a class="auto-link h-x-username" href="https://twitter.com/staubin">@staubin</a> lead a vinyasa flow and asked me to instruct our class of about 15-20 in a step-by-step practice to do an arm balance (side crow) as I&rsquo;d taught her the day before. 
+
+Without preparation I led everyone from memory the steps I learned from my yoga teacher Jordan at Mission Cliffs.
+
+From standing, start with chair pose, and slowly deliberately take each of these steps as they feel comfortable, or stop, hold, and breathe when you feel like you&rsquo;ve reached a limit.
+* from chair, put your hands together in front of your chest and twist your upper torso to the right.
+* side twist with hands together, knees still bent, left elbow to the right of your right knee, watching your knees to keep them aligned
+* then stretched apart, one hand touch the floor, the other reaching to the sky, looking up to it
+* both hands on the mat pointing to the side, keeping knees aligned
+* use your core to lift your thigs up higher, so they touched as high up on your upper arms as possible
+* then start to bend your elbows and lean over them, your upper arms supporting your stacked thighs, keeping your core strong while still breathing
+* gradually as you lean further, your feet should feel light then left off the floor as your elbows are bent eventually to a 90 degree angle and you&rsquo;re doing side crow!
+
+Apparently about half the class was able to do it, and everyone took at least a few steps and found spots to stretch and practice.
+
+I had everyone unwind from the pose, stand back up, take a counter backbend stretch, and then do the same on the other side.
+
+That was a first for me &#x2014; I&rsquo;ve never led a group in any kind of yoga, and was grateful to have the opportunity to do so, as well as having been taught a series of small incremental steps to achieving side crow that I could remember and pass along. Teaching something to a group for the first time was itself a learning experience.</p>
+<span class="info footer"><a href="2015/166/t2/morning-yxyy-yoga-practice-vinyasa" class="dt-published published dt-updated updated u-url u-uid"><time class="value" datetime="23:56-0700">23:56</time> on <time class="value">2015-06-15</time></a></span>
+</li>
+<li class="h-entry hentry as-note">
+<p class="p-name entry-title e-content entry-content article"><a class="auto-link h-x-username" href="https://twitter.com/benwerd">@benwerd</a> really appreciate and inspired by all your work.
+Yes and give yourself gratefulness for your achievements.</p>
+<span class="info footer"><a href="2015/166/t1/appreciate-inspired-give-gratefulness" class="dt-published published dt-updated updated u-url u-uid"><time class="value" datetime="07:44-0700">07:44</time> on <time class="value">2015-06-15</time></a></span>
+</li>
+<li class="h-entry hentry as-note">
+<p class="p-name entry-title e-content entry-content article">Yesterday: automatic reply webmentions sending. (my first indieweb reply to do so was <a class="auto-link" href="http://tantek.com/2015/162/t2/indieweb-ui-ux-sketch-build">tantek.com/2015/162/t2/indieweb-ui-ux-sketch-build</a>)
+
+Today: pingbacks too, e.g. First Federated #Indieweb Comments: <a class="auto-link" href="https://eschnou.com/entry/testing-indieweb-federation-with-waterpigscouk-aaronpareckicom-and--62-24908.html">https://eschnou.com/entry/testing-indieweb-federation-with-waterpigscouk-aaronpareckicom-and--62-24908.html</a>
+
+Previously: <a class="auto-link" href="http://tantek.com/2013/113/b1/first-federated-indieweb-comment-thread">http://tantek.com/2013/113/b1/first-federated-indieweb-comment-thread</a></p>
+<span class="info footer"><a href="2015/163/t2/webmention-sending-pingbacks-federated-indieweb" class="dt-published published dt-updated updated u-url u-uid"><time class="value" datetime="03:03-0700">03:03</time> on <time class="value">2015-06-12</time></a></span>
+</li>
+<li class="h-entry hentry as-note">
+<p class="p-name entry-title e-content entry-content article"><a class="auto-link h-x-username" href="https://twitter.com/eschnou">@eschnou</a> now automatically sending webmentions (or pingbacks if necessary) from replies; joining #indieweb federation!</p>
+<span class="info footer"><a href="2015/163/t1/webmentions-pingbacks-indieweb-federation" class="dt-published published dt-updated updated u-url u-uid"><time class="value" datetime="02:34-0700">02:34</time> on <time class="value">2015-06-12</time></a></span>
+</li>
+<li class="h-entry hentry as-note">
+<p class="p-name entry-title e-content entry-content article"><a class="auto-link h-x-username" href="https://twitter.com/kylewmahan">@kylewmahan</a> re: <a class="auto-link" href="http://kylewm.com/r/4ba4">kylewm.com/r/4ba4</a>
+Let&rsquo;s see how a reply three deep (reply to your reply to your reply) works.</p>
+<span class="info footer"><a href="2015/162/t3/reply-three-deep" class="dt-published published dt-updated updated u-url u-uid"><time class="value" datetime="22:06-0700">22:06</time> on <time class="value">2015-06-11</time></a></span>
+</li>
+<li class="h-entry hentry as-note">
+<p class="p-name entry-title e-content entry-content article"><a class="auto-link h-x-username" href="https://twitter.com/aaronpk">@aaronpk</a> re: <a class="auto-link" href="http://aaron.pk/n4bc1">aaron.pk/n4bc1</a>
+Looking forward to seeing what #indieweb #UI #UX iterations you sketch and build!</p>
+<span class="info footer"><a href="2015/162/t2/indieweb-ui-ux-sketch-build" class="dt-published published dt-updated updated u-url u-uid"><time class="value" datetime="19:06-0700">19:06</time> on <time class="value">2015-06-11</time></a></span>
+</li>
+<li class="h-entry hentry as-note">
+<p class="p-name entry-title e-content entry-content article"><a class="auto-link h-x-username" href="https://twitter.com/benwerd">@benwerd</a> indieweb tenets?
+<a class="auto-link h-x-username" href="https://twitter.com/loqisaur">@loqisaur</a> says <a class="auto-link" href="http://indiewebcamp.com/tenets">indiewebcamp.com/tenets</a>
+In summary: &#128509;&#9994;&#128269;&#128170;&#128523;&#128211;&#128158;&#128208;&#127760;&#128511;&#127881;&#127752;</p>
+<span class="info footer"><a href="2015/162/t1/indieweb-tenets-indiewebcamp-summary" class="dt-published published dt-updated updated u-url u-uid"><time class="value" datetime="17:21-0700">17:21</time> on <time class="value">2015-06-11</time></a></span>
+</li>
+<li class="h-entry hentry as-note">
+<p class="p-name entry-title e-content entry-content article">going to Homebrew Website Club 17:30 <a class="auto-link h-x-username" href="https://twitter.com/MozSF">@MozSF</a> 2015-06-17.
+Indie event <a class="auto-link" href="http://kylewm.com/2015/06/homebrew-website-club">kylewm.com/2015/06/homebrew-website-club</a>
+silo <a class="auto-link" href="http://fb.com/events/101890076819383">fb.com/events/101890076819383</a></p>
+<span class="info footer"><a href="2015/161/t2/homebrew-website-club-mozsf" class="dt-published published dt-updated updated u-url u-uid"><time class="value" datetime="23:49-0700">23:49</time> on <time class="value">2015-06-10</time></a></span>
+</li>
+<li class="h-entry hentry as-note">
+<p class="p-name entry-title e-content entry-content article">Made it to track yesterday.
+workout: 800 1600 800 1600 4x200
+I did: 800 1200 800 1200 4x200
+
+Previously: <a class="auto-link" href="http://tantek.com/2015/153/t1/headache-water-track-ran-anyway">http://tantek.com/2015/153/t1/headache-water-track-ran-anyway</a></p>
+<span class="info footer"><a href="2015/161/t1/track-yesterday-did" class="dt-published published dt-updated updated u-url u-uid"><time class="value" datetime="20:53-0700">20:53</time> on <time class="value">2015-06-10</time></a></span>
+</li>
+<li class="h-entry hentry as-note">
+<p class="p-name entry-title e-content entry-content article">I too am &ldquo;of the web&rdquo; per <a class="auto-link h-x-username" href="https://twitter.com/adactio">@adactio</a> <a class="auto-link" href="https://adactio.com/journal/9016">https://adactio.com/journal/9016</a>
+Also the #indieweb because silos die, like <a class="auto-link h-x-username" href="https://twitter.com/Branch">@Branch</a>: <a class="auto-link" href="http://tantek.com/2015/159/t1/branch-replied-my-site-last-longer">http://tantek.com/2015/159/t1/branch-replied-my-site-last-longer</a></p>
+<span class="info footer"><a href="2015/159/t2/of-the-indieweb-because-silos-die" class="dt-published published dt-updated updated u-url u-uid"><time class="value" datetime="23:22-0700">23:22</time> on <time class="value">2015-06-08</time></a></span>
+</li>
+<li class="h-entry hentry as-note">
+<p class="p-name entry-title e-content entry-content article"><a class="auto-link h-x-username" href="https://twitter.com/brianoberkirch">@brianoberkirch</a> 2y ago you posted <a class="auto-link h-x-username" href="https://twitter.com/Branch">@Branch</a>, I replied on my site &ldquo;where it will likely last longer&rdquo;.
+
+It did: <a class="auto-link" href="http://tantek.com/2013/073/b1/silos-vs-open-social-web">http://tantek.com/2013/073/b1/silos-vs-open-social-web</a>
+
+vs.
+
+<a class="auto-link" href="http://branch.com/b/why-are-silos-beating-the-light-out-of-an-open-social-web">http://branch.com/b/why-are-silos-beating-the-light-out-of-an-open-social-web</a>
+
+&ldquo;
+After more than three years of great conversations, our team has decided to shut down <a class="auto-link" href="http://Branch.com">Branch.com</a>. Before we go, we want to let you download the full text of all your posts and branches you joined.
+
+( Sign in with Twitter to Download )
+
+Keep bringing people together, and keep talking to each other. Thanks for all the conversations. 
+&rdquo;
+
+As reported by TechCrunch:
+* <a class="auto-link" href="http://techcrunch.com/2015/06/03/bye-branch/">http://techcrunch.com/2015/06/03/bye-branch/</a>
+
+Internet Archive:
+* <a class="auto-link" href="https://web.archive.org/web/20140731143212/http://branch.com/b/why-are-silos-beating-the-light-out-of-an-open-social-web">https://web.archive.org/web/20140731143212/http://branch.com/b/why-are-silos-beating-the-light-out-of-an-open-social-web</a></p>
+<span class="info footer"><a href="2015/159/t1/branch-replied-my-site-last-longer" class="dt-published published dt-updated updated u-url u-uid"><time class="value" datetime="22:30-0700">22:30</time> on <time class="value">2015-06-08</time></a></span>
+</li>
+<li class="h-entry hentry as-like">
+<p class="p-name entry-title e-content entry-content article">likes <a class="u-like-of" href="https://twitter.com/amazingmap/status/599931666803597312">@amazingmap&rsquo;s tweet</a></p>
+<span class="info footer"><a href="2015/159/f1" class="dt-published published dt-updated updated u-url u-uid"><time class="value" datetime="18:26-0700">18:26</time> on <time class="value">2015-06-08</time></a></span>
+</li>
+<li class="h-entry hentry as-note">
+<p class="p-name entry-title e-content entry-content article"><a class="auto-link h-x-username" href="https://twitter.com/deewu">@deewu</a> thanks for pointing out. Noted .so ccTLD issues:
+<a class="auto-link" href="https://indiewebcamp.com/short-domains#so">https://indiewebcamp.com/short-domains#so</a>
+and cited your tweets. Hope that&rsquo;s ok!</p>
+<span class="info footer"><a href="2015/156/t1/noted-so-cctld-issues" class="dt-published published dt-updated updated u-url u-uid"><time class="value" datetime="17:29-0700">17:29</time> on <time class="value">2015-06-05</time></a></span>
+</li>
+<li class="h-entry hentry as-note">
+<p class="p-name entry-title e-content entry-content article"><a class="auto-link h-x-username" href="https://twitter.com/BillSeitz">@BillSeitz</a> <a class="auto-link h-x-username" href="https://twitter.com/holden">@holden</a> <a class="auto-link h-x-username" href="https://twitter.com/WardCunningham">@WardCunningham</a> IndieWeb approach:
+1 reply from your own site
+2 POSSE e.g. Twitter
+3 webmention to posts on indieweb sites which then copy and embed such a reply inline under the post.
+
+Already works when received by these "BlogComment" engines for example:
+* Known / <a class="auto-link" href="http://withknown.com">withknown.com</a>
+* WordPress Webmention Plugin / <a class="auto-link" href="https://indiewebcamp.com/Getting_Started_on_WordPress">https://indiewebcamp.com/Getting_Started_on_WordPress</a>
+
+For more see:
+* <a class="auto-link" href="https://indiewebcamp.com/reply">https://indiewebcamp.com/reply</a>
+* <a class="auto-link" href="https://indiewebcamp.com/comments-presentation">https://indiewebcamp.com/comments-presentation</a></p>
+<span class="info footer"><a href="2015/154/t2/indieweb-ownyourcomments" class="dt-published published dt-updated updated u-url u-uid"><time class="value" datetime="18:23-0700">18:23</time> on <time class="value">2015-06-03</time></a></span>
+</li>
+<li class="h-entry hentry as-note">
+<p class="p-name entry-title e-content entry-content article">If I ever get a cat I'm naming it str.</p>
+<span class="info footer"><a href="2015/154/t1/cat-naming-str" class="dt-published published dt-updated updated u-url u-uid"><time class="value" datetime="18:07-0700">18:07</time> on <time class="value">2015-06-03</time></a></span>
+</li>
+<li class="h-entry hentry as-note">
+<p class="p-name entry-title e-content entry-content article">Awoke to a bad headache. Drank water til somewhat lucid. Track halfway over, ran to anyway:
+did 1x(600,300).
+workout was 5-7x(600,300).
+
+Previously: <a class="auto-link" href="http://tantek.com/2015/146/t2/made-trackattack">http://tantek.com/2015/146/t2/made-trackattack</a></p>
+<span class="info footer"><a href="2015/153/t1/headache-water-track-ran-anyway" class="dt-published published dt-updated updated u-url u-uid"><time class="value" datetime="23:06-0700">23:06</time> on <time class="value">2015-06-02</time></a></span>
+</li>
+<li class="h-entry hentry as-note">
+<p class="p-name entry-title e-content entry-content article"><a class="auto-link h-x-username" href="https://twitter.com/LynnMagic">@LynnMagic</a> it would be great to have you <a class="auto-link h-x-username" href="https://twitter.com/IndieWebCamp">@IndieWebCamp</a>.</p>
+<span class="info footer"><a href="2015/152/t4/indiewebcamp" class="dt-published published dt-updated updated u-url u-uid"><time class="value" datetime="23:22-0700">23:22</time> on <time class="value">2015-06-01</time></a></span>
+</li>
+<li>
+<p><span class="h-entry article"><span class="p-name">likes <a class="u-like-of" href="https://twitter.com/LynnMagic/status/585783676790706177">@LynnMagic&rsquo;s tweet</a></span> <a class="u-url" href="2015/152/f3">at <time class="dt-published" datetime="2015-06-01T23:19-0700">23:19</time></a></span>, <span class="h-entry article"><abbr class="p-name" title="likes @LynnMagic&rsquo;s tweet"><a class="u-like-of" href="https://twitter.com/LynnMagic/status/605616551958429696">tweet</a></abbr> <a class="u-url" href="2015/152/f2">at <time class="dt-published" datetime="2015-06-01T23:18-0700">23:18</time></a></span>, and <span class="h-entry article"><abbr class="p-name" title="likes @LynnMagic&rsquo;s tweet"><a class="u-like-of" href="https://twitter.com/LynnMagic/status/605615899475722240">tweet</a></abbr> <a class="u-url" href="2015/152/f1">at <time class="dt-published" datetime="2015-06-01T23:18-0700">23:18</time></a></span></p>
+<span class="info footer"><a href="2015/152/f">on <time>2015-06-01</time></a></span>
+</li>
+<li class="h-entry hentry as-note">
+<p class="p-name entry-title e-content entry-content article">going to IndieWebCamp 2015-07-11&#x2026;12 in Portland! You should too! Choose Portland or Brighton: <a class="auto-link" href="https://indiewebcamp.com/2015">https://indiewebcamp.com/2015</a></p>
+<span class="info footer"><a href="2015/152/t3/going-indiewebcamp-2015-portland" class="dt-published published dt-updated updated u-url u-uid"><time class="value" datetime="22:59-0700">22:59</time> on <time class="value">2015-06-01</time></a></span>
+</li>
+<li class="h-entry hentry as-note">
+<p class="p-name entry-title e-content entry-content article"><a class="auto-link h-x-username" href="https://twitter.com/benwerd">@benwerd</a> <a class="auto-link h-x-username" href="https://twitter.com/erinjo">@erinjo</a> also proud of you &amp; <a class="auto-link h-x-username" href="https://twitter.com/withknown">@withknown</a> &#x2014; so much #indieweb &amp; especially user empathy. Keep up the great work!</p>
+<span class="info footer"><a href="2015/152/t2/proud-withknown-indieweb-user-empathy" class="dt-published published dt-updated updated u-url u-uid"><time class="value" datetime="22:20-0700">22:20</time> on <time class="value">2015-06-01</time></a></span>
+</li>
+<li class="h-entry hentry as-note">
+<p class="p-name entry-title e-content entry-content article">Congrats to fellow re-elected <a class="auto-link h-x-username" href="https://twitter.com/W3CAB">@W3CAB</a> members <a class="auto-link h-x-username" href="https://twitter.com/chaals">@chaals</a> <a class="auto-link h-x-username" href="https://twitter.com/cwilso">@cwilso</a> <a class="auto-link h-x-username" href="https://twitter.com/mc2hampion">@mc2hampion</a> and newcomer Judy Zhu! <a class="auto-link" href="http://www.w3.org/blog/news/archives/4727">http://www.w3.org/blog/news/archives/4727</a></p>
+<span class="info footer"><a href="2015/152/t1/congrats-fellow-elected-w3cab-members" class="dt-published published dt-updated updated u-url u-uid"><time class="value" datetime="21:56-0700">21:56</time> on <time class="value">2015-06-01</time></a></span>
+</li>
+<li class="h-entry hentry as-note">
+<p class="p-name entry-title e-content entry-content article">Having had success with more openness, I&rsquo;m running for the <a class="auto-link h-x-username" href="https://twitter.com/W3CAB">@W3CAB</a> again.
+
+Ask your <a class="auto-link h-x-username" href="https://twitter.com/W3C">@W3C</a> AC Rep to vote by tomorrow!
+
+<a class="auto-link" href="https://www.w3.org/2002/09/wbs/33280/ab20150501/">https://www.w3.org/2002/09/wbs/33280/ab20150501/</a> 
+(W3C Member-only link)
+
+I&rsquo;ll write more later, but here&rsquo;s a few accomplishments:
+
+I created and got the W3C Advisory Board (AB) to start openly using:
+
+* <a class="auto-link h-x-username" href="https://twitter.com/W3CAB">@W3CAB</a> - The W3C Advisory Board's official Twitter account
+* <a class="auto-link" href="https://www.w3.org/wiki/AB">https://www.w3.org/wiki/AB</a> - wiki page of open AB projects
+
+I worked hard at the Advisory Board to make more open licensing happen at W3C, and with the help and collaboration of many, concrete progress has been made there:
+* <a class="auto-link" href="https://www.w3.org/2004/pp/psig/group/1505-derivative-REC.html">https://www.w3.org/2004/pp/psig/group/1505-derivative-REC.html</a> (also a W3C Member-only link, hope to report more at a public link soon)
+
+I'm still working towards allowing Working Groups (and Editors) to choose to use CC0, but the above is at least a big step forward for establishing a culture of using more liberal licenses.
+
+Thank you for your support!</p>
+<span class="info footer"><a href="2015/150/t1/running-for-w3cab-again" class="dt-published published dt-updated updated u-url u-uid"><time class="value" datetime="11:58-0700">11:58</time> on <time class="value">2015-05-30</time></a></span>
+</li>
+<li class="h-entry hentry as-note">
+<p class="p-name entry-title e-content entry-content article">going to #YxYY003! Looking forward to warm &amp; thoughtful chats with independent creatives. <a class="auto-link" href="http://yesandyesyes.com">yesandyesyes.com</a> <a class="auto-link h-x-username" href="https://twitter.com/yxyy">@yxyy</a></p>
+<span class="info footer"><a href="2015/149/t1/yxyy003-thoughtful-independent-creatives-yxyy" class="dt-published published dt-updated updated u-url u-uid"><time class="value" datetime="21:20-0700">21:20</time> on <time class="value">2015-05-29</time></a></span>
+</li>
+<li class="h-entry hentry as-note">
+<p class="p-name entry-title e-content entry-content article"><a class="auto-link h-x-username" href="https://twitter.com/phidip">@phidip</a> #NPSF is <a class="auto-link h-x-username" href="https://twitter.com/Nov_Project_SF">@Nov_Project_SF</a>, SF chapter/tribe of <a class="auto-link" href="http://november-project.com">november-project.com</a> &#x2014; a free workout group. Last Wednesday of the month is our "PR Wednesday" where we do a particular routine and try to set a new personal record time to completion. More on NPSF&rsquo;s PR Wednesday routine in this previous post: <a class="auto-link" href="http://tantek.com/2015/119/t1/personal-record-npsf-pr-faster">tantek.com/2015/119/t1/personal-record-npsf-pr-faster</a></p>
+<span class="info footer"><a href="2015/148/t1/npsf-nov-project-sf-free-workout" class="dt-published published dt-updated updated u-url u-uid"><time class="value" datetime="15:49-0700">15:49</time> on <time class="value">2015-05-28</time></a></span>
+</li>
+<li class="h-entry hentry as-note">
+<p class="p-name entry-title e-content entry-content article">Actually I did set an #NPSF PR this morning!
+
+33:20 = 35s faster than 33:55 last month!
+
+Apparently I misremembered my last month&rsquo;s time as 32:55. I was so sure of my previous PR this morning and when I wrote my previous post that I didn&rsquo;t even click back to last month&rsquo;s post until just now.
+
+No wonder I was a lot closer to the people just ahead of me this time. 
+
+I was over half a minute faster!
+
+So yeah, the 3/1 minute run/walk Galloway method totally worked.</p>
+<span class="info footer"><a href="2015/147/t2/actually-npsf-pr-faster" class="dt-published published dt-updated updated u-url u-uid"><time class="value" datetime="21:20-0700">21:20</time> on <time class="value">2015-05-27</time></a></span>
+</li>
+<li class="h-entry hentry as-note">
+<p class="p-name entry-title e-content entry-content article">#NPSF PR Wednesday this morning: 33:20, 25s slower.
+Tried a 3/1min run/walk this time. Felt a lot smoother overall, with a lot more room to grow and improve. Also today was colder than last month, and I was a lot closer to the people just ahead of me than I was last month.
+
+Previously: <a class="auto-link" href="http://tantek.com/2015/119/t1/personal-record-npsf-pr-faster">tantek.com/2015/119/t1/personal-record-npsf-pr-faster</a></p>
+<span class="info footer"><a href="2015/147/t1/npsf-pr-wednesday-slower" class="dt-published published dt-updated updated u-url u-uid"><time class="value" datetime="16:50-0700">16:50</time> on <time class="value">2015-05-27</time></a></span>
+</li>
+<li class="h-entry hentry as-note">
+<p class="p-name entry-title e-content entry-content article">Somehow woke up, made it to #trackattack.
+plan 1200 1600 1200 1600 1200
+I did 1200 1200 800 800 1200 w 90s rests
+
+These people: <a class="auto-link" href="https://instagram.com/p/3KgnvHg9SZ">https://instagram.com/p/3KgnvHg9SZ</a>
+<a class="auto-link figure" href="https://igcdn-photos-b-a.akamaihd.net/hphotos-ak-xfa1/t51.2885-15/11326271_1574506699465321_1933832894_n.jpg"><img class="auto-embed" alt="a photo" src="https://igcdn-photos-b-a.akamaihd.net/hphotos-ak-xfa1/t51.2885-15/11326271_1574506699465321_1933832894_n.jpg"/></a>
+Photo by Nick Buck
+
+Last week: <a class="auto-link" href="http://tantek.com/2015/139/t1/first-nyrr-tuesday-intervals">tantek.com/2015/139/t1/first-nyrr-tuesday-intervals</a>
+
+Previously: <a class="auto-link" href="http://tantek.com/2015/118/t1/npsf-trackattack-done">tantek.com/2015/118/t1/npsf-trackattack-done</a></p>
+<span class="info footer"><a href="2015/146/t2/made-trackattack" class="dt-published published dt-updated updated u-url u-uid"><time class="value" datetime="22:10-0700">22:10</time> on <time class="value">2015-05-26</time></a></span>
+</li>
+<li class="h-entry hentry as-note">
+<p class="p-name entry-title e-content entry-content article">making progress on short, simple, flat open source code for webmention discovery in HTTP&amp;HTML: <a class="auto-link" href="https://indiewebcamp.com/Webmention#Discovery_in_PHP">https://indiewebcamp.com/Webmention#Discovery_in_PHP</a></p>
+<span class="info footer"><a href="2015/146/t1/short-simple-flat-code-webmention" class="dt-published published dt-updated updated u-url u-uid"><time class="value" datetime="00:54-0700">00:54</time> on <time class="value">2015-05-26</time></a></span>
+</li>
+<li class="h-entry hentry as-note">
+<p class="p-name entry-title e-content entry-content article">Tired of native iOS app inefficiencies, thus a deletion binge:
+* Buy Me a Pie! (unused)
+* Clear (unused)
+* Connect (never seemed to work or do anything useful, asked for too many creepy permissions)
+* Epicurious (unused)
+* Give It Up! (unused)
+* MapMyRun (unused)
+* MyFitnessPal (unused)
+* RunKeeper (no good on iPod, Nike+ Running works fine)
+* Runtastic (unused)
+* PaperKarma (never got it to work)
+* Path Talk (unused)
+* Tumblr (website should be good enough)
+
+These are just the few based on what showed up in App Store / Updates. As long as a native iOS app is not asking to be updated, then it seems mostly harmless.
+
+However, most so-called "native" mobile apps are more work for the user (thus more unfriendly) by making the user deal with:
+* update notifications
+* explicitly needing to update them
+* having them be disabled (Waiting&#x2026;) while being updated
+* making device backups take longer
+
+On the other hand, the nice thing about web app shortcuts is that they never need explicit updating, nor do you have to wait for such updates to finish before you can use them again, nor do you have to deal with any of the other above-noted native app annoyances.</p>
+<span class="info footer"><a href="2015/145/t2/native-ios-app-deletion-binge" class="dt-published published dt-updated updated u-url u-uid"><time class="value" datetime="23:11-0700">23:11</time> on <time class="value">2015-05-25</time></a></span>
+</li>
+<li class="h-entry hentry as-note">
+<p class="p-name entry-title e-content entry-content article">going to Homebrew Website Club 17:30 <a class="auto-link h-x-username" href="https://twitter.com/MozSF">@MozSF</a> 2015-06-03.
+Indie event <a class="auto-link" href="http://kylewm.com/2015/05/homebrew-website-club">kylewm.com/2015/05/homebrew-website-club</a>
+silo <a class="auto-link" href="http://fb.com/events/674781485961103">fb.com/events/674781485961103</a></p>
+<span class="info footer"><a href="2015/145/t1/homebrew-website-club-mozsf" class="dt-published published dt-updated updated u-url u-uid"><time class="value" datetime="15:14-0700">15:14</time> on <time class="value">2015-05-25</time></a></span>
+</li>
+<li>
+<p><span class="h-entry article"><span class="p-name">likes <a class="u-like-of" href="https://twitter.com/matthillco/status/601682905430171648">@matthillco&rsquo;s tweet</a></span> <a class="u-url" href="2015/143/f5">at <time class="dt-published" datetime="2015-05-23T07:47-0700">07:47</time></a></span>, <span class="h-entry article"><abbr class="p-name" title="likes @andy_leap&rsquo;s tweet"><a class="u-like-of" href="https://twitter.com/andy_leap/status/601376468904574976">@andy_leap&rsquo;s tweet</a></abbr> <a class="u-url" href="2015/143/f4">at <time class="dt-published" datetime="2015-05-23T07:47-0700">07:47</time></a></span>, <span class="h-entry article"><abbr class="p-name" title="likes @matthillco&rsquo;s tweet"><a class="u-like-of" href="https://twitter.com/matthillco/status/601349809300217856">@matthillco&rsquo;s tweet</a></abbr> <a class="u-url" href="2015/143/f3">at <time class="dt-published" datetime="2015-05-23T07:46-0700">07:46</time></a></span>, <span class="h-entry article"><abbr class="p-name" title="likes @matthillco&rsquo;s tweet"><a class="u-like-of" href="https://twitter.com/matthillco/status/601347474171781120">tweet</a></abbr> <a class="u-url" href="2015/143/f2">at <time class="dt-published" datetime="2015-05-23T07:46-0700">07:46</time></a></span>, and <span class="h-entry article"><abbr class="p-name" title="likes @matthillco&rsquo;s tweet"><a class="u-like-of" href="https://twitter.com/matthillco/status/601344498791272448">tweet</a></abbr> <a class="u-url" href="2015/143/f1">at <time class="dt-published" datetime="2015-05-23T07:45-0700">07:45</time></a></span></p>
+<span class="info footer"><a href="2015/143/f">on <time>2015-05-23</time></a></span>
+</li>
+<li class="h-entry hentry as-note">
+<p class="p-name entry-title e-content entry-content article"><a class="auto-link h-x-username" href="https://twitter.com/matthillco">@matthillco</a> thanks for kind words!
+<a class="auto-link h-x-username" href="https://twitter.com/techytuppers">@techytuppers</a> good feedback. Changed IRC to webchat link.
+You&rsquo;re right regarding &ldquo;You have to walk before you can run.&rdquo;
+Some thoughts on that: <a class="auto-link" href="http://indiewebcamp.com/generations">http://indiewebcamp.com/generations</a>
+
+<a class="auto-link h-x-username" href="https://twitter.com/IndieWebCamp">@IndieWebCamp</a> is a community that encourages and helps enable everyone to walk and run who wants to do so, especially with their own identity and creativity, incrementally, step by step. More: <a class="auto-link" href="http://indiewebcamp.com/principles">http://indiewebcamp.com/principles</a></p>
+<span class="info footer"><a href="2015/141/t2/thanks-kind-words-good-feedback" class="dt-published published dt-updated updated u-url u-uid"><time class="value" datetime="22:05-0700">22:05</time> on <time class="value">2015-05-21</time></a></span>
+</li>
+<li class="h-entry hentry as-like">
+<p class="p-name entry-title e-content entry-content article">likes <a class="u-like-of" href="https://twitter.com/Nov_Project_NYC/status/600977572151828480"><span class="figure" style="text-align:left"><video class="auto-embed" controls="controls" src="https://video.twimg.com/ext_tw_video/600977499464585218/pu/vid/640x360/QN-gh97NUETsYAfb.webm"></video></span></a></p>
+<span class="info footer"><a href="2015/141/f1" class="dt-published published dt-updated updated u-url u-uid"><time class="value" datetime="07:38-0700">07:38</time> on <time class="value">2015-05-21</time></a></span>
+</li>
+<li class="h-entry hentry as-note">
+<p class="p-name entry-title e-content entry-content article">New <a class="auto-link h-x-username" href="https://twitter.com/CSS3UI">@CSS3UI</a> WD: <a class="auto-link" href="http://w3.org/TR/2015/WD-css3-ui-20150519">w3.org/TR/2015/WD-css3-ui-20150519</a>
+* 0 open issues
+* Security&amp;Privacy Q&amp;A per <a class="auto-link" href="http://tantek.com/b/4a31">tantek.com/b/4a31</a>
+More: <a class="auto-link" href="http://www.w3.org/blog/CSS/2015/05/20/css-basic-user-interface-draft-updated/">http://www.w3.org/blog/CSS/2015/05/20/css-basic-user-interface-draft-updated/</a></p>
+<span class="info footer"><a href="2015/141/t1/new-css3ui-wd-resolved-issues" class="dt-published published dt-updated updated u-url u-uid"><time class="value" datetime="07:31-0700">07:31</time> on <time class="value">2015-05-21</time></a></span>
+</li>
+<li class="h-entry hentry as-note">
+<p class="p-name entry-title e-content entry-content article">first <a class="auto-link h-x-username" href="https://twitter.com/Nov_Project_NYC">@Nov_Project_NYC</a> #doublegang this morning.
+2x40min partner workouts 5:28 w <a class="auto-link h-x-username" href="https://twitter.com/alison825L">@alison825L</a>, 6:28 w Brittany: <a class="auto-link" href="https://instagram.com/p/26qFWNpQZE">https://instagram.com/p/26qFWNpQZE</a> <a class="auto-link figure" href="https://igcdn-photos-b-a.akamaihd.net/hphotos-ak-xaf1/t51.2885-15/11256735_877803465589481_1657423548_n.jpg"><img class="auto-embed" alt="a photo" src="https://igcdn-photos-b-a.akamaihd.net/hphotos-ak-xaf1/t51.2885-15/11256735_877803465589481_1657423548_n.jpg"/></a></p>
+<span class="info footer"><a href="2015/140/t1/first-nov-project-nyc-doublegang" class="dt-published published dt-updated updated u-url u-uid"><time class="value" datetime="18:09-0700">18:09</time> on <time class="value">2015-05-20</time></a></span>
+</li>
+<li class="h-entry hentry as-note">
+<p class="p-name entry-title e-content entry-content article">did my first <a class="auto-link h-x-username" href="https://twitter.com/NYRR">@NYRR</a> Tuesday #intervals at #EngineersGate #CentralPark this morning: 4x800 2x400 (workout was: 6x800).</p>
+<span class="info footer"><a href="2015/139/t1/first-nyrr-tuesday-intervals" class="dt-published published dt-updated updated u-url u-uid"><time class="value" datetime="16:58-0700">16:58</time> on <time class="value">2015-05-19</time></a></span>
+</li>
+<li class="h-entry hentry as-note">
+<p class="p-name entry-title e-content entry-content article">Made it to NYC (4hr SFO delay). Grateful for #running #baytobreakers with so many friends, #NPSF LAX BOS NYC. #b2b104</p>
+<span class="info footer"><a href="2015/138/t1/grateful-running-baytobreakers-friends-np" class="dt-published published dt-updated updated u-url u-uid"><time class="value" datetime="23:13-0700">23:13</time> on <time class="value">2015-05-18</time></a></span>
+</li>
+<li class="h-entry hentry as-note">
+<p class="p-name entry-title e-content entry-content article">ran #baytobreakers in 1:17:53. ~3 minutes slower than last year.
+#b2b #b2b104 #noinjuries #noexcuses More: 
+
+Transited by bus halfway with a couple of <a class="auto-link h-x-username" href="https://twitter.com/nov_project_lax">@nov_project_lax</a> friends and then we did a ~2 mile warmup jog before the race to the corral entrances, stretched in the corral, and then bounced to stay warm with fellow <a class="auto-link h-x-username" href="https://twitter.com/nov_project_sf">@nov_project_sf</a> runners.
+
+We started the race on time near the front of Corral A, can&rsquo;t say anyone got in my way, people in general were faster than me. I kept pace with my friend <a class="auto-link h-x-username" href="https://twitter.com/leahculver">@leahculver</a> for the first mile which was my fastest of the whole race.
+
+Despite feeling prepared, I felt like I was dragging and heavy for the whole race. Even the downhills didn&rsquo;t feel as speedy as I&rsquo;m used to. I tried not to let those feelings get to me and pushed on regardless. 
+
+Still, I could tell by mile 4 that I wasn&rsquo;t making the time I wanted to, and wasn't sure I would even be able to beat my last year PR (personal record). I thought to myself regardless of any doubts, I owed it to myself to give it my all, so that I could at least finish knowing that I did, regardless of whether I PR'd or not.
+
+So I did, and I still fell short of my goal(s) for the day (except I did finish free of injury at least).
+
+I&rsquo;m not going to make any excuses, yet I have to admit, after consistently making progress the previous four years, and crushing it last year, I was disappointed with my performance today. 
+
+I&rsquo;m going to attempt to make the most of it, by reflecting on and writing down what I did (or did not do) that I might/could/should have done differently. Despite giving it my all on raceday, that&rsquo;s only part of giving it your all for the race, whether last night, yesterday, last week, or in the months of training beforehand. 
+
+It&rsquo;s just over two months before my next race (the second half of the San Francisco Marathon), and I&rsquo;m going to consciously plan for and put whatever insights I come up with to use from tomorrow until then.
+
+Previously: <a class="auto-link" href="http://tantek.com/2014/138/t1/ran-baytobreakers-faster-b2b103">tantek.com/2014/138/t1/ran-baytobreakers-faster-b2b103</a></p>
+<span class="info footer"><a href="2015/137/t1/ran-baytobreakers-slower-b2b104" class="dt-published published dt-updated updated u-url u-uid"><time class="value" datetime="18:45-0700">18:45</time> on <time class="value">2015-05-17</time></a></span>
+</li>
+<li class="h-entry hentry as-like">
+<p class="p-name entry-title e-content entry-content article">likes <a class="u-like-of" href="https://twitter.com/adactio/status/598238450853224448"><span class="figure" style="text-align:left"><img class="auto-embed" alt="a jpg" src="https://pbs.twimg.com/media/CE1es3lW8AAc1Dv.jpg"></span></a></p>
+<span class="info footer"><a href="2015/133/f1" class="dt-published published dt-updated updated u-url u-uid"><time class="value" datetime="02:51-0700">02:51</time> on <time class="value">2015-05-13</time></a></span>
+</li>
+<li class="h-entry hentry as-note">
+<p class="p-name entry-title e-content entry-content article">going to Homebrew Website Club NYC next Wed 2015-05-20!
+~18:30 in Manhattan. RSVP: <a class="auto-link" href="http://fb.com/events/807045706055031">fb.com/events/807045706055031</a></p>
+<span class="info footer"><a href="2015/131/t1/homebrew-website-club" class="dt-published published dt-updated updated u-url u-uid"><time class="value" datetime="14:55-0700">14:55</time> on <time class="value">2015-05-11</time></a></span>
+</li>
+<li class="h-entry hentry as-note">
+<p class="p-name entry-title e-content entry-content article">just like that (&lt;24h) <a class="auto-link h-x-username" href="https://twitter.com/Andy_Leap">@Andy_Leap</a> wrote+deployed a great start on a #golang #microformats2 parser <a class="auto-link" href="http://microformats.org/wiki/microformats2#Go">http://microformats.org/wiki/microformats2#Go</a></p>
+<span class="info footer"><a href="2015/130/t5/golang-microformats2-parser" class="dt-published published dt-updated updated u-url u-uid"><time class="value" datetime="23:03-0700">23:03</time> on <time class="value">2015-05-10</time></a></span>
+</li>
+<li class="h-entry hentry as-note">
+<p class="p-name entry-title e-content entry-content article">watching Forrest Gump for the first time since it came out. #ThisSeatsTaken #YouCantSitHere #YouCanSitHereIfYouWant</p>
+<span class="info footer"><a href="2015/130/t4/watching-forrest-gump" class="dt-published published dt-updated updated u-url u-uid"><time class="value" datetime="20:14-0700">20:14</time> on <time class="value">2015-05-10</time></a></span>
+</li>
+<li class="h-entry hentry as-note">
+<p class="p-name entry-title e-content entry-content article"><a class="auto-link h-x-username" href="https://twitter.com/ttepasse">@ttepasse</a> sorry about that &#x2014; didn&rsquo;t see the typo til just now, but demos are done. <a class="auto-link" href="http://talky.io">talky.io</a> for future reference.</p>
+<span class="info footer"><a href="2015/130/t3/sorry-typo-talky-for-future" class="dt-published published dt-updated updated u-url u-uid"><time class="value" datetime="10:23-0700">10:23</time> on <time class="value">2015-05-10</time></a></span>
+</li>
+<li class="h-entry hentry as-note">
+<p class="p-name entry-title e-content entry-content article">#IndieWebCamp Germany demos all done. They&rsquo;re off to BBQ but see extensive notes by <a class="auto-link h-x-username" href="https://twitter.com/rhiaro">@rhiaro</a>: <a class="auto-link" href="http://indiewebcamp.com/irc/2015-05-10#t1431268323324">http://indiewebcamp.com/irc/2015-05-10#t1431268323324</a></p>
+<span class="info footer"><a href="2015/130/t2/indiewebcamp-germany-demos-notes" class="dt-published published dt-updated updated u-url u-uid"><time class="value" datetime="09:10-0700">09:10</time> on <time class="value">2015-05-10</time></a></span>
+</li>
+<li class="h-entry hentry as-note">
+<p class="p-name entry-title e-content entry-content article">#IndieWebCamp Germany demos are live on <a class="auto-link" href="https://beta.talky.io/iwc">https://beta.talky.io/iwc</a> and are amazing! #webmention #micropub #microformats2</p>
+<span class="info footer"><a href="2015/130/t1/indiewebcamp-germany-demos" class="dt-published published dt-updated updated u-url u-uid"><time class="value" datetime="08:48-0700">08:48</time> on <time class="value">2015-05-10</time></a></span>
+</li>
+<li>
+<p><span class="h-entry article"><span class="p-name">likes <a class="u-like-of" href="https://twitter.com/bcrypt/status/597175459831533568">@bcrypt&rsquo;s tweet</a></span> <a class="u-url" href="2015/129/f15">at <time class="dt-published" datetime="2015-05-09T19:12-0700">19:12</time></a></span>, <span class="h-entry article"><abbr class="p-name" title="likes @bcrypt&rsquo;s tweet"><a class="u-like-of" href="https://twitter.com/bcrypt/status/597172549894574080">tweet</a></abbr> <a class="u-url" href="2015/129/f14">at <time class="dt-published" datetime="2015-05-09T19:12-0700">19:12</time></a></span>, <span class="h-entry article"><abbr class="p-name" title="likes @bcrypt&rsquo;s tweet"><a class="u-like-of" href="https://twitter.com/bcrypt/status/597171023004442624">tweet</a></abbr> <a class="u-url" href="2015/129/f13">at <time class="dt-published" datetime="2015-05-09T19:12-0700">19:12</time></a></span>, <span class="h-entry article"><abbr class="p-name" title="likes @bcrypt&rsquo;s tweet"><a class="u-like-of" href="https://twitter.com/bcrypt/status/597169351477702656">tweet</a></abbr> <a class="u-url" href="2015/129/f12">at <time class="dt-published" datetime="2015-05-09T19:11-0700">19:11</time></a></span>, <span class="h-entry article"><abbr class="p-name" title="likes @danielpietzsch&rsquo;s tweet"><a class="u-like-of" href="https://twitter.com/danielpietzsch/status/597043053174628352">@danielpietzsch&rsquo;s tweet</a></abbr> <a class="u-url" href="2015/129/f11">at <time class="dt-published" datetime="2015-05-09T09:23-0700">09:23</time></a></span>, <span class="h-entry article"><abbr class="p-name" title="likes @jkphl&rsquo;s tweet"><a class="u-like-of" href="https://twitter.com/jkphl/status/596984779997892610">@jkphl&rsquo;s tweet</a></abbr> <a class="u-url" href="2015/129/f10">at <time class="dt-published" datetime="2015-05-09T09:23-0700">09:23</time></a></span>, <span class="h-entry article"><abbr class="p-name" title="likes @glennjones&rsquo;s tweet"><a class="u-like-of" href="https://twitter.com/glennjones/status/596972622967103488">@glennjones&rsquo;s tweet</a></abbr> <a class="u-url" href="2015/129/f9">at <time class="dt-published" datetime="2015-05-09T09:22-0700">09:22</time></a></span>, <span class="h-entry article"><abbr class="p-name" title="likes @ChrisAldrich&rsquo;s tweet"><a class="u-like-of" href="https://twitter.com/ChrisAldrich/status/596958801938534400">@ChrisAldrich&rsquo;s tweet</a></abbr> <a class="u-url" href="2015/129/f8">at <time class="dt-published" datetime="2015-05-09T09:22-0700">09:22</time></a></span>, <span class="h-entry article"><abbr class="p-name" title="likes @Renaade&rsquo;s tweet"><a class="u-like-of" href="https://twitter.com/Renaade/status/596949529473220608">@Renaade&rsquo;s tweet</a></abbr> <a class="u-url" href="2015/129/f7">at <time class="dt-published" datetime="2015-05-09T09:21-0700">09:21</time></a></span>, <span class="h-entry article"><abbr class="p-name" title="likes @jkphl&rsquo;s tweet"><a class="u-like-of" href="https://twitter.com/jkphl/status/596949206075645953">@jkphl&rsquo;s tweet</a></abbr> <a class="u-url" href="2015/129/f6">at <time class="dt-published" datetime="2015-05-09T09:21-0700">09:21</time></a></span>, <span class="h-entry article"><abbr class="p-name" title="likes @rhiaro&rsquo;s tweet"><a class="u-like-of" href="https://twitter.com/rhiaro/status/596937187398148096">@rhiaro&rsquo;s tweet</a></abbr> <a class="u-url" href="2015/129/f5">at <time class="dt-published" datetime="2015-05-09T09:21-0700">09:21</time></a></span>, <span class="h-entry article"><abbr class="p-name" title="likes @jkphl&rsquo;s tweet"><a class="u-like-of" href="https://twitter.com/jkphl/status/596935960719396864">@jkphl&rsquo;s tweet</a></abbr> <a class="u-url" href="2015/129/f4">at <time class="dt-published" datetime="2015-05-09T09:20-0700">09:20</time></a></span>, <span class="h-entry article"><abbr class="p-name" title="likes @jkphl&rsquo;s tweet"><a class="u-like-of" href="https://twitter.com/jkphl/status/596934753942675456">tweet</a></abbr> <a class="u-url" href="2015/129/f3">at <time class="dt-published" datetime="2015-05-09T09:20-0700">09:20</time></a></span>, <span class="h-entry article"><abbr class="p-name" title="likes @jkphl&rsquo;s tweet"><a class="u-like-of" href="https://twitter.com/jkphl/status/596974567068934144">tweet</a></abbr> <a class="u-url" href="2015/129/f2">at <time class="dt-published" datetime="2015-05-09T09:02-0700">09:02</time></a></span>, and <span class="h-entry article"><abbr class="p-name" title="likes @jkphl&rsquo;s tweet"><a class="u-like-of" href="https://twitter.com/jkphl/status/596957707481051136">tweet</a></abbr> <a class="u-url" href="2015/129/f1">at <time class="dt-published" datetime="2015-05-09T09:01-0700">09:01</time></a></span></p>
+<span class="info footer"><a href="2015/129/f">on <time>2015-05-09</time></a></span>
+</li>
+<li class="h-entry hentry as-like">
+<p class="p-name entry-title e-content entry-content article">likes <a class="u-like-of" href="https://twitter.com/cdevroe/status/595214974567456769">@cdevroe&rsquo;s tweet</a></p>
+<span class="info footer"><a href="2015/124/f1" class="dt-published published dt-updated updated u-url u-uid"><time class="value" datetime="07:16-0700">07:16</time> on <time class="value">2015-05-04</time></a></span>
+</li>
+<li class="h-entry hentry as-note">
+<p class="p-name entry-title e-content entry-content article"><a class="auto-link figure" href="https://igcdn-photos-c-a.akamaihd.net/hphotos-ak-xtp1/t51.2885-15/11208222_287966931327250_1393997391_n.jpg"><img class="auto-embed" alt="a photo" src="https://igcdn-photos-c-a.akamaihd.net/hphotos-ak-xtp1/t51.2885-15/11208222_287966931327250_1393997391_n.jpg"/></a> <a class="auto-link" href="https://instagram.com/p/2JSbLeg9aR/">https://instagram.com/p/2JSbLeg9aR/</a>
+
+Saw a Corona Heights sunrise this morning after running #NPSF #hillsforbreakfast #earlygang with this great crew. 
+
+<a class="auto-link figure" href="https://igcdn-photos-a-a.akamaihd.net/hphotos-ak-xfa1/t51.2885-15/11189998_1700532250174120_2109592547_n.jpg"><img class="auto-embed" alt="a photo" src="https://igcdn-photos-a-a.akamaihd.net/hphotos-ak-xfa1/t51.2885-15/11189998_1700532250174120_2109592547_n.jpg"/></a> <a class="auto-link" href="https://instagram.com/p/2JPwhIBzMR/">https://instagram.com/p/2JPwhIBzMR/</a>
+
+Keeping it all in mind to get through the next week.</p>
+<span class="info footer"><a href="2015/121/t1/sunrise-npsf-earlygang" class="dt-published published dt-updated updated u-url u-uid"><time class="value" datetime="14:31-0700">14:31</time> on <time class="value">2015-05-01</time></a></span>
+</li>
+<li class="h-entry hentry as-note">
+<p class="p-name entry-title e-content entry-content article">&ldquo;Reclaim Your Domain&rdquo; <a class="auto-link" href="http://audreywatters.com/2015/04/29/reclaim-known/">http://audreywatters.com/2015/04/29/reclaim-known/</a>
+Nice post on how <a class="auto-link h-x-username" href="https://twitter.com/WithKnown">@WithKnown</a> helps you reclaim your online self &amp; stuff.</p>
+<span class="info footer"><a href="2015/120/t1/reclaim-domain-withknown-self-stuff" class="dt-published published dt-updated updated u-url u-uid"><time class="value" datetime="11:15-0700">11:15</time> on <time class="value">2015-04-30</time></a></span>
+</li>
+<li class="h-entry hentry as-note">
+<p class="p-name entry-title e-content entry-content article">Today I set a personal record at #NPSF PR-Wednesday.
+33:55 &#x2014; 2:07 faster.
+
+I don&rsquo;t remember feeling this miserable during a PR-Wednesday workout in a long time.
+
+But first the times:
+
+* 2:07 faster than my previous PR-Wednesday record 36:02 (2015-02-25)
+* 1:30 faster than my course record 35:25 (2015-01-13, before the course became our PR-Wednesday workout)
+
+The previous two months I did both the 5:30 &amp; 6:30 PR-Wednesday workouts as well as the &ldquo;tweeners&rdquo; in-between workout. Those times:
+<a class="auto-link" href="http://tantek.com/2015/084/t1/npsf-double-pr-wednesday">tantek.com/2015/084/t1/npsf-double-pr-wednesday</a>
+Feb: 36:02 &amp; 36:15
+Mar: 38:32 &amp; 37:04
+
+Since February of this year, the NPSF Alta Plaza PR-Wednesday workout has consisted of:
+
+1. start at the bottom of the steps on Pierce.
+2. run a clockwise lap around the park
+3. run up steps to the flat area between the playground &amp; tennis courts
+4. 10 burpees
+5. run back down the steps
+6. repeat 2-5 two more times
+7. repeat 2-3.
+
+For a total of 4 laps, 30 burpees, ??? steps, as fast as you can.
+
+Things I did differently beforehand for this morning:
+
+* Last night: iced my knees &#x2014; no pain, just a little swollen from Tuesday track (<a class="auto-link" href="http://ttk.me/t4at1">ttk.me/t4at1</a>)
+* 5:49 put on my newer racing ASICs instead of old training pair or Nike Structure 18s.
+* 5:50 rungang (warmup run ~2 miles) to 6:30 <a class="auto-link h-x-username" href="https://twitter.com/Nov_Project_SF">@Nov_Project_SF</a> instead of driving to doubling-up 5:30 &amp; 6:30.
+* ~6:15 downed a Starbucks single espresso on the run to Alta Plaza (having had nothing to eat at home but a couple of chewable vitamin Cs).
+
+During the PR workout this morning, there were three things that I distinctly remember doing differently, and feeling more mentally and physically miserable about.
+
+1. Ran (no walking) up the entire West side hill (first time) on lap 1, legs shaking at the top, thinking, I'm not even half a lap in yet.
+
+2. Second time up the steps, I raced them hard two at a time to the top (thanks to a serendipitous music boost), and then almost felt like throwing up while doing burpees after. Actually felt that during all subsequent burpees.
+
+3. Third lap, on the North side downhill, sprinted to the point of losing my breath (was inspired to pass Gil and Jorge on the downhill, each on their fourth lap, who then passed me back on the East side downhill when I had trouble breathing &amp; running at the same time).
+
+4. Not what I did, but what a friend did for me: Fourth lap, my friend Matt Schaar ran with me (he&rsquo;d finished his workout already), verbally encouraging me and anyone else nearby the whole way.
+
+I&rsquo;ve said it before (<a class="auto-link" href="http://ttk.me/b/4Yy2">ttk.me/b/4Yy2</a>) and I&rsquo;ll say it again (<a class="auto-link" href="http://ttk.me/b/4_n1">ttk.me/b/4_n1</a>), this is an incredibly positive, inspiring, and supportive group to run and workout with.
+
+<a class="auto-link figure" href="http://november-project.com/wp-content/uploads/2015/04/DSC_01331-768x515.jpg"><img class="auto-embed" alt="a jpg" src="http://november-project.com/wp-content/uploads/2015/04/DSC_01331-768x515.jpg"/></a> from <a class="auto-link" href="http://fb.com/media/set/?set=a.632064620263368.1073742040.276430682493432">fb.com/media/set/?set=a.632064620263368.1073742040.276430682493432</a>
+
+However, the entire workout I felt like I was going either slower or no faster than before. I felt like I was having an off day. A miserable off day. But stubbornly I wasn&rsquo;t going to give up. Instead, I pushed harder to just get it over with. And ended up going faster.
+
+I should emphasize, none of this involved any kind of pain threshold (as far as I remember). No knee pain nor ankle pain. (Well maybe a bit of suppressing a lingering sidecramp from my Sunday 7 mile trail run). 
+
+Apparently it was all about pushing myself further into both psychological and physical discomfort than I had before on a PR day.
+
+It&rsquo;s going to be interesting facing that next month, when I know that that&rsquo;s what it&rsquo;s going to take to both go that fast, and to have even a chance of PRing again.
+
+Fortunately I have a different race focus before then:
+
+Just 18 days til Bay to Breakers (2015-05-17) - where I&rsquo;ll have a different mental challenge. 
+
+Last year I cut over 16 minutes (<a class="auto-link" href="http://ttk.me/t4W81">ttk.me/t4W81</a>) from my B2B time (thanks to six months of NovemberProject). This year I've had twelve more months of NP and I honestly have no idea what is a reasonable expectation.
+
+I&rsquo;ve had some thoughts, like cut five minutes, get a sub-1:10 but I&rsquo;m trying hard to focus and concentrate on just beating last year&rsquo;s time and giving it all I&rsquo;ve got, finishing with the knowledge of having done so.</p>
+<span class="info footer"><a href="2015/119/t1/personal-record-npsf-pr-faster" class="dt-published published dt-updated updated u-url u-uid"><time class="value" datetime="18:45-0700">18:45</time> on <time class="value">2015-04-29</time></a></span>
+</li>
+<li class="h-entry hentry as-note">
+<p class="p-name entry-title e-content entry-content article">Congratulations <a class="auto-link h-x-username" href="https://twitter.com/benwerd">@benwerd</a> <a class="auto-link h-x-username" href="https://twitter.com/erinjo">@erinjo</a>! You should both be very proud with what you&rsquo;ve done <a class="auto-link h-x-username" href="https://twitter.com/Withknown">@Withknown</a> in just one year.</p>
+<span class="info footer"><a href="2015/118/t6/congratulations-withknown-one-year" class="dt-published published dt-updated updated u-url u-uid"><time class="value" datetime="21:03-0700">21:03</time> on <time class="value">2015-04-28</time></a></span>
+</li>
+<li class="h-entry hentry as-like">
+<p class="p-name entry-title e-content entry-content article">likes <a class="u-like-of" href="http://werd.io/2015/our-little-company-is-a-year-old---and-we">Ben Werdm&uuml;ller's note &ldquo;Our little company is a year old&rdquo;</a></p>
+<span class="info footer"><a href="2015/118/f4" class="dt-published published dt-updated updated u-url u-uid"><time class="value" datetime="20:57-0700">20:57</time> on <time class="value">2015-04-28</time></a></span>
+</li>
+<li class="h-entry hentry as-note">
+<p class="p-name entry-title e-content entry-content article">Hard enough find someone to get along with in #love, why would anyone object to that? Thoughts with #marriageequality.</p>
+<span class="info footer"><a href="2015/118/t5/hard-find-love-why-object-marriageequality" class="dt-published published dt-updated updated u-url u-uid"><time class="value" datetime="20:48-0700">20:48</time> on <time class="value">2015-04-28</time></a></span>
+</li>
+<li class="h-entry hentry as-note">
+<p class="p-name entry-title e-content entry-content article"><a class="auto-link h-x-username" href="https://twitter.com/scatteredbrainV">@scatteredbrainV</a> sure! See also <a class="auto-link" href="http://microformats.org/wiki/how-to-start-new-translation">http://microformats.org/wiki/how-to-start-new-translation</a> which has some tips. Feedback welcome!</p>
+<span class="info footer"><a href="2015/118/t4/microformats-translation-tips" class="dt-published published dt-updated updated u-url u-uid"><time class="value" datetime="14:59-0700">14:59</time> on <time class="value">2015-04-28</time></a></span>
+</li>
+<li class="h-entry hentry as-like">
+<p class="p-name entry-title e-content entry-content article">likes <a class="u-like-of" href="https://twitter.com/scatteredbrainV/status/593168938856484866">@scatteredbrainV&rsquo;s tweet</a></p>
+<span class="info footer"><a href="2015/118/f3" class="dt-published published dt-updated updated u-url u-uid"><time class="value" datetime="14:56-0700">14:56</time> on <time class="value">2015-04-28</time></a></span>
+</li>
+<li class="h-entry hentry as-note">
+<p class="p-name entry-title e-content entry-content article"><a class="auto-link h-x-username" href="https://twitter.com/scatteredbrainV">@scatteredbrainV</a> yes very much so!
+Perhaps start with syncing up <a class="auto-link" href="http://microformats.org/wiki/Main_Page-it">http://microformats.org/wiki/Main_Page-it</a> with <a class="auto-link" href="http://microformats.org/wiki/">http://microformats.org/wiki/</a> ?</p>
+<span class="info footer"><a href="2015/118/t3/syncing-up-main-page-it" class="dt-published published dt-updated updated u-url u-uid"><time class="value" datetime="14:55-0700">14:55</time> on <time class="value">2015-04-28</time></a></span>
+</li>
+<li class="h-entry hentry as-like">
+<p class="p-name entry-title e-content entry-content article">likes <a class="u-like-of" href="https://twitter.com/scatteredbrainV/status/592957830321287170">@scatteredbrainV&rsquo;s tweet</a></p>
+<span class="info footer"><a href="2015/118/f2" class="dt-published published dt-updated updated u-url u-uid"><time class="value" datetime="14:01-0700">14:01</time> on <time class="value">2015-04-28</time></a></span>
+</li>
+</ol>
+</div>
+
+<aside><div class="aside" id="contact">
+
+<div class="section hello">
+<h2>Hello</h2>
+<p class="p-note note">Hi. I work on open web standards and the indie web. I code, design, run, climb, and fight for the users.</p>
+</div>
+
+<div class="section recent-articles">
+<h2>Recent Articles</h2>
+<ul>
+<li><a href="2015/190/b1/blinking-fever">Blinking Fever</a></li>
+<li><a href="2015/189/b1/css-basic-user-interface-level-3">CSS Basic User Interface Module Level 3 Candidate Recommendation Published</a></li>
+<li><a href="2015/079/b1/dublin-core-application-profiles">Dublin Core Application Profiles &#x2014; A Brief Dialogue</a></li>
+</ul>
+</div>
+
+<div class="section information">
+<h2>Information</h2>
+<dl>
+<dt>Networks:</dt>
+<dd>
+<span class="p-category category">Stanford</span> <abbr title="computer science">CS</abbr> Alum (<a href="http://web.archive.org/web/20080615140717/http://www-cs.stanford.edu/People/undergraduate_alumni"><abbr title="Bachelor of Science">B.S.</abbr></a>, <a href="http://web.archive.org/web/20090831131632/http://www-cs.stanford.edu/People/masters_alumni"><abbr title="Master of Science">M.S.</abbr></a>)</dd>
+<dd>
+<span class="p-org org">microformats.org</span> (<a href="http://microformats.org/wiki/admins"><abbr class="p-role" title="administrator">admin</abbr></a>, <a href="http://microformats.org/about/people">founder</a>)</dd>
+<dd>
+<span class="p-org org">Mozilla</span> (<a class="p-role" href="https://wiki.mozilla.org/Standards">web standards</a>)</dd>
+<dt>Current City:</dt>
+<dd class="adr">
+<span class="p-locality locality">San Francisco</span>, <abbr title="California" class="p-region region">CA</abbr>
+</dd>
+</dl>
+</div>
+
+<div class="section elsewhere">
+<h2>Elsewhere</h2>
+<p>tantek.com is my online identity. I share, syndicate, (sometimes host) my activities elsewhere as well.</p>
+<ul class="comms">
+<li>
+<a rel="me" class="u-url url" href="https://twitter.com/t" title="notes on Twitter"><img src="images/twitter-16x16.png" alt=""/> Twitter notes</a>
+</li>
+</ul>
+<ul class="facets">
+<li><a rel="me" class="u-url url" href="https://github.com/tantek" title="open source on Github"><img src="images/github-16x16.png" alt=""/> Github projects</a></li>
+<li><a rel="me" class="u-url url" href="http://dribbble.com/tantek/" title="design snippets on Dribbble"><img src="images/dribbble-16x16.png" alt=""/> Dribbble designs</a></li>
+<li><a rel="me" class="u-url url" href="http://instagram.com/tantek/" title="photos on Instagram"><img src="images/instagram-16x16.png" alt=""/> Instagram photos</a></li>
+<li><a rel="me" class="u-url url" href="http://flickr.com/tantek/" title="photos on Flickr"><img src="images/flickr-16x16.png" alt=""/> Flickr photos</a></li>
+<li><a rel="me" class="u-url url" href="http://last.fm/user/tantekc" title="music on last.fm"><img src="images/lastfm-16x16.png" alt=""/> last.fm music</a></li>
+<li><a rel="me" class="u-url url" href="http://plancast.com/t" title="events, talks, and conferences on Plancast"><img src="images/plancast-16x16.png" alt=""/> Plancast events</a></li>
+<li>
+<s><a href="http://upcoming.org/user/6623" title="events, talks, and conferences on Upcoming"><img src="images/upcoming-16x16.png" alt=""/> Upcoming events</a></s><!-- Yahoo shutdown http://upcoming.yahoo.com/user/6623 -->
+</li>
+<li><a rel="me" class="u-url url" href="http://lanyrd.com/people/t" title="conferences past, present, and future on Lanyrd"><img src="images/lanyrd-16x16.png" alt=""/> Lanyrd conferences</a></li>
+<li><a rel="me" class="u-url url" href="http://foursquare.com/t" title="geolocation checkins on Foursquare"><img src="images/foursquare-16x16.png" alt=""/> Foursquare checkins</a></li>
+<!--<li><a rel="me" class="u-url url" href="http://tantek.pbwiki.com/" title="projects, notes, and events on PBWiki">PBworks wiki</a></li>-->
+<li><a rel="me" class="u-url url" href="http://www.facebook.com/tantek.celik"><img src="images/facebook-16x16.png" alt=""/> Facebook Profile</a></li>
+<li><a rel="me" class="u-url url" href="http://google.com/profiles/tantek" title="named Google Profile (formerly Google Buzz syndications)"><img src="images/google-16x16.png" alt=""/> Google Profile</a></li>
+<li><a rel="me" class="u-url url" href="https://plus.google.com/109182513536739786206/posts" title="occasional Google Plus posts"><img src="images/google+-16x16.png" alt=""/> Google Plus posts</a></li>
+<li><a class="u-url url" type="text/directory" href="http://h2vx.com/vcf/tantek.com/" title="Download my vCard to add this contact information to your Address Book"><img src="images/vcard-16x16.png" alt=""/> download vCard</a></li>
+<li>
+<a href="http://tantek.com/w/CommunicationProtocols">Preferred contact</a>: <a class="u-url url u-impp" href="aim:goim?screenname=tantekc"><img src="images/aim-16x16.png" alt=""/> aim:tantekc</a>
+</li>
+</ul>
+</div>
+
+<div class="section">
+<h2>Buy my book!</h2>
+<a href="http://tantek.com/html5now"><img src="images/html5nowdvd.jpg" alt="HTML5 Now!"/></a>
+<p>A step-by-step tutorial for getting started with HTML5 today. Includes reference guide and DVD with 2.5 hours of video plus 100 page searchable full-color PDF eBook.</p>
+<p><a href="http://tantek.com/html5now">Buy at Amazon.com</a></p>
+</div>
+
+
+
+<!--
+<div class="section">
+<h2>recommending</h2>
+<ol>
+
+</ol>
+</div>
+-->
+</div></aside>
+
+
+<footer><div class="footer">
+
+<div class="section">
+<h2>Launched &amp; Live</h2>
+<ul>
+<li>
+<a href="http://tantek.com/html5now">HTML5 Now! book &amp; DVD</a> (<a href="https://twitter.com/html5now">@html5now</a>) - quickly learn how to write HTML5, from simple documents to video and vector graphics.</li>
+<li>
+<a href="http://asin.cc" title="Amazon product link shortener">ASIN.cc</a> (<a href="https://twitter.com/asindotcc">@asindotcc</a>) - a handy URL shortener for books and Amazon products</li>
+<li>
+<a href="http://h2vx.com/" title="hCard to vCard, hCalendar to iCalendar conversion services">H2VX</a> (<a href="https://twitter.com/h2vx">@h2vx</a>) - add hCard contacts and hCalendar events from web pages to your address book and calendar programs</li>
+<li class="h-card">
+<a class="p-name u-url" href="http://microformats.org/wiki">microformats.org</a> (<a class="u-url" href="https://twitter.com/microformats">@microformats</a>) - <span class="p-note">the fastest way to turn your web pages into simple APIs and simultaneously look better in search engines</span>
+</li>
+</ul>
+</div>
+<div class="section">
+<h2>Currently Working On</h2>
+<ul>
+<li>
+<a href="https://wiki.mozilla.org/Tantek-Mozilla-projects">Mozilla projects</a> - open standards: 
+<a class="p-category category" href="http://microformats.org/wiki/microformats2">microformats2</a> (e.g. <a class="p-category category" href="http://microformats.org/wiki/h-card">h-card</a>, 
+<a class="p-category category" href="http://microformats.org/wiki/h-cite">h-cite</a>, 
+<a class="p-category category" href="http://microformats.org/wiki/h-entry">h-entry</a>, &amp;
+<a class="p-category category" href="http://microformats.org/wiki/h-event">h-event</a>),
+some <span class="p-category category">HTML5</span> &amp;
+<span class="p-category category">CSS3</span>,
+growing the <a class="p-category category p-org org h-org" href="https://indiewebcamp.com/">IndieWeb</a> &amp; <a href="https://indiewebcamp.com/events/next-hwc">Homebrew Website</a> communities.</li>
+<li>
+<a href="https://indiewebcamp.com/">IndieWebCamp</a> (<a href="https://twitter.com/indiewebcamp">@indiewebcamp</a>) - 
+organizing <a href="https://indiewebcamp.com/events">events</a>, 
+<a href="https://indiewebcamp.com/irc/today">discussions</a>, developing UI/UX patterns like 
+<a href="http://tantek.com/2014/067/b1/building-blocks-people-focused-mobile-communication">people-focused mobile communication</a> &amp; 
+<a class="p-category category" href="https://indiewebcamp.com/reply-context">reply-contexts</a>, and
+technologies like <a class="p-category category" href="https://indiewebcamp.com/authorship">authorship</a>, 
+<a class="p-category category" href="https://indiewebcamp.com/POSSE">POSSE</a>, &amp;
+<a class="p-category category" href="https://indiewebcamp.com/webactions">webactions</a>.
+</li>
+<li>
+<a class="p-category category" href="http://cassisproject.com" title="CASSIS language and library"><abbr title="Client And Server Scripting Implementation Subset for Javascript and PHP">CASSIS</abbr></a> 
+(<a href="http://github.com/tantek/cassis/">on github</a>, <a href="https://twitter.com/cassisjs">@cassisjs</a>) - a functional programming language and framework for  code that natively executes in PHP and Javascript.</li>
+<!-- 
+need help with this: https://indiewebcamp.com/User:Tantek.com#RelMeAuth_PHP_library
+<li><a class="p-category category" href="http://microformats.org/wiki/RelMeAuth" title="Simplified personal logins with rel-me and OAuth">RelMeAuth</a> - use a personal site and rel="me" hyperlinks to profiles on popular OAuth supporting services like <a href="https://twitter.com/t">Twitter</a>, <a href="https://github.com/tantek">Github</a> etc. to sign-in with your own URL.
+</li> -->
+<li>
+<a class="p-category category" href="https://indiewebcamp.com/Falcon">Falcon</a> (<a href="https://twitter.com/falcon">@falcon</a>) - server-based personal tweeting/blogging application. See in particular, what <a href="https://indiewebcamp.com/Falcon#Working_On">I'm currently working on</a>.
+</li>
+<li>
+<a href="http://tantek.com/w/Whistle">Whistle</a> - personal algorithmically reversible URL shortener.</li>
+</ul>
+</div>
+
+<div class="section">
+<h2>Speaking &amp; Events</h2>
+<ol>
+
+<li class="h-event vevent">
+<span class="dt-start dtstart"><time>2015-07-01</time></span> <a class="u-url url" href="https://indiewebcamp.com/events/2015-07-01-homebrew-website-club"><span class="p-name summary">Homebrew Website Club</span> <abbr class="p-location location" title="San Francisco, California, USA">San Francisco</abbr></a>
+</li>
+
+<li class="h-event vevent">
+<span class="dt-start dtstart"><time>2015-07-11</time></span>&#x2026;<abbr class="dt-end dtend" title="2015-07-12"><time datetime="2015-07-12">12</time></abbr> <a class="u-url url" href="https://indiewebcamp.com/2015"><span class="p-name summary">IndieWebCamp</span> <abbr class="p-location location" title="Portland, Oregon">Portland</abbr></a>
+</li>
+
+<li class="h-event vevent">
+<span class="dt-start dtstart"><time>2015-07-15</time></span> <a class="u-url url" href="https://indiewebcamp.com/events/2015-07-15-homebrew-website-club"><span class="p-name summary">Homebrew Website Club</span> <abbr class="p-location location" title="San Francisco, California, USA">San Francisco</abbr></a>
+</li>
+
+</ol>
+<p>See <a href="http://lanyrd.com/profile/t/future/">my Lanyrd</a> for more.</p>
+<p>
+<a href="webcal://h2vx.com/ics/tantek.com">Subscribe to events</a>
+</p>
+</div>
+
+<address class="copyright">&#xA9; <time>1996</time>-<time>2015</time> Tantek &#xC7;elik <span class="c">All Rights Reserved.</span>
+<span style="display:block" class="photo-credit">
+Icon photo by <a href="http://www.rebeccadanielsphoto.com/" class="h-card">Rebecca Daniels</a>.
+</span>
+</address>
+
+</div></footer>
+<script type="text/javascript" src="cassis.js"></script>
+<script type="text/javascript">/**/ 
+var es = document.getElementById("link");
+if (es) {
+  es.onclick = function() {
+   var e = targetelement();
+   e.focus();
+   e.select();
+  };
+}
+/**/</script>
+</body>
+</html>
+
+
+
+
+
+
+
+

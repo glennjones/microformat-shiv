@@ -1,23 +1,48 @@
 {
-  "author": "Glenn Jones",
-  "name": "microformat-shiv",
-  "description": "A cross browser JavaScript Microformats 2 parser",
-  "version": "0.3.4",
-  "license": "MIT",
-  "homepage": "http://microformat-shiv.com",
-  "repository": {
-    "type": "git",
-    "url": "git://github.com/glennjones/microformat-shiv.git"
-  },
-  "main": "microformat-shiv.js",
-  "devDependencies": {
-    "grunt": "0.4.x",
-    "grunt-contrib-jshint": "0.11.x",
-    "grunt-contrib-concat": "0.5.x",
-    "grunt-contrib-copy": "0.8.x",
-    "grunt-jsmin-sourcemap": "1.9.x",
-    "download-github-repo": "0.1.x",
-    "fs-extra": "0.19.x"
-  }
+	"author": "Glenn Jones",
+	"name": "microformat-shiv",
+	"description": "A cross browser JavaScript Microformats 2 parser",
+	"version": "1.0.0",
+	"license": "MIT",
+	"homepage": "http://microformat-shiv.com",
+	"repository": {
+		"type": "git",
+		"url": "git://github.com/glennjones/microformat-shiv.git"
+	},
+	"main": "microformat-shiv.js",
+	"scripts": {
+		"start": "app",
+   		"test": "make test",
+		"coveralls": "poncho -R lcov test/mocha-tests-server.html  | coveralls"
+	 },
+	"devDependencies": {
+		"hapi": "8.4.x",
+		"blipp": "2.1.x",
+		"good": "6.1.x",
+		"good-console": "5.0.x",
+		"mocha": "2.2.x",
+		"chai": "3.0.x",
+		"download-github-repo": "0.1.x",
+		"fs-extra": "0.19.x",
+		"request": "2.58.x",
+		"grunt": "0.4.x",
+		"grunt-contrib-concat": "0.5.x",
+		"grunt-contrib-copy": "0.8.x",
+		"grunt-contrib-jshint": "0.11.x",
+		"grunt-contrib-watch": "0.6.x",
+		"grunt-contrib-uglify": "0.9.x",
+		"grunt-mocha-phantomjs": "0.6.x",
+		"mocha-lcov-reporter": "0.0.x",
+		"mocha-phantomjs": "3.5.x",
+		"poncho": "0.1.x",
+		"codacy-coverage": "1.1.x",
+		"coveralls": "2.11.x"
+	},
+	"config": {
+		"blanket": {
+			"pattern": [
+				"lib"
+			]
+		}
+	}
 }
-

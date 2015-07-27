@@ -1,17 +1,31 @@
 {
   "name": "microformat-shiv",
-  "version": "0.3.4",
-  "main": "microformat-shiv.js",
+  "version": "1.0.0",
+  "main": "microformat-shiv.js", 
+  "authors": ["Glenn Jones <glennjonesnet@gmail.com>"],
+  "license": "MIT",
+  "moduleType": [
+    "amd",
+    "globals",
+    "node"
+  ],
   "ignore": [
     "**/.*",
     "examples",
     "lib",
     "node_modules",
     "test",
+    "umd",
+    "performance",
+    ".git",
     ".gitignore",
     "Gruntfile.js",
     "package.json",
-    "testlink.html",
-    "bower.json"
+    "update-tests.js",
+    "bower.json",
+    "Makefile",
+    ".coveralls.yml",
+    ".travis.yml",
+    "app.js"
   ]
 }

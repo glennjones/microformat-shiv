@@ -1,17 +1,17 @@
 /*
    Example Firefox Addon - microformat-shiv
-   Copyright (C) 2010 - 2013 Glenn Jones. All Rights Reserved.
+   Copyright (C) 2010 - 2015 Glenn Jones. All Rights Reserved.
    MIT License: https://raw.github.com/glennjones/microformat-shiv/master/license.txt
    
    */
 
-const self = require("self");
-const widgets = require('widget');
-const tabs = require('tabs');
-const pageMod = require('page-mod');
-const panels = require('panel');
-const pageWorkers = require("page-worker");
-const data = require("self").data;
+const self = require("sdk/self");
+const widgets = require('sdk/widget');
+const tabs = require('sdk/tabs');
+const pageMod = require('sdk/page-mod');
+const panels = require('sdk/panel');
+const pageWorkers = require("sdk/page-worker");
+const data = require("sdk/self").data;
 
 var tabData = {}
 

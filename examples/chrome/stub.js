@@ -6,7 +6,7 @@
    */
 
 
-items = microformats.getItems();
+items = Microformats.get();
 if(items && items.items.length > 0){
 	var pack = {'method':'storeData', 'data': items, 'url': document.location.href};
 	chrome.extension.sendMessage(pack, function(response) {});

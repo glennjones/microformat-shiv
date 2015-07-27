@@ -20,26 +20,23 @@ They’re only a few simple steps to installing the browser extension example fo
 
 There are a few more steps to installing the Firefox addon:
 
-* Install the `cfx` application from [https://ftp.mozilla.org/pub/mozilla.org/labs/jetpack/jetpack-sdk-latest.zip](https://ftp.mozilla.org/pub/mozilla.org/labs/jetpack/jetpack-sdk-latest.zip)
-* Extract the file contents wherever you choose, and navigate to the root directory of the SDK with a shell/command prompt. For example:
-
-         tar -xf addon-sdk.tar.gz
-         cd addon-sdk
-
-* Then run:
-
-        source bin/activate
-
-* Your command prompt should now have a new prefix containing the name of the SDK's root directory:
-
-        (addon-sdk)~/mozilla/addon-sdk >
-
+* Install the `jpm` its a [node.js](https://nodejs.org/) application so node.js needs to be install first. At the command line run: 
+```sh
+ npm install jpm -g
+ ```
+ 
 * Then download this GitHub repo to your local hard drive
 
-* Finally navigate to the directory containing the example project and run
+* To test the Firefox addon in your command line navigate to the Firefox directory in examples and run:
+```sh
+jpm run
+ ```
 
-        cfx run  
-
+* To build the addon to load into Firefox run:
+```sh
+jpm xpi
+ ```
+Once built you can drag the file into Firefox to intall it
 
 
 ### Opera
