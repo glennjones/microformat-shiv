@@ -115,7 +115,7 @@ JSON output with error.
 getParent
 -----
 
-Given an HTML DOM node in a document it will return its first parent microformat.
+Given an HTML DOM node it will return its first parent microformat.
 ```javascript
     <script src="microformat-shiv.min.js" type="text/javascript"></script>
     <script type="text/javascript">
@@ -144,7 +144,7 @@ The `getParent` method takes the same `options` as the `get` method. The one dif
 Count
 -----
 The `count` method returns the number of each microformat type found. It does not do a full parse so it is much quicker 
-than get and can be used for tasks such as adding notifications to the UI.
+than get and can be used for tasks such as adding notifications to the UI. The method can take a `options` object as a parameter.
 ```javascript
     <script src="microformat-shiv.min.js" type="text/javascript"></script>
     <script type="text/javascript">
@@ -163,7 +163,8 @@ Output
 
 isMicroformat
 -------------
-The `isMicroformat` method returns weather a node has a valid microformats class. It currently does not work for `rel=*` microformats.
+The `isMicroformat` method returns weather a node has a valid microformats class. It currently does not work consider 
+`rel=*` a microformats. The method can take a `options` object as a second parameter.
 ```javascript
     <script src="microformat-shiv.min.js" type="text/javascript"></script>
     <script type="text/javascript">
@@ -172,6 +173,24 @@ The `isMicroformat` method returns weather a node has a valid microformats class
         // do something with isVaild boolean 
     </script>    
 ```  
+
+
+hasMicroformats
+-------------
+The `hasMicroformats` method returns weather a document or node has any valid microformats class. It currently does 
+not take rel=* microformats into account. The method can take a `options` object as a second parameter.
+```javascript
+    <script src="microformat-shiv.min.js" type="text/javascript"></script>
+    <script type="text/javascript">
+        var isVaild,
+            node = document.getElementById('target');
+            
+        isVaild = Microformats.isMicroformat( node );
+        // do something with isVaild boolean 
+    </script>    
+```  
+
+
 
 Version and livingStandard
 --------------------------

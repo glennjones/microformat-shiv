@@ -3,7 +3,7 @@ var pack = {};
 window.addEventListener('DOMContentLoaded', function() {
 	
 	if(window.top === window.self) {
-		var items = microformats.getItems();
+		var items = Microformats.get();
 		pack = {'method':'storeData', 'data': items, 'url': document.location.href};
 		opera.extension.postMessage(pack);	
 	}

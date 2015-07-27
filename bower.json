@@ -1,7 +1,14 @@
 {
   "name": "microformat-shiv",
   "version": "1.0.0",
-  "main": "microformat-shiv.js",
+  "main": "microformat-shiv.js", 
+  "authors": ["Glenn Jones <glennjonesnet@gmail.com>"],
+  "license": "MIT",
+  "moduleType": [
+    "amd",
+    "globals",
+    "node"
+  ],
   "ignore": [
     "**/.*",
     "examples",
