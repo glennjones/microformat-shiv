@@ -9,15 +9,11 @@ lib-cov
 
 pids
 logs
-results
-
 node_modules
+
 npm-debug.log
 _site
 .DS_Store
-
-/static/testsuite/
 *.svn-base
-test/test.html
 
-testlink.html
+

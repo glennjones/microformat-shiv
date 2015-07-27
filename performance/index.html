@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+
+		<meta charset="UTF-8">
+		<title>Performance results</title>
+
+        <link rel="stylesheet" href="../css/testrunner.css">
+
+	</head>
+	
+	<body>
+        
+        <h1>Performance results</h1>
+		
+		<p>Averaged over 3 page renders. Laptop used was a MacBook Pro (Retina, Mid 2014) and phone used was a HTC M8. 
+			Used latest browsers <time>2015-07-21</time>
+		</p>
+		
+		
+		
+		
+		
+		<h2>Microformats.count()</h2>
+		<table>
+			<thead>
+				<tr>
+					<td>site</td>
+					<td>Firefox</td>
+					<td>Firefox for Andriod</td>
+					<td>Chrome</td>
+					<td>Chrome for Andriod</td>
+					<td>Opera</td>
+					<td>Safari</td>
+				</tr>
+				
+			</thead>
+			<tbody>
+				<tr>
+					<td>bbc.co.uk (no micorformats)</td>
+					<td>4ms</td>
+					<td>33ms</td>
+					<td>3ms</td>
+					<td>45ms</td>
+					<td>4ms</td>
+					<td>2ms</td>
+				</tr>
+				<tr>
+					<td>glennjones.net/notes</td>
+					<td>5ms</td>
+					<td>60ms</td>
+					<td>3ms</td>
+					<td>28ms</td>
+					<td>2ms</td>
+					<td>3ms</td>
+				</tr>
+				<tr>
+					<td>tantek.com</td>
+					<td>5ms</td>
+					<td>64ms</td>
+					<td>7ms</td>
+					<td>52ms</td>
+					<td>4ms</td>
+					<td>3ms</td>
+				</tr>
+			</tbody>
+		</table>
+		
+		
+		<h2>Microformats.getParent()</h2>
+		<table>
+			<thead>
+				<tr>
+					<td>site</td>
+					<td>Firefox</td>
+					<td>Firefox for Andriod</td>
+					<td>Chrome</td>
+					<td>Chrome for Andriod</td>
+					<td>Opera</td>
+					<td>Safari</td>
+				</tr>
+				
+			</thead>
+			<tbody>
+				<tr>
+					<td>bbc.co.uk (no micorformats)</td>
+					<td>2ms</td>
+					<td>7ms</td>
+					<td>1ms</td>
+					<td>5ms</td>
+					<td>1ms</td>
+					<td>1ms</td>
+				</tr>
+				<tr>
+					<td>glennjones.net/notes</td>
+					<td>18ms</td>
+					<td>192ms</td>
+					<td>14ms</td>
+					<td>101ms</td>
+					<td>10ms</td>
+					<td>7ms</td>
+				</tr>
+				<tr>
+					<td>tantek.com</td>
+					<td>16ms</td>
+					<td>237ms</td>
+					<td>12ms</td>
+					<td>116ms</td>
+					<td>10ms</td>
+					<td>9ms</td>
+				</tr>
+			</tbody>
+		</table>
+		
+		
+		
+		<h2>Microformats.get()</h2>
+		<table>
+			<thead>
+				<tr>
+					<td>site</td>
+					<td>Firefox</td>
+					<td>Firefox for Andriod</td>
+					<td>Chrome</td>
+					<td>Chrome for Andriod</td>
+					<td>Opera</td>
+					<td>Safari</td>
+				</tr>
+				
+			</thead>
+			<tbody>
+				<tr>
+					<td>bbc.co.uk (no micorformats)</td>
+					<td>5ms</td>
+					<td>61ms</td>
+					<td>6ms</td>
+					<td>42ms *</td>
+					<td>4ms</td>
+					<td>2ms</td>
+				</tr>
+				<tr>
+					<td>glennjones.net/notes</td>
+					<td>91ms</td>
+					<td>790ms</td>
+					<td>68ms</td>
+					<td>503ms</td>
+					<td>76ms</td>
+					<td>46ms</td>
+				</tr>
+				<tr>
+					<td>tantek.com</td>
+					<td>163ms</td>
+					<td>1481ms</td>
+					<td>116ms</td>
+					<td>980ms</td>
+					<td>120ms</td>
+					<td>59ms</td>
+				</tr>
+			</tbody>
+		</table>
+		* Random results in 170ms range seen
+	
+	</body>
+</html>
