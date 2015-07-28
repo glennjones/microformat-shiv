@@ -13,7 +13,7 @@
 	"scripts": {
 		"start": "app",
    		"test": "make test",
-		"coveralls": "poncho -R lcov test/mocha-tests-server.html  | coveralls"
+		"coveralls": "poncho -R lcov test/mocha-tests-server.html | coveralls"
 	 },
 	"devDependencies": {
 		"hapi": "8.4.x",

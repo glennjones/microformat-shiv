@@ -1,6 +1,6 @@
 
 [![build status](https://img.shields.io/travis/glennjones/microformat-shiv.svg?style=flat-square)](http://travis-ci.org/glennjones/microformat-shiv)
-[![Coverage Status](https://img.shields.io/coveralls/glennjones/microformat-shiv/dev.svg?style=flat-square)](https://coveralls.io/r/glennjones/microformat-shiv?branch=dev)
+[![Coverage Status](https://img.shields.io/coveralls/glennjones/microformat-shiv/dev.svg?style=flat-square)](https://coveralls.io/r/glennjones/microformat-shiv)
 [![Codacy Badge](https://img.shields.io/codacy/520b9cab36254761b100c33d3e3899e3.svg?style=flat-square)](https://www.codacy.com/app/glennjonesnet/microformat-shiv)
 [![MIT license](http://img.shields.io/badge/license-MIT-blue.svg?style=flat-square)](https://raw.github.com/glennjones/microformat-shic/master/license.txt)
 
