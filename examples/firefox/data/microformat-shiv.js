@@ -1,6 +1,6 @@
 /*
    microformat-shiv - v1.0.0
-   Built: 2015-07-28 12:07 - http://microformat-shiv.com
+   Built: 2015-07-29 08:07 - http://microformat-shiv.com
    Copyright (c) 2015 Glenn Jones
    Licensed MIT 
 */
@@ -233,10 +233,19 @@ var Microformats; // jshint ignore:line
 			// get path to rootNode 
 			// then clone document
 			// then reset the rootNode to its cloned version in new document
-			var path = modules.domUtils.getNodePath(this.rootNode);
-			var newDocument = modules.domUtils.cloneDocument(this.document);
-			this.document = newDocument;
-			this.rootNode = modules.domUtils.getNodeByPath(this.document, path);
+			var path,
+				newDocument,
+				newRootNode; 
+			
+			path = modules.domUtils.getNodePath(this.rootNode);
+			newDocument = modules.domUtils.cloneDocument(this.document);
+			newRootNode = modules.domUtils.getNodeByPath(newDocument, path);
+			
+			// check results as early IE fails
+			if(newDocument && newRootNode){
+				this.document = newDocument;
+				this.rootNode = newRootNode;	
+			}
 			
 			// add includes
 			if(this.addIncludes){
@@ -1766,7 +1775,6 @@ var Microformats; // jshint ignore:line
 						uf.properties.name = [modules.domUtils.textContent(title)];
 					}
 				}
-				
 			}
 			return uf;
 		};
@@ -2750,6 +2758,7 @@ var Microformats; // jshint ignore:line
 		/**
 		 * get a node from a path.
 		 *
+		 *   @param  {DOM document} document
 		 *   @param  {Array} path
 		 *   @return {DOM Node}
 		 */
@@ -2782,7 +2791,12 @@ var Microformats; // jshint ignore:line
 				// this try catch is need as IE has a URL object but no constuctor support
 				// http://glennjones.net/articles/the-problem-with-window-url
 				try {
-					return new URL(url, baseUrl).toString();
+					var resolved = new URL(url, baseUrl).toString();
+					// deal with early webkit not throwing an error - for safari
+					if(resolved === '[object URL]'){
+						resolved = URI.resolve(baseUrl, url);
+					}
+					return resolved;
 				}catch(e){
 					// otherwise fallback to URI library
 					return URI.resolve(baseUrl, url);
