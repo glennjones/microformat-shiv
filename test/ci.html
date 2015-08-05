@@ -1,17 +1,20 @@
 <html><head><title>Mocha</title>
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 <link rel="stylesheet" href="../node_modules/mocha/mocha.css" />
-<link rel="stylesheet" href="css/mocha-custom.css" />
-
 <script src="../node_modules/chai/chai.js"></script>
 <script src="../node_modules/mocha/mocha.js"></script>
 <script src="../thirdparty/es5-shim.min.js"></script>
-<script src="javascript/DOMParser.js"></script>
+<link rel="stylesheet" href="static/css/mocha-custom.css" />
 
-<!-- loads Microformats the full umd version ie window.Microformat -->
+<script src="static/javascript/DOMParser.js"></script>
+
 <script data-cover src="../microformat-shiv.js"></script>
 
-<script>mocha.setup("bdd")</script>
+<script>
+chai.config.includeStack = true;
+mocha.setup({ui: 'bdd', timeout: 10000});
+</script>
+
 <script src="standards-tests/mf-mixed-h-card-mixedpropertries.js"></script>
 <script src="standards-tests/mf-mixed-h-card-tworoots.js"></script>
 <script src="standards-tests/mf-mixed-h-entry-mixedroots.js"></script>
@@ -151,12 +154,16 @@
 <script src="interface-tests/isMicroformat-test.js"></script>
 <script src="interface-tests/hasMicroformats-test.js"></script>
 
-
-<script src="../node_modules/poncho/node_modules/blanket/dist/qunit/blanket.min.js"> </script>
-<script src="../node_modules/poncho/node_modules/blanket/src/adapters/mocha-blanket.js"></script>
-
 </head><body>
-<h3>Microformats test suite - v0.1.18</h3>
-<p>Mocha tests built on Tue Jul 14 2015 14:41:36 GMT+0100 (BST). Downloaded from github repo: glennjones/tests version v0.1.18</p>
+<h3 class="capitalize">Microformats-shiv: standards, interface tests</h3>
+<p>Standards tests built on Wed Aug 05 2015 14:24:03 GMT+0100 (BST). Downloaded from github repo: glennjones/tests version v0.1.18</p>
 <div id="mocha"></div>
+</body>
+<script>window.onload= function(){
+if (window.mochaPhantomJS) {
+mochaPhantomJS.run();
+}else{
+mocha.run();
+}
+};</script>
 </body></html>

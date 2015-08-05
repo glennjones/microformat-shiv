@@ -1,6 +1,5 @@
-  
 /*
-Unit test for isMicroformat
+Unit test for hasMicroformat
 */
 
 assert = chai.assert;

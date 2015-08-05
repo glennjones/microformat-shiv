@@ -1,4 +1,9 @@
-// Unit test for parser get function
+/*
+Unit test for get
+*/
+
+assert = chai.assert;
+
 
 describe('Microformat.get', function() {
     

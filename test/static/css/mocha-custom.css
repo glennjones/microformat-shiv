@@ -4,3 +4,6 @@ body {
   padding: 60px 50px;
 }
 
+h3.capitalize {
+    text-transform: capitalize;
+}
