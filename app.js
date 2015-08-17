@@ -65,8 +65,7 @@ server.route([{
 	handler: {
 		directory: {
 			path: './test',
-			listing: true,
-			index: 'parse.html'
+			listing: true
 		}
 	}
 },{

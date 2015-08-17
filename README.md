@@ -1,6 +1,6 @@
 
 [![build status](https://img.shields.io/travis/glennjones/microformat-shiv.svg?style=flat-square)](http://travis-ci.org/glennjones/microformat-shiv)
-[![Coverage Status](https://img.shields.io/coveralls/glennjones/microformat-shiv/dev.svg?style=flat-square)](https://coveralls.io/r/glennjones/microformat-shiv?branch=dev)
+[![Coverage Status](https://img.shields.io/coveralls/glennjones/microformat-shiv/master.svg?style=flat-square)](https://coveralls.io/r/glennjones/microformat-shiv)
 [![Codacy Badge](https://img.shields.io/codacy/520b9cab36254761b100c33d3e3899e3.svg?style=flat-square)](https://www.codacy.com/app/glennjonesnet/microformat-shiv)
 [![MIT license](http://img.shields.io/badge/license-MIT-blue.svg?style=flat-square)](https://raw.github.com/glennjones/microformat-shic/master/license.txt)
 
@@ -202,24 +202,23 @@ The library has two properties to help identify now up todate it is:
 
 Browser Support
 ---------------
-TODO update this list with support info.
+Desktop
 
-* Firefox 40 > 20
-* Chrome
-* Opera
-* Safari
-* IE11 
-* IE10 
-* IE9 (needs ES6-shim.js)
-* IE8 (needs ES6-shim.js)
+* Firefox 42-11
+* Chrome 43-14
+* Opera 30-19 (18 > passes 84% of tests)
+* Safari 8-6 (5 pass 97% of tests)
+* IE 11-8 
+* Edge 
 
-Device Browser Support
+Mobile
 ----------------------
-* iOS
-* Andriod
+* iOS 8.3, 7, 6, 5.1 (4 pass 97% of tests)	
+* Andriod 5, 4.4, 4.2 (Only verisions I could test)
+* Android Firefox 39 (Only verision I could test)
+* Android Chrome 43	(Only verision I could test)
 
-Add notes on support:
-
+Note some earlier browser will need ES6-shim.js
 
 
 Microformats definitions object

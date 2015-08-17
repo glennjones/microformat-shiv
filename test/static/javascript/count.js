@@ -45,7 +45,7 @@ window.onload = function() {
         
         // format output
         parserJSONElt.innerHTML = htmlEscape( js_beautify( JSON.stringify(mfJSON) ) );
-        prettyPrint(); 
+        //prettyPrint(); 
         
     }
     

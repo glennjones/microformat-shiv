@@ -1,3 +1,9 @@
+/*
+Unit test for getParent
+*/
+
+assert = chai.assert;
+
 
 describe('Microformat.getParent', function() {
         

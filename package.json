@@ -2,7 +2,7 @@
 	"author": "Glenn Jones",
 	"name": "microformat-shiv",
 	"description": "A cross browser JavaScript Microformats 2 parser",
-	"version": "1.0.0",
+	"version": "1.0.2",
 	"license": "MIT",
 	"homepage": "http://microformat-shiv.com",
 	"repository": {
@@ -13,7 +13,7 @@
 	"scripts": {
 		"start": "app",
    		"test": "make test",
-		"coveralls": "poncho -R lcov test/mocha-tests-server.html  | coveralls"
+		"coveralls": "poncho -R lcov test/ci.html | coveralls"
 	 },
 	"devDependencies": {
 		"hapi": "8.4.x",

@@ -1,4 +1,9 @@
-// Unit test for parser get function
+/*
+Unit test for get
+*/
+
+assert = chai.assert;
+
 
 describe('Microformat.get', function() {
     
@@ -8,8 +13,7 @@ describe('Microformat.get', function() {
             'type': ['h-card'],
             'properties': {
                 'name': ['Glenn Jones'],
-                'url': ['http://glennjones.net'],
-                'photo': ['http://example.com/photo.jpeg']
+                'url': ['http://glennjones.net']
             }
         }],
         'rels': {
@@ -37,8 +41,7 @@ describe('Microformat.get', function() {
             'rel': 'home'
         }]
     },
-    html = '<div class="h-card"><a class="p-name u-url" rel="bookmark" href="http://glennjones.net">Glenn Jones</a><img class="u-photo" src="photo.jpeg"/></div><a rel="alternate home" href="http://example.com/fr" media="handheld" hreflang="fr">French mobile homepage</a>';
-
+    html = '<div class="h-card"><a class="p-name u-url" rel="bookmark" href="http://glennjones.net">Glenn Jones</a></div><a rel="alternate home" href="http://example.com/fr" media="handheld" hreflang="fr">French mobile homepage</a>';
 
 
 
