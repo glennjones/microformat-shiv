@@ -83,6 +83,15 @@ Options
 
 __I would recommended always setting `textFormat` option to `normalised`. This is not part of the microformat parsing rules, but in most cases provides more usable output.__
 
+Experimental Options
+-------
+These are options are part of experimental specification development. They be removed or renamed in future.
+* `overlappingVersions` - (Boolean) block overlapping properties from different microformat versions default is `true`
+* `impliedPropertiesByVersion` (Boolean)  Set implied properties by microformat version default is `false`
+* `parseLatLonGeo` (Boolean)  Parse geo date writen as latlon i.e. 30.267991;-97.739568 
+default is `false`
+
+
 Output
 -------
 JSON output. This is an example of a parsed `h-card` microformat.
