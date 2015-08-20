@@ -1,6 +1,6 @@
 /*
-   microformat-shiv - v1.0.0
-   Built: 2015-07-29 08:07 - http://microformat-shiv.com
+   microformat-shiv - v1.0.2
+   Built: 2015-08-20 03:08 - http://microformat-shiv.com
    Copyright (c) 2015 Glenn Jones
    Licensed MIT 
 */
@@ -21,8 +21,8 @@ var Microformats; // jshint ignore:line
     var modules = {};
     
 
-	modules.version = '1.0.0';
-	modules.livingStandard = '2015-07-14T08:11:14Z';
+	modules.version = '1.0.2';
+	modules.livingStandard = '2015-08-20T13:50:36Z';
 
 	/**
 	 * constructor
@@ -31,6 +31,7 @@ var Microformats; // jshint ignore:line
 	modules.Parser = function () {
 		this.rootPrefix = 'h-';
 		this.propertyPrefixes = ['p-', 'dt-', 'u-', 'e-'];
+		this.excludeTags = ['br', 'hr'];
 	};
 	
 	
@@ -48,7 +49,10 @@ var Microformats; // jshint ignore:line
 				'baseUrl': '',
 				'filters': [],
 				'textFormat': 'whitespacetrimmed',
-				'dateFormat': 'auto'
+				'dateFormat': 'auto',
+				'overlappingVersions': true,
+				'impliedPropertiesByVersion': false,
+				'parseLatLonGeo': false
 			};
 			this.rootID = 0;
 			this.errors = [];
@@ -496,48 +500,6 @@ var Microformats; // jshint ignore:line
 			}
 		},
 	
-		
-		/**
-		 * finds microformat within the tree microformat a parent uf - child has to have properties to count
-		 *
-		 * @param  {DOM Node} rootNode
-		 * @param  {String} ufName
-		 * @return {Array}
-		 */
-		findChildItems: function(rootNode, ufName) {
-			var items, 
-				out = [],
-				ufs = [],
-				x,
-				i,
-				z,			
-				y;
-	
-			items = this.findRootNodes(rootNode, true);
-			if(items.length > 0) {
-				i = items.length;
-				x = 0; // 1 excludes parent
-				while(x < i) {
-					var classes = this.getUfClassNames(items[x], ufName);
-					if(classes.root.length > 0 && classes.properties.length === 0) {
-						ufs = this.walkTree(items[x], true);
-						y = ufs.length;
-						z = 0;
-						while(z < y) {
-							// make sure its a valid structure 
-							if(ufs[z] && modules.utils.hasProperties(ufs[z].properties)) {
-								out.push(ufs[z]);
-							}
-							z++;
-						}
-					}
-					x++;
-				}
-			}
-	
-			return out;
-		},
-	
 	
 		/**
 		 * finds all microformat roots in a rootNode
@@ -655,13 +617,13 @@ var Microformats; // jshint ignore:line
 	
 				this.rootID++;
 				itemRootID = this.rootID;
-				obj = this.createUfObject(classes.root);
+				obj = this.createUfObject(classes.root, classes.typeVersion);
 	
 				this.walkChildren(node, obj, classes.root, itemRootID, classes);
 				if(this.impliedRules){
 					this.impliedRules(node, obj, classes);
 				}
-				out.push(obj);
+				out.push( this.cleanUfObject(obj) );
 			
 				
 			}
@@ -684,6 +646,7 @@ var Microformats; // jshint ignore:line
 				itemRootID,
 				value,
 				propertyName,
+				propertyVersion,
 				i,
 				x,
 				y,
@@ -702,24 +665,27 @@ var Microformats; // jshint ignore:line
 				if(classes.root.length > 0 && classes.properties.length > 0 && !child.addedAsRoot) {
 					// create object with type, property and value
 					rootItem = context.createUfObject(
-						classes.root, 
+						classes.root,
+						classes.typeVersion,
 						modules.text.parse(this.document, child, context.options.textFormat)
 					);
+					
+					// add the microformat as an array of properties
+					propertyName = context.removePropPrefix(classes.properties[0][0]);
 					
 					// modifies value with "implied value rule"
 					if(parentClasses && parentClasses.root.length === 1 && parentClasses.properties.length === 1){
 						if(context.impliedValueRule){
-							out = context.impliedValueRule(out, parentClasses.properties[0], classes.properties[0], value);
+							out = context.impliedValueRule(out, parentClasses.properties[0][0], classes.properties[0][0], value);
 						}
 					}
-	
-					// add the microformat as an array of properties
-					propertyName = context.removePropPrefix(classes.properties[0]);
+					
 					if(out.properties[propertyName]) {
 						out.properties[propertyName].push(rootItem);
 					} else {
 						out.properties[propertyName] = [rootItem];
 					}
+					
 					context.rootID++;
 					// used to stop duplication in heavily nested structures
 					child.addedAsRoot = true;
@@ -735,6 +701,7 @@ var Microformats; // jshint ignore:line
 					if(this.impliedRules){
 						context.impliedRules(child, rootItem, classes);
 					}
+					this.cleanUfObject(rootItem);
 	
 				}
 	
@@ -745,29 +712,32 @@ var Microformats; // jshint ignore:line
 					i = classes.properties.length;
 					while(x < i) {
 	
-						value = context.getValue(child, classes.properties[x], out);
-						propertyName = context.removePropPrefix(classes.properties[x]);
+						value = context.getValue(child, classes.properties[x][0], out);
+						propertyName = context.removePropPrefix(classes.properties[x][0]);
+						propertyVersion = classes.properties[x][1];
 						
 						// modifies value with "implied value rule"
 						if(parentClasses && parentClasses.root.length === 1 && parentClasses.properties.length === 1){
 							if(context.impliedValueRule){
-								out = context.impliedValueRule(out, parentClasses.properties[0], classes.properties[x], value);
+								out = context.impliedValueRule(out, parentClasses.properties[0][0], classes.properties[x][0], value);
 							}
 						}
 	
-						// if the value is not empty 
-						// and we have not added this value into a property with the same name already
-						if(value !== '' && !context.hasRootID(child, rootID, propertyName)) {
-						//if(value !== '') {
-							// add the property as a an array of properties 
-							if(out.properties[propertyName]) {
-								out.properties[propertyName].push(value);
-							} else {
-								out.properties[propertyName] = [value];
+						// if we have not added this value into a property with the same name already
+						if(!context.hasRootID(child, rootID, propertyName)) {
+							// check the root and property is same version or overlapping versions are allowed
+							if( context.isAllowedPropertyVersion( out.typeVersion, propertyVersion ) ){
+								// add the property as a an array of properties	 
+								if(out.properties[propertyName]) {
+									out.properties[propertyName].push(value);
+								} else {
+									out.properties[propertyName] = [value];
+								}
+								// add rootid to node so we track it use
+								context.appendRootID(child, rootID, propertyName);
 							}
-							// add rootid to node so we track it use
-							context.appendRootID(child, rootID, propertyName);
 						}
+				
 						x++;
 					}
 	
@@ -786,7 +756,8 @@ var Microformats; // jshint ignore:line
 		
 					// create object with type, property and value
 					rootItem = context.createUfObject(
-						classes.root, 
+						classes.root,
+						classes.typeVersion, 
 						modules.text.parse(this.document, child, context.options.textFormat)
 					);
 
@@ -796,7 +767,7 @@ var Microformats; // jshint ignore:line
 					}
 
 					if(!context.hasRootID(child, rootID, 'child-root')) {
-						out.children.push(rootItem);
+						out.children.push( rootItem );
 						context.appendRootID(child, rootID, 'child-root');
 						context.rootID++;
 					}
@@ -808,9 +779,10 @@ var Microformats; // jshint ignore:line
 						context.walkChildren(child, rootItem, rootItem.type, itemRootID, classes);
 						x++;
 					}
-					if(context.impliedRules){
+					if(this.impliedRules){
 						context.impliedRules(child, rootItem, classes);
 					}
+					context.cleanUfObject( rootItem );
 					
 				}
 				
@@ -820,7 +792,9 @@ var Microformats; // jshint ignore:line
 			}
 	
 		},
-	
+		
+		
+
 	
 		/**
 		 * gets the value of a property from a node
@@ -874,7 +848,7 @@ var Microformats; // jshint ignore:line
 			}
 	
 			if(!out) {
-				out = modules.domUtils.getAttrValFromTagList(node, ['data'], 'value');
+				out = modules.domUtils.getAttrValFromTagList(node, ['data','input'], 'value');
 			}
 	
 			if(node.name === 'br' || node.name === 'hr') {
@@ -902,32 +876,9 @@ var Microformats; // jshint ignore:line
 		getEValue: function(node) {
 					
 			var out = {value: '', html: ''};
-	
-			// replace all relative links with absolute ones where it can
-			function expandUrls(node, attrName, baseUrl){
-				var i,
-					nodes,
-					attr;
-	
-				nodes = modules.domUtils.getNodesByAttribute(node, attrName);
-				i = nodes.length;
-				while (i--) {
-					try{
-						// the url parser can blow up if the format is not right
-						attr = modules.domUtils.getAttribute(nodes[i], attrName);
-						if(attr && attr !== '' && baseUrl !== '' && attr.indexOf(':') === -1) {
-							//attr = urlParser.resolve(baseUrl, attr);
-							attr = modules.url.resolve(attr, baseUrl);
-							modules.domUtils.setAttribute(nodes[i], attrName, attr);
-						}	
-					}catch(err){
-						// do nothing convert only the urls we can leave the rest as they where
-					}
-				}
-			}
 			
-			expandUrls(node, 'src', this.options.baseUrl);
-			expandUrls(node, 'href', this.options.baseUrl);
+			this.expandURLs(node, 'src', this.options.baseUrl);
+			this.expandURLs(node, 'href', this.options.baseUrl);
 	
 			out.value = modules.text.parse(this.document, node, this.options.textFormat);
 			out.html = modules.html.parse(node);
@@ -959,7 +910,7 @@ var Microformats; // jshint ignore:line
 			}
 	
 			if(!out) {
-				out = modules.domUtils.getAttrValFromTagList(node, ['img'], 'src');
+				out = modules.domUtils.getAttrValFromTagList(node, ['img','audio','video','source'], 'src');
 			}
 	
 			if(!out) {
@@ -976,7 +927,7 @@ var Microformats; // jshint ignore:line
 			}
 	
 			if(!out) {
-				out = modules.domUtils.getAttrValFromTagList(node, ['data'], 'value');
+				out = modules.domUtils.getAttrValFromTagList(node, ['data','input'], 'value');
 			}
 	
 			if(!out) {
@@ -1016,7 +967,7 @@ var Microformats; // jshint ignore:line
 			}
 	
 			if(!out) {
-				out = modules.domUtils.getAttrValFromTagList(node, ['data'], 'value');
+				out = modules.domUtils.getAttrValFromTagList(node, ['data', 'input'], 'value');
 			}
 	
 			if(!out) {
@@ -1208,93 +1159,104 @@ var Microformats; // jshint ignore:line
 				impiedRel,
 				ufName;
 	
-	
-			classNames = modules.domUtils.getAttribute(node, 'class');
-			if(classNames) {
-				items = classNames.split(' ');
-				x = 0;
-				i = items.length;
-				while(x < i) {
-	
-					item = modules.utils.trim(items[x]);
-	
-					// test for root prefix - v2
-					if(modules.utils.startWith(item, context.rootPrefix)) {
-						out.root.push(item);
-					}
-					
-					// test for property prefix - v2
-					z = context.propertyPrefixes.length;
-					while(z--) {
-						if(modules.utils.startWith(item, context.propertyPrefixes[z])) {
-							out.properties.push(item);
+			// don't get classes from exclude list of tags
+			if(modules.domUtils.hasTagName(node, this.excludeTags) === false){
+				
+				// find classes for node
+				classNames = modules.domUtils.getAttribute(node, 'class');
+				if(classNames) {
+					items = classNames.split(' ');
+					x = 0;
+					i = items.length;
+					while(x < i) {
+		
+						item = modules.utils.trim(items[x]);
+		
+						// test for root prefix - v2
+						if(modules.utils.startWith(item, context.rootPrefix)) {
+							if(out.root.indexOf(item) === -1){
+								out.root.push(item);
+							}
+							out.typeVersion = 'v2';
 						}
-					}
-	
-					// test for mapped root classnames v1
-					for(key in modules.maps) {
-						if(modules.maps.hasOwnProperty(key)) {
-							// only add a root once
-							if(modules.maps[key].root === item && out.root.indexOf(key) === -1) {
-								// if root map has subTree set to true
-								// test to see if we should create a property or root
-								if(modules.maps[key].subTree && context.isSubTreeRoot(node, modules.maps[key], items) === false) {
-									out.properties.push('p-' + modules.maps[key].root);
-								} else {
-									out.root.push(key);
+						
+						// test for property prefix - v2
+						z = context.propertyPrefixes.length;
+						while(z--) {
+							if(modules.utils.startWith(item, context.propertyPrefixes[z])) {
+								out.properties.push([item,'v2']);
+							}
+						}
+		
+						// test for mapped root classnames v1
+						for(key in modules.maps) {
+							if(modules.maps.hasOwnProperty(key)) {
+								// only add a root once
+								if(modules.maps[key].root === item && out.root.indexOf(key) === -1) {
+									// if root map has subTree set to true
+									// test to see if we should create a property or root
+									if(modules.maps[key].subTree) {
+										out.properties.push(['p-' + modules.maps[key].root, 'v1']);
+									} else {
+										out.root.push(key);
+										if(!out.typeVersion){
+											out.typeVersion = 'v1';
+										}
+									}
 								}
 							}
 						}
-					}
-
-					
-					// test for mapped property classnames v1 -- ufNameArr is 
-					if(ufNameArr){
-						for (var a = 0; a < ufNameArr.length; a++) {
-							ufName = ufNameArr[a];
-							// get mapped property v1 microformat
-							map = context.getMapping(ufName);
-							if(map) {
-								for(key in map.properties) {
-									if (map.properties.hasOwnProperty(key)) {
-										
-										prop = map.properties[key];
-										propName = (prop.map) ? prop.map : 'p-' + key;
 	
-										if(key === item) {
-											if(prop.uf) {
-												// loop all the classList make sure 
-												//   1. this property is a root
-												//   2. that there is not already a equivalent v2 property ie url and u-url on the same element
-												y = 0;
-												while(y < i) {
-													v2Name = context.getV2RootName(items[y]);
-													// add new root
-													if(prop.uf.indexOf(v2Name) > -1 && out.root.indexOf(v2Name) === -1) {
-														out.root.push(v2Name);
+						
+						// test for mapped property classnames v1 -- ufNameArr is 
+						if(ufNameArr){
+							for (var a = 0; a < ufNameArr.length; a++) {
+								ufName = ufNameArr[a];
+								// get mapped property v1 microformat
+								map = context.getMapping(ufName);
+								if(map) {
+									for(key in map.properties) {
+										if (map.properties.hasOwnProperty(key)) {
+											
+											prop = map.properties[key];
+											propName = (prop.map) ? prop.map : 'p-' + key;
+		
+											if(key === item) {
+												if(prop.uf) {
+													// loop all the classList make sure 
+													//   1. this property is a root
+													//   2. that there is not already a equivalent v2 property ie url and u-url on the same element
+													y = 0;
+													while(y < i) {
+														v2Name = context.getV2RootName(items[y]);
+														// add new root 
+														if(prop.uf.indexOf(v2Name) > -1 && out.root.indexOf(v2Name) === -1) {
+															out.root.push(v2Name);
+															out.typeVersion = 'v1';
+														}
+														y++;
 													}
-													y++;
-												}
-												//only add property once
-												if(out.properties.indexOf(propName) === -1) {
-													out.properties.push(propName);
-												}
-											} else {
-												if(out.properties.indexOf(propName) === -1) {
-													out.properties.push(propName);
+													//only add property once
+													if(out.properties.indexOf(propName) === -1) {
+														out.properties.push([propName,'v1']);
+													}
+												} else {
+													if(out.properties.indexOf(propName) === -1) {
+														out.properties.push([propName,'v1']);
+													}
 												}
 											}
 										}
+	
 									}
-
 								}
 							}
+						
 						}
-					
+						
+						x++;
+		
 					}
-					
-					x++;
-	
 				}
 			}
 	
@@ -1305,12 +1267,18 @@ var Microformats; // jshint ignore:line
 					ufName = ufNameArr[b];
 					impiedRel = this.findRelImpied(node, ufName);
 					if(impiedRel && out.properties.indexOf(impiedRel) === -1) {
-						out.properties.push(impiedRel);
+						out.properties.push([impiedRel, 'v1']);
 					}
 				}
 			}
+
+
+			//if(out.root.length === 1 && out.properties.length === 1) {
+			//	if(out.root[0].replace('h-','') === this.removePropPrefix(out.properties[0][0])) {
+			//		out.typeVersion = 'v2';
+			//	}
+			//}
 			
-	
 			return out;
 		},
 
@@ -1347,51 +1315,23 @@ var Microformats; // jshint ignore:line
 			}
 			return null;
 		},
-	
-	
+		
+		
 		/**
-		 * is subTree mapping should be a property or root
+		 * creates weather a property is the right microformats version for its root type
 		 *
-		 * @param  {DOM Node} node
-		 * @param  {Object} map
-		 * @param  {Array} classList
+		 * @param  {String} typeVersion
+		 * @param  {String} propertyVersion
 		 * @return {Boolean}
 		 */
-		isSubTreeRoot: function(node, map, classList) {
-			var out,
-				hasSecondRoot,
-				i,
-				x;
-	
-			out = this.createUfObject(map.name);
-			hasSecondRoot = false;	
-	
-			// loop the classList to see if there is a second root
-			x = 0;
-			i = classList.length;	
-			while(x < i) {
-				var item = modules.utils.trim(classList[x]);
-				for(var key in modules.maps) {
-					if(modules.maps.hasOwnProperty(key)) {
-						if(modules.maps[key].root === item && modules.maps[key].root !== map.root) {
-							hasSecondRoot = true;
-							break;
-						}
-					}
-				}
-				x++;
-			}
-	
-			// walk the sub tree for properties that match this subTree
-			this.walkChildren(node, out, map.name, null, null);
-	
-			if(modules.utils.hasProperties(out.properties) && hasSecondRoot === false) {
+		isAllowedPropertyVersion: function(typeVersion, propertyVersion){
+			if(this.options.overlappingVersions === true){
 				return true;
-			} else {
-				return false;
+			}else{
+				return (typeVersion === propertyVersion);
 			}
 		},
-	
+		
 
 		/**
 		 * creates a blank microformats object
@@ -1400,7 +1340,7 @@ var Microformats; // jshint ignore:line
 		 * @param  {String} value
 		 * @return {Object}
 		 */
-		createUfObject: function(names, value) {
+		createUfObject: function(names, typeVersion, value) {
 			var out = {};
 	
 			// is more than just whitespace
@@ -1414,11 +1354,29 @@ var Microformats; // jshint ignore:line
 				out.type = [names];
 			}
 			out.properties = {};
+			// metadata properties for parsing
+			out.typeVersion = typeVersion;
 			out.times = [];
 			out.dates = [];
 			out.altValue = null;
+			
 			return out;
 		},
+		
+		
+		/**
+		 * removes unwanted microformats property before output
+		 *
+		 * @param  {Object} microformat
+		 */
+		cleanUfObject: function( microformat ) {
+			delete microformat.times;
+			delete microformat.dates;
+			delete microformat.typeVersion;
+			delete microformat.altValue;
+			return microformat;
+		},
+	
 	
 		
 		/**
@@ -1439,37 +1397,35 @@ var Microformats; // jshint ignore:line
 			}
 			return text;
 		},
-	
-	
-
+		
+		
 		/**
-		 * expandes all relative URLs in DOM structures
+		 * expandes all relative URLs absolute ones where it can
 		 *
 		 * @param  {DOM Node} node
+		 * @param  {String} attrName
 		 * @param  {String} baseUrl
-		 * @return {DOM Node}
 		 */
-		expandURLs: function(node, baseUrl){
+		expandURLs: function(node, attrName, baseUrl){
+			var i,
+				nodes,
+				attr;
 
-			node = modules.domUtils.clone(node);
-	
-			function expand( nodeList, attrName ){
-				if(nodeList && nodeList.length){
-					var i = nodeList.length;
-					while (i--) {
-						// this gives the orginal text
-						var href =  nodeList[i].getAttribute(attrName);
-						if(href.toLowerCase().indexOf('http') !== 0){
-							nodeList[i].setAttribute(attrName, modules.url.resolve(href, baseUrl));
-						}
-					}
+			nodes = modules.domUtils.getNodesByAttribute(node, attrName);
+			i = nodes.length;
+			while (i--) {
+				try{
+					// the url parser can blow up if the format is not right
+					attr = modules.domUtils.getAttribute(nodes[i], attrName);
+					if(attr && attr !== '' && baseUrl !== '' && attr.indexOf(':') === -1) {
+						//attr = urlParser.resolve(baseUrl, attr);
+						attr = modules.url.resolve(attr, baseUrl);
+						modules.domUtils.setAttribute(nodes[i], attrName, attr);
+					}	
+				}catch(err){
+					// do nothing convert only the urls we can leave the rest as they where
 				}
 			}
-			
-			expand( modules.domUtils.getNodesByAttribute(node, 'href'), 'href' );
-			expand( modules.domUtils.getNodesByAttribute(node, 'src'), 'src' );
-			
-			return node;
 		},
 	
 	
@@ -1529,119 +1485,169 @@ var Microformats; // jshint ignore:line
 	if(modules.Parser){
 	
 		/**
-		 * applies "implied rules" microformat output structure ie name, photo, url and date 
+		 * applies "implied rules" microformat output structure ie feed-title, name, photo, url and date 
 		 *
 		 * @param  {DOM Node} node
 		 * @param  {Object} uf (microformat output structure)
 		 * @param  {Object} parentClasses (classes structure)
+		 * @param  {Boolean} impliedPropertiesByVersion
+		 * @return {Object}
 		 */
 		 modules.Parser.prototype.impliedRules = function(node, uf, parentClasses) {
-			var context = this,
-				value,
-				newDate;
-	
-	
-			if(uf && uf.properties) {
-				
-				uf = this.impliedhFeedTitle(node, uf);
-				
-				// implied name rule
-				/*
-					img.h-x[alt]										<img class="h-card" src="glenn.htm" alt="Glenn Jones"></a>
-					area.h-x[alt] 										<area class="h-card" href="glenn.htm" alt="Glenn Jones"></area>
-					abbr.h-x[title]										<abbr class="h-card" title="Glenn Jones"GJ</abbr>
-
-					.h-x>img:only-child[alt]:not[.h-*]					<div class="h-card"><a src="glenn.htm" alt="Glenn Jones"></a></div>
-					.h-x>area:only-child[alt]:not[.h-*] 				<div class="h-card"><area href="glenn.htm" alt="Glenn Jones"></area></div>
-					.h-x>abbr:only-child[title] 						<div class="h-card"><abbr title="Glenn Jones">GJ</abbr></div>
-
-					.h-x>:only-child>img:only-child[alt]:not[.h-*] 		<div class="h-card"><span><img src="jane.html" alt="Jane Doe"/></span></div>
-					.h-x>:only-child>area:only-child[alt]:not[.h-*] 	<div class="h-card"><span><area href="jane.html" alt="Jane Doe"></area></span></div>
-					.h-x>:only-child>abbr:only-child[title]				<div class="h-card"><span><abbr title="Jane Doe">JD</abbr></span></div>
-				*/
-				if(!uf.properties.name) {
-					value = this.getImpliedProperty(node, ['img', 'area', 'abbr'], this.getNameAttr);
-					var textFormat = this.options.textFormat;
-					if(!value) {
-						uf.properties.name = [modules.text.parse(this.document, node, textFormat)];
-					}else{
-						uf.properties.name = [modules.text.parseText(this.document, value, textFormat)];
-					}
-				}
-				
-				
-				// intersection of implied name and implied value rules
-				if(uf.properties.name) {	
-					if(uf.value && parentClasses.root.length > 0 && parentClasses.properties.length === 1){
-						uf = context.impliedValueRule(uf, parentClasses.properties[0], 'p-name', uf.properties.name[0]);
-					}
-				}
-	
-	
-				// implied photo rule
-				/*
-					img.h-x[src] 												<img class="h-card" alt="Jane Doe" src="jane.jpeg"/>
-					object.h-x[data] 											<object class="h-card" data="jane.jpeg"/>Jane Doe</object>
-					.h-x>img[src]:only-of-type:not[.h-*]						<div class="h-card"><img alt="Jane Doe" src="jane.jpeg"/></div> 
-					.h-x>object[data]:only-of-type:not[.h-*] 					<div class="h-card"><object data="jane.jpeg"/>Jane Doe</object></div> 
-					.h-x>:only-child>img[src]:only-of-type:not[.h-*] 			<div class="h-card"><span><img alt="Jane Doe" src="jane.jpeg"/></span></div> 
-					.h-x>:only-child>object[data]:only-of-type:not[.h-*] 		<div class="h-card"><span><object data="jane.jpeg"/>Jane Doe</object></span></div> 
-				*/
-				if(!uf.properties.photo) {
-					value = this.getImpliedProperty(node, ['img', 'object'], this.getPhotoAttr);
-					if(value) {
-						// relative to absolute URL
-						if(value && value !== '' && this.options.baseUrl !== '' && value.indexOf(':') === -1) {
-							value = modules.url.resolve(value, this.options.baseUrl);
-						}
-						uf.properties.photo = [modules.utils.trim(value)];
-					}
-				}
-				
-				
-				// implied url rule
-				/*
-					a.h-x[href]  							<a class="h-card" href="glenn.html">Glenn</a>
-					area.h-x[href]  						<area class="h-card" href="glenn.html">Glenn</area>
-					.h-x>a[href]:only-of-type:not[.h-*]  	<div class="h-card" ><a href="glenn.html">Glenn</a><p>...</p></div> 
-					.h-x>area[href]:only-of-type:not[.h-*]  <div class="h-card" ><area href="glenn.html">Glenn</area><p>...</p></div>
-				*/
-				if(!uf.properties.url) {
-					value = this.getImpliedProperty(node, ['a', 'area'], this.getURLAttr);
-					if(value) {
-						// relative to absolute URL
-						if(value && value !== '' && this.options.baseUrl !== '' && value.indexOf(':') === -1) {
-							value = modules.url.resolve(value, this.options.baseUrl);
-						}
-						uf.properties.url = [modules.utils.trim(value)];
-					}
-				}
+			var typeVersion = (uf.typeVersion)? uf.typeVersion: 'v2';
 			
-				// intersection of implied url and implied value rules
-				if(uf.properties.url) {
-					if(parentClasses && parentClasses.root.length === 1 && parentClasses.properties.length === 1){
-						uf = context.impliedValueRule(uf, parentClasses.properties[0], 'u-url', uf.properties.url[0]);
-					}
-				}
-			
+			// TEMP: override to allow V1 implied properties while spec changes
+			if(this.options.impliedPropertiesByVersion === false){
+				typeVersion = 'v2';
 			}
-	
+			
+			if(node && uf && uf.properties) {
+				uf = this.impliedBackwardComp( node, uf, parentClasses );  
+				if(typeVersion === 'v2'){
+					uf = this.impliedhFeedTitle( uf );
+					uf = this.impliedName( node, uf ); 
+					uf = this.impliedPhoto( node, uf ); 	
+					uf = this.impliedUrl( node, uf );
+				}
+				uf = this.impliedValue( node, uf, parentClasses );
+				uf = this.impliedDate( uf );
+				
+				// TEMP: flagged while spec changes are put forward
+				if(this.options.parseLatLonGeo === true){
+					uf = this.impliedGeo( uf );
+				}  
+			}
+
+			return uf;
+		};
+		
+		
+		/**
+		 * apply implied name rule
+		 *
+		 * @param  {DOM Node} node
+		 * @param  {Object} uf
+		 * @return {Object}
+		 */		
+		modules.Parser.prototype.impliedName = function(node, uf) {
+			// implied name rule
+			/*
+				img.h-x[alt]										<img class="h-card" src="glenn.htm" alt="Glenn Jones"></a>
+				area.h-x[alt] 										<area class="h-card" href="glenn.htm" alt="Glenn Jones"></area>
+				abbr.h-x[title]										<abbr class="h-card" title="Glenn Jones"GJ</abbr>
+
+				.h-x>img:only-child[alt]:not[.h-*]					<div class="h-card"><a src="glenn.htm" alt="Glenn Jones"></a></div>
+				.h-x>area:only-child[alt]:not[.h-*] 				<div class="h-card"><area href="glenn.htm" alt="Glenn Jones"></area></div>
+				.h-x>abbr:only-child[title] 						<div class="h-card"><abbr title="Glenn Jones">GJ</abbr></div>
+
+				.h-x>:only-child>img:only-child[alt]:not[.h-*] 		<div class="h-card"><span><img src="jane.html" alt="Jane Doe"/></span></div>
+				.h-x>:only-child>area:only-child[alt]:not[.h-*] 	<div class="h-card"><span><area href="jane.html" alt="Jane Doe"></area></span></div>
+				.h-x>:only-child>abbr:only-child[title]				<div class="h-card"><span><abbr title="Jane Doe">JD</abbr></span></div>
+			*/
+			var name,
+				value;
+					
+			if(!uf.properties.name) {
+				value = this.getImpliedProperty(node, ['img', 'area', 'abbr'], this.getNameAttr);
+				var textFormat = this.options.textFormat;
+				// if no value for tags/properties use text
+				if(!value) {
+					name = [modules.text.parse(this.document, node, textFormat)];
+				}else{
+					name = [modules.text.parseText(this.document, value, textFormat)];
+				}
+				if(name && name[0] !== ''){
+					uf.properties.name = name;
+				}
+			}
+			
+			return uf;
+		};
+		
+		
+		/**
+		 * apply implied photo rule
+		 *
+		 * @param  {DOM Node} node
+		 * @param  {Object} uf
+		 * @return {Object}
+		 */		
+		modules.Parser.prototype.impliedPhoto = function(node, uf) {
+			// implied photo rule
+			/*
+				img.h-x[src] 												<img class="h-card" alt="Jane Doe" src="jane.jpeg"/>
+				object.h-x[data] 											<object class="h-card" data="jane.jpeg"/>Jane Doe</object>
+				.h-x>img[src]:only-of-type:not[.h-*]						<div class="h-card"><img alt="Jane Doe" src="jane.jpeg"/></div> 
+				.h-x>object[data]:only-of-type:not[.h-*] 					<div class="h-card"><object data="jane.jpeg"/>Jane Doe</object></div> 
+				.h-x>:only-child>img[src]:only-of-type:not[.h-*] 			<div class="h-card"><span><img alt="Jane Doe" src="jane.jpeg"/></span></div> 
+				.h-x>:only-child>object[data]:only-of-type:not[.h-*] 		<div class="h-card"><span><object data="jane.jpeg"/>Jane Doe</object></span></div> 
+			*/
+			var value;
+			if(!uf.properties.photo) {
+				value = this.getImpliedProperty(node, ['img', 'object'], this.getPhotoAttr);
+				if(value) {
+					// relative to absolute URL
+					if(value && value !== '' && this.options.baseUrl !== '' && value.indexOf(':') === -1) {
+						value = modules.url.resolve(value, this.options.baseUrl);
+					}
+					uf.properties.photo = [modules.utils.trim(value)];
+				}
+			}		
+			return uf;
+		};
+		
+		
+		/**
+		 * apply implied url rule
+		 *
+		 * @param  {DOM Node} node
+		 * @param  {Object} uf
+		 * @return {Object}
+		 */		
+		modules.Parser.prototype.impliedUrl = function(node, uf) {
+			// implied url rule
+			/*
+				a.h-x[href]  							<a class="h-card" href="glenn.html">Glenn</a>
+				area.h-x[href]  						<area class="h-card" href="glenn.html">Glenn</area>
+				.h-x>a[href]:only-of-type:not[.h-*]  	<div class="h-card" ><a href="glenn.html">Glenn</a><p>...</p></div> 
+				.h-x>area[href]:only-of-type:not[.h-*]  <div class="h-card" ><area href="glenn.html">Glenn</area><p>...</p></div>
+			*/
+			var value;
+			if(!uf.properties.url) {
+				value = this.getImpliedProperty(node, ['a', 'area'], this.getURLAttr);
+				if(value) {
+					// relative to absolute URL
+					if(value && value !== '' && this.options.baseUrl !== '' && value.indexOf(':') === -1) {
+						value = modules.url.resolve(value, this.options.baseUrl);
+					}
+					uf.properties.url = [modules.utils.trim(value)];
+				}
+			}	
+			return uf;
+		};
+		
+		
+		/**
+		 * apply implied date rule - if there is a time only property try to concat it with any date property
+		 *
+		 * @param  {DOM Node} node
+		 * @param  {Object} uf
+		 * @return {Object}
+		 */		
+		modules.Parser.prototype.impliedDate = function(uf) {
 			// implied date rule
-			// only applied to first date and time match
+			// http://microformats.org/wiki/value-class-pattern#microformats2_parsers
+			// http://microformats.org/wiki/microformats2-parsing-issues#implied_date_for_dt_properties_both_mf2_and_backcompat
+			var newDate;
 			if(uf.times.length > 0 && uf.dates.length > 0) {
 				newDate = modules.dates.dateTimeUnion(uf.dates[0][1], uf.times[0][1], this.options.dateFormat);
 				uf.properties[this.removePropPrefix(uf.times[0][0])][0] = newDate.toString(this.options.dateFormat);
 			}
+			// clean up object
 			delete uf.times;
 			delete uf.dates;
-			
-			if(uf.altValue !== null){
-				uf.value = uf.altValue.value;
-			}
-			delete uf.altValue;
-	
+			return uf;
 		};
-		
 			
 			
 		/**
@@ -1728,10 +1734,44 @@ var Microformats; // jshint ignore:line
 			}
 			return value;
 		};
+		
+		
+		/**
+		 * 
+		 *
+		 * @param  {DOM Node} node
+		 * @param  {Object} uf
+		 * @return {Object}
+		 */	
+		modules.Parser.prototype.impliedValue = function(node, uf, parentClasses){
+			
+			// intersection of implied name and implied value rules
+			if(uf.properties.name) {	
+				if(uf.value && parentClasses.root.length > 0 && parentClasses.properties.length === 1){
+					uf = this.getAltValue(uf, parentClasses.properties[0][0], 'p-name', uf.properties.name[0]);
+				}
+			}
+			
+			// intersection of implied url and implied value rules
+			if(uf.properties.url) {
+				if(parentClasses && parentClasses.root.length === 1 && parentClasses.properties.length === 1){
+					uf = this.getAltValue(uf, parentClasses.properties[0][0], 'u-url', uf.properties.url[0]);
+				}
+			}	
+			
+			// apply alt value
+			if(uf.altValue !== null){
+				uf.value = uf.altValue.value;
+			}
+			delete uf.altValue;
+	
+	
+			return uf;
+		};
 			
 		
 		/**
-		 * changes the value property based on rules about parent property prefix
+		 * get alt value based on rules about parent property prefix
 		 *
 		 * @param  {Object} uf
 		 * @param  {String} parentPropertyName
@@ -1739,18 +1779,18 @@ var Microformats; // jshint ignore:line
 		 * @param  {String} value
 		 * @return {Object}
 		 */	
-		modules.Parser.prototype.impliedValueRule = function(uf, parentPropertyName, propertyName, value){
-			if(uf.value){
+		modules.Parser.prototype.getAltValue = function(uf, parentPropertyName, propertyName, value){
+			if(uf.value && !uf.altValue){
 				// first p-name of the h-* child
 				if(modules.utils.startWith(parentPropertyName,'p-') && propertyName === 'p-name'){
 					uf.altValue = {name: propertyName, value: value};
 				}
 				// if it's an e-* property element
-				if(modules.utils.startWith(parentPropertyName,'e-')){
+				if(modules.utils.startWith(parentPropertyName,'e-') && modules.utils.startWith(propertyName,'e-')){
 					uf.altValue = {name: propertyName, value: value};
 				}
-				//f it's a u-* property element
-				if(modules.utils.startWith(parentPropertyName,'u-')){
+				// if it's a u-* property element
+				if(modules.utils.startWith(parentPropertyName,'u-') && propertyName === 'u-url'){
 					uf.altValue = {name: propertyName, value: value};
 				}
 			}
@@ -1761,11 +1801,10 @@ var Microformats; // jshint ignore:line
 		/**
 		 * if a h-feed does not have a title use the title tag of a page
 		 *
-		 * @param  {DOM Node} node
 		 * @param  {Object} uf
 		 * @return {Object}
 		 */	
-		modules.Parser.prototype.impliedhFeedTitle = function(node, uf){
+		modules.Parser.prototype.impliedhFeedTitle = function( uf ){
 			if(uf.type && uf.type.indexOf('h-feed') > -1){
 				// has no name property
 				if(uf.properties.name === undefined || uf.properties.name[0] === '' ){
@@ -1776,6 +1815,90 @@ var Microformats; // jshint ignore:line
 					}
 				}
 			}
+			return uf;
+		};
+		
+		
+		
+	    /**
+		 * implied Geo from pattern <abbr class="p-geo" title="37.386013;-122.082932">
+		 *
+		 * @param  {Object} uf
+		 * @return {Object}
+		 */	
+		modules.Parser.prototype.impliedGeo = function( uf ){
+			var geoPair,
+				parts,
+				longitude,
+				latitude,
+				valid = true;
+			
+			if(uf.type && uf.type.indexOf('h-geo') > -1){
+				
+				// has no latitude or longitude property
+				if(uf.properties.latitude === undefined || uf.properties.longitude === undefined ){
+
+					geoPair = (uf.properties.name)? uf.properties.name[0] : null;
+					geoPair = (!geoPair && uf.properties.value)? uf.properties.value : geoPair;
+					
+					if(geoPair){
+						// allow for the use of a ';' as in microformats and also ',' as in Geo URL
+						geoPair = geoPair.replace(';',',');
+						
+						// has sep char
+						if(geoPair.indexOf(',') > -1 ){
+							parts = geoPair.split(',');
+							
+							// only correct if we have two or more parts
+							if(parts.length > 1){
+
+								// latitude no value outside the range -90 or 90 
+								latitude = parseFloat( parts[0] );
+								if(modules.utils.isNumber(latitude) && latitude > 90 || latitude < -90){
+									valid = false;
+								}
+								
+								// longitude no value outside the range -180 to 180
+								longitude = parseFloat( parts[1] );
+								if(modules.utils.isNumber(longitude) && longitude > 180 || longitude < -180){
+									valid = false;
+								}
+								
+								if(valid){
+									uf.properties.latitude = [latitude];
+									uf.properties.longitude  = [longitude];
+								}
+							}
+							
+						}
+					}
+				}
+			}
+			return uf;
+		};
+		
+		
+		/**
+		 * if a backwards compat built structure has no properties add name through this.impliedName
+		 *
+		 * @param  {Object} uf
+		 * @return {Object}
+		 */	
+		modules.Parser.prototype.impliedBackwardComp = function(node, uf, parentClasses){
+			
+			// look for pattern in parent classes like "p-geo h-geo"
+			// these are structures built from backwards compat parsing of geo
+			if(parentClasses.root.length === 1 && parentClasses.properties.length === 1) {
+				if(parentClasses.root[0].replace('h-','') === this.removePropPrefix(parentClasses.properties[0][0])) {
+					
+					// if microformat has no properties apply the impliedName rule to get value from containing node
+					// this will get value from html such as <abbr class="geo" title="30.267991;-97.739568">Brighton</abbr>
+					if( modules.utils.hasProperties(uf.properties) === false ){
+						uf = this.impliedName( node, uf );
+					}
+				}
+			}
+			
 			return uf;
 		};
 		
@@ -3796,6 +3919,7 @@ b,d){return g(y(h(a,d),h(b,d),d,!0),d)},normalize:function(a,b){"string"===typeo
 				'map': 'p-name'
 			},
 			'adr': {
+				'map': 'p-adr',
 				'uf': ['h-adr']
 			},
 			'agent': {
@@ -3816,7 +3940,9 @@ b,d){return g(y(h(a,d),h(b,d),d,!0),d)},normalize:function(a,b){"string"===typeo
 				'map': 'p-geo', 
 				'uf': ['h-geo']
 			},
-			'key': {},
+			'key': {
+				'map': 'u-key'
+			},
 			'label': {},
 			'logo': {
 				'map': 'u-logo'
@@ -3844,7 +3970,9 @@ b,d){return g(y(h(a,d),h(b,d),d,!0),d)},normalize:function(a,b){"string"===typeo
 			'sound': {
 				'map': 'u-sound'
 			},
-			'title': {},
+			'title': {
+				'map': 'p-job-title'
+			},
 			'tel': {},
 			'tz': {},
 			'uid': {
@@ -4063,6 +4191,7 @@ b,d){return g(y(h(a,d),h(b,d),d,!0),d)},normalize:function(a,b){"string"===typeo
 	modules.maps['h-org'] = {
 		root: 'h-x-org',  // drop this from v1 as it causes issue with fn org hcard pattern
 		name: 'h-org',
+		childStructure: true,
 		properties: {
 			'organization-name': {},
 			'organization-unit': {}

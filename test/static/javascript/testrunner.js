@@ -5,6 +5,12 @@
 	MIT License: https://raw.github.com/glennjones/microformat-shiv/master/license.txt
 */
 
+var options = {
+        'baseUrl': 'http://example.com',
+        'overlappingVersions': true,
+        'impliedPropertiesByVersion': false,
+        'parseLatLonGeo': false
+    };
 
 window.onload = function() {
 	var test  = testData.data[0],
@@ -40,26 +46,11 @@ function buildTest( test ){
 	nameElt.innerHTML = test.name;	
 	htmlElt.innerHTML = htmlEscape( test.html );	
 	jsonElt.innerHTML = htmlEscape( test.json );	
-	
-	// parse html
-    var doc,
-        node,
-        options;
-        
-    // createHTMLDocument is not support below ie9
-	//doc = document.implementation.createHTMLDocument("New Document");
-	//node =  document.createElement('div');
-	//node.innerHTML = test.html;
-	//doc.body.appendChild(node);   
     
     var dom = new DOMParser();
         doc = dom.parseFromString( test.html, 'text/html' ); 
     
-    options ={
-        'document': doc,
-        'node': doc,
-        'baseUrl': 'http://example.com'
-    };
+    options.node = doc;
     var mfJSON = Microformats.get( options );
 	parserElt.innerHTML = htmlEscape( js_beautify( JSON.stringify(mfJSON) ) );
     
@@ -71,20 +62,12 @@ function buildTest( test ){
        diffElt.innerHTML = ''; 
     }
     
-    
+    console.log(diff)
     if(diff !== undefined){
-       // nameElt.classList.add('failed');
-       // testDetailElt.classList.add('test-failed');
-       // testDetailElt.classList.remove('test-passed');
-        
         addClass(nameElt, 'failed');
         addClass(testDetailElt, 'test-failed');
         removeClass(testDetailElt, 'test-passed');
     }else{
-       // nameElt.classList.remove('failed');
-       // testDetailElt.classList.remove('test-failed');
-       // testDetailElt.classList.add('test-passed');
-        
         removeClass(nameElt, 'failed');
         removeClass(testDetailElt, 'test-failed');
         addClass(testDetailElt, 'test-passed');
@@ -98,24 +81,10 @@ function buildTest( test ){
 
 
 function passTest( test ){
-    var doc,
-        node,
-        options;
-        
-    // createHTMLDocument is not well support below ie9
-	//doc = document.implementation.createHTMLDocument("New Document");
-	//node =  document.createElement('div');
-	//node.innerHTML = test.html;
-	//doc.body.appendChild(node);    
-    
-    var dom = new DOMParser();
+    var dom = new DOMParser(),
         doc = dom.parseFromString( test.html, 'text/html' );
     
-    options ={
-        'document': doc,
-        'node': doc,
-        'baseUrl': 'http://example.com'
-    };
+    options.node = doc;
     var mfJSON = Microformats.get( options );
     
     // diff json
