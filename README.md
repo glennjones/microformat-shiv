@@ -85,7 +85,7 @@ __I would recommended always setting `textFormat` option to `normalised`. This i
 
 Experimental Options
 -------
-These are options are part of experimental specification development. They be removed or renamed in future.
+These options are part of ongoing specification development. They maybe removed or renamed in future.
 * `overlappingVersions` - (Boolean) block overlapping properties from different microformat versions default is `true`
 * `impliedPropertiesByVersion` (Boolean)  Set implied properties by microformat version default is `false`
 * `parseLatLonGeo` (Boolean)  Parse geo date writen as latlon i.e. 30.267991;-97.739568 
