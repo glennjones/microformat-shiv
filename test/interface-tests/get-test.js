@@ -47,12 +47,11 @@ describe('Microformat.get', function() {
 
 
 
-    it('get - no options.node parse this document', function(){
+   it('get - no options.node parse this document', function(){
         var result;
 
         result = Microformats.get({});
         assert.deepEqual( result.items, [] );
-        
    });
   
     
@@ -144,96 +143,6 @@ describe('Microformat.get', function() {
         result = Microformats.get(options);
         assert.deepEqual( result, expected );
  
-   });
-   
-
-   it('get - include that does not exists', function(){
-       
-       var  doc,
-            node,
-            options,
-            result;
-            
-        var altHTML =   '<div class="vcard" itemref="mozilla-org mozilla-adr"><span class="fn">Brendan Eich</span></div><div class="vcard" itemref="mozilla-org mozilla-adr"><span class="fn">Mitchell Baker</span></div><p id="mozilla-org" class="org">Mozilla</p>';
-        var altExpected = {
-            'items': [{
-                'type': ['h-card'],
-                'properties': {
-                    'org': ['Mozilla'],
-                    'name': ['Brendan Eich']
-                }
-            },
-            {
-                'type': ['h-card'],
-                'properties': {
-                    'org': ['Mozilla'],
-                    'name': ['Mitchell Baker']
-                }
-            }],
-            'rels': {},
-            'rel-urls': {}
-        };   
-       
-        doc = document.implementation.createHTMLDocument('New Document');
-        node = document.createElement('div');
-        node.innerHTML = altHTML;
-        doc.body.appendChild(node);    
-        
-        options ={
-            'node': node,
-        };
-
-        result = Microformats.get(options);
-      
-        
-        assert.deepEqual( result, altExpected );
-        
-
- 
-   });
-   
-   it('get - impliedValueRule e-content', function(){
-       
-       var  doc,
-            node,
-            options,
-            result;
-            
-        var altHTML = '<div class="h-feed"><p class="p-name">Blog</a> <p class="h-entry"><span class="e-content">Mozilla Foundation</span></div>';
-        var altExpected = {
-                'items': [{
-                    'type': ['h-feed'],
-                    'properties': {
-                        'name': ['Blog']
-                    },
-                    'children': [{
-                        'value': 'Mozilla Foundation',
-                        'type': ['h-entry'],
-                        'properties': {
-                            'content': [{
-                                'value': 'Mozilla Foundation',
-                                'html': 'Mozilla Foundation'
-                            }],
-                            'name': ['Mozilla Foundation']
-                        }
-                    }]
-                }],
-                'rels': {},
-                'rel-urls': {}
-            };   
-       
-        doc = document.implementation.createHTMLDocument('New Document');
-        node =  document.createElement('div');
-        node.innerHTML = altHTML;
-        doc.body.appendChild(node);    
-        
-        options ={
-            'node': node,
-        };
-
-        result = Microformats.get(options); 
-        assert.deepEqual( result, altExpected );
-        
    });
    
    

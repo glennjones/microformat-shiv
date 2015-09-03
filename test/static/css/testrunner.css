@@ -44,7 +44,7 @@ h2, h3 {
 }
 
 /* the first h1 in a page */
-body>:first-child{
+h1:first-of-type{
   margin-top: 0;
   font-weight: bold;
 }

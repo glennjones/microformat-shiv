@@ -1,6 +1,6 @@
 /*
-   microformat-shiv - v1.1.1
-   Built: 2015-08-21 11:08 - http://microformat-shiv.com
+   microformat-shiv - v1.1.2
+   Built: 2015-09-03 03:09 - http://microformat-shiv.com
    Copyright (c) 2015 Glenn Jones
    Licensed MIT 
 */
@@ -21,7 +21,7 @@ var Microformats; // jshint ignore:line
     var modules = {};
     
 
-	modules.version = '1.1.1';
+	modules.version = '1.1.2';
 	modules.livingStandard = '2015-08-20T13:50:36Z';
 
 	/**
@@ -56,6 +56,7 @@ var Microformats; // jshint ignore:line
 			};
 			this.rootID = 0;
 			this.errors = [];
+			this.noContentErr = 'No options.node or options.html was provided and no document object could be found.';
 		},
 		
 		
@@ -77,13 +78,13 @@ var Microformats; // jshint ignore:line
 				
 			// if we do not have any context create error
 			if(!this.rootNode || !this.document){
-				this.errors.push('No options.node was provided and no document object could be found.');
+				this.errors.push(this.noContentErr);
 			}else{
 			
 				// only parse h-* microformats if we need too
 				// this is added to speed up parsing 
 				if(this.hasMicroformats(this.rootNode, options)){
-					this.prepareClonedDOM( options );
+					this.prepareDOM( options );
 			
 					if(this.options.filters.length > 0){
 						// parse flat list of items
@@ -112,9 +113,6 @@ var Microformats; // jshint ignore:line
 				}
 				
 			}
-			
-			// drop memory usage ie cloned DOM
-			this.init();
 
 			if(this.errors.length > 0){
 				return this.formatError();
@@ -134,10 +132,10 @@ var Microformats; // jshint ignore:line
 			this.init();
 			options = (options)? options : {};
 			
-			if(node && node.nodeType && node.nodeType === 1){
+			if(node){
 				return this.getParentTreeWalk(node, options);
 			}else{
-				this.errors.push('No node was provided or it was the wrong type of object.');
+				this.errors.push(this.noContentErr);
 				return this.formatError();
 			}
 		},
@@ -148,31 +146,27 @@ var Microformats; // jshint ignore:line
 		 *
 		 * @param  {DOM Node} node
 		 * @param  {Object} options
+		 * @param  {Int} recursive
 		 * @return {Object}
 		 */
-		getParentTreeWalk: function (node, options) {
+		getParentTreeWalk: function (node, options, recursive) {
 			options = (options)? options : {};
 			
 			// recursive calls
 		    if (arguments.length === 2) {
-		        if (node.parentNode && node.nodeName !== 'BODY'){
+		        if (node.parentNode && node.nodeName !== 'HTML'){
 		            return this.getParentTreeWalk(node.parentNode, options, 1);
 				}else{
 		            return this.formatEmpty();
 				}
 		    }
-		    if (node !== null && node !== undefined) {
+		    if (node !== null && node !== undefined && node.parentNode) {
 		        if (this.isMicroformat( node, options )) {
 					// if we have match return microformats
 					options.node = node;
 		            return this.get( options );
 		        }else{
-					// no match keep looking there is no parent
-		            if (node.parentNode){
-		                return this.getParentTreeWalk(node.parentNode, options, 1);
-					}else{
-		                return this.formatEmpty();
-					}
+		            return this.getParentTreeWalk(node.parentNode, options, 1);
 		        }
 		    }else{
 		        return this.formatEmpty();
@@ -186,27 +180,10 @@ var Microformats; // jshint ignore:line
 		 *
 		 * @param  {Object} options
 		 */
-		getDOMContext: function( options ){
-				
-			// if a node is passed in options use it
-			if(options.node){
-				this.rootNode = options.node;
-				// if document is passed in as options.node get html element
-				if(this.rootNode.nodeType === 9){
-					this.document = this.rootNode;
-					this.rootNode = modules.domUtils.querySelector(this.rootNode, 'html');
-				}else{
-					// if its DOM Node get parent DOM Document
-					this.document = modules.domUtils.ownerDocument(this.rootNode);
-				} 
-			}
-
-			// if no node is passed in options but there is a global document object use that
-			if(!this.rootNode && document){
-				this.rootNode = modules.domUtils.querySelector(document, 'html');
-				this.document = document;
-			}
-			
+		getDOMContext: function( options ){	
+			var nodes = modules.domUtils.getDOMContext( options );		
+			this.rootNode = nodes.rootNode;		
+			this.document = nodes.document;
 		},
 		
 		
@@ -216,7 +193,7 @@ var Microformats; // jshint ignore:line
 		 * @param  {Object} options
 		 * @return {Boolean}
 		 */
-		prepareClonedDOM: function( options ){
+		prepareDOM: function( options ){
 			var baseTag,
 				href;
 				
@@ -302,8 +279,7 @@ var Microformats; // jshint ignore:line
 		
 		// find uf's of a given type and return a dom and node structure of just that type of ufs
 		findFilterNodes: function(rootNode, filters) {
-			
-			var newRootNode = this.document.createElement('div'),
+			var newRootNode = modules.domUtils.createNode('div'),
 				items = this.findRootNodes(rootNode, true),
 				i = 0,
 				x = 0,
@@ -356,7 +332,7 @@ var Microformats; // jshint ignore:line
 			
 			// if we do not have any context create error
 			if(!this.rootNode || !this.document){
-				return {'errors': ['No options.node was provided and no document object could be found.']};
+				return {'errors': [this.noContentErr]};
 			}else{	
 					
 				items = this.findRootNodes( this.rootNode, true );	
@@ -378,7 +354,7 @@ var Microformats; // jshint ignore:line
 						}
 					}
 				}
-				var relCount = this.countRels( options.node );
+				var relCount = this.countRels( this.rootNode );
 				if(relCount > 0){
 					out.rels = relCount;
 				}
@@ -416,14 +392,15 @@ var Microformats; // jshint ignore:line
 			var classes,
 				i;
 				
-			if(!node || !node.nodeType){
+			if(!node){
 				return false;
 			}
-			
+
 			// if documemt get topmost node
-			if(node.nodeType === 9){
-				node = modules.domUtils.querySelector(node, 'html');
-			}
+			node = modules.domUtils.getTopMostNode( node );
+			//if(node.nodeType && node.nodeType === 9){
+			//	node = modules.domUtils.querySelector(node, 'html');
+			//}
 			
 			// look for h-* microformats		
 			classes = this.getUfClassNames(node);
@@ -452,14 +429,16 @@ var Microformats; // jshint ignore:line
 			var items,
 				i;
 			
-			if(!node || !node.nodeType){
+			if(!node){
 				return false;
 			}
+
 	
-			// if documemt get topmost node
-			if(node.nodeType === 9){
-				node = modules.domUtils.querySelector(node, 'html');
-			}
+			// if browser based documemt get topmost node
+			node = modules.domUtils.getTopMostNode( node );
+			//if(node.nodeType && node.nodeType === 9){
+			//	node = modules.domUtils.querySelector(node, 'html');
+			//}
 			
 			// returns all microformats roots	
 			items = this.findRootNodes( node, true );
@@ -571,6 +550,8 @@ var Microformats; // jshint ignore:line
 		 */
 		walkRoot: function(node){
 			var context = this,
+				children = [],
+				child,
 				classes,
 				items = [],
 				out = [];
@@ -585,9 +566,10 @@ var Microformats; // jshint ignore:line
 				}
 			}else{
 				// check if there are children and one of the children has a root uf
-				if(node && node.children && node.children.length > 0 && this.findRootNodes(node, true).length > -1){
-					for (var i = 0; i < node.children.length; i++) {
-						var child = node.children[i];
+				children = modules.domUtils.getChildren( node );
+				if(children && children.length > 0 && this.findRootNodes(node, true).length > -1){
+					for (var i = 0; i < children.length; i++) {
+						child = children[i];
 						items = context.walkRoot(child);
 						if(items.length > 0){
 							out = out.concat(items);
@@ -642,6 +624,7 @@ var Microformats; // jshint ignore:line
 		 */
 		walkChildren: function(node, out, ufName, rootID, parentClasses) {
 			var context = this,
+				children = [],
 				rootItem,
 				itemRootID,
 				value,
@@ -652,11 +635,13 @@ var Microformats; // jshint ignore:line
 				y,
 				z, 
 				child;
+				
+			children = modules.domUtils.getChildren( node );
 	
 			y = 0;
-			z = node.children.length;
+			z = children.length;
 			while(y < z) {
-				child = node.children[y];
+				child = children[y];
 		
 				// get uf classes for this single element
 				var classes = context.getUfClassNames(child, ufName);
@@ -1045,15 +1030,18 @@ var Microformats; // jshint ignore:line
 		 */
 		getValueClass: function(node, propertyType) {
 			var context = this,
+				children = [],
 				out = [],
 				child,
 				x,
 				i;
+				
+			children = modules.domUtils.getChildren( node );	
 	
 			x = 0;
-			i = node.children.length;
+			i = children.length;
 			while(x < i) {
-				child = node.children[x];
+				child = children[x];
 				var value = null;
 				if(modules.domUtils.hasAttributeValue(child, 'class', 'value')) {
 					switch(propertyType) {
@@ -2240,7 +2228,7 @@ var Microformats; // jshint ignore:line
 		 * @return {Int}
 		 */
 		modules.Parser.prototype.countRels = function(node) {
-			if(node && node.nodeType){
+			if(node){
 				return modules.domUtils.getNodesByAttribute(node, 'rel').length;
 			}
 			return 0;
@@ -2282,6 +2270,17 @@ var Microformats; // jshint ignore:line
 		 */
 		isArray: function( obj ) {
 			return obj && !( obj.propertyIsEnumerable( 'length' ) ) && typeof obj === 'object' && typeof obj.length === 'number';
+		},
+		
+		
+		/**
+		 * is the object a function
+		 *
+		 * @param  {Object} obj
+		 * @return {Boolean}
+		 */
+		isFunction: function(obj) {
+			return !!(obj && obj.constructor && obj.call && obj.apply);
 		},
 	
 	
@@ -2432,7 +2431,70 @@ var Microformats; // jshint ignore:line
 
 	modules.domUtils = {
 		
+		// blank objects for DOM
+		document: null,
+		rootNode: null,
 		
+		
+	     /**
+		 * configures what are the base DOM objects for parsing
+		 *
+		 * @param  {Object} options
+		 * @return {DOM Node} node
+		 */
+		getDOMContext: function( options ){
+				
+			// if a node is passed 
+			if(options.node){
+				this.rootNode = options.node;
+				// if document is passed in as options.node get html element
+				if(this.rootNode.nodeType === 9){
+					this.document = this.rootNode;
+					this.rootNode = modules.domUtils.querySelector(this.rootNode, 'html');
+				}else{
+					// if its DOM Node get parent DOM Document
+					this.document = modules.domUtils.ownerDocument(this.rootNode);
+				} 
+			}
+			
+			
+			// if a html string is passed
+			if(options.node){
+				// TODO add DOMParser
+			}
+
+			// use global document object
+			if(!this.rootNode && document){
+				this.rootNode = modules.domUtils.querySelector(document, 'html');
+				this.document = document;
+			}
+			
+			
+			if(this.rootNode && this.document){
+				return {document: this.document, rootNode: this.rootNode}
+			}
+			
+			return {document: null, rootNode: null}
+		},
+		
+		
+				
+		/**
+		* gets the first DOM node
+		*
+		* @param  {Dom Document}
+		* @return {DOM Node} node
+		*/
+		getTopMostNode: function( node ){
+			//var doc = this.ownerDocument(node);
+			//if(doc && doc.nodeType && doc.nodeType === 9 && doc.documentElement){
+			//	return doc.documentElement;
+			//}
+			return node;
+		},
+		
+		
+
 		 /**
 		 * abstracts DOM ownerDocument
 		 *
@@ -2591,9 +2653,8 @@ var Microformats; // jshint ignore:line
 		},
 	
 	
-		// gets all child nodes with a given attribute containing a given value
 		/**
-		 * does an attribute contain a value
+		 * gets all child nodes with a given attribute containing a given value
 		 *
 		 * @param  {DOM Node} node
 		 * @param  {String} attributeName
@@ -2893,7 +2954,44 @@ var Microformats; // jshint ignore:line
 			  node = node.childNodes[index];
 		  } 
 		  return node;
+		},
+		
+		
+		/**
+		* get an array/nodeList of child nodes 
+		*
+		*   @param  {DOM node} node
+		*   @return {Array}
+		*/
+		getChildren: function( node ){
+			return node.children;
+		},
+		
+		
+		/**
+		* create a node
+		*
+		*   @param  {String} tagName
+		*   @return {DOM node}
+		*/
+		createNode: function( tagName ){
+			return this.document.createElement(tagName);
+		},	
+		
+		
+		/**
+		* create a node with passed text content
+		*
+		*   @param  {String} tagName
+		*   @param  {String} text
+		*   @return {DOM node}
+		*/
+		createNodeWithText: function( tagName, text ){
+			return this.document
+							.createElement(tagName)
+							.appendChild(this.document.createTextNode(text));
 		}
+		
 		
 
 	};
@@ -3720,8 +3818,7 @@ b,d){return g(y(h(a,d),h(b,d),d,!0),d)},normalize:function(a,b){"string"===typeo
 		 * @return {String}
 		 */  
 		parseText: function( doc, text, textFormat ){
-		   var node = doc.createElement('div');
-		   node.innerHTML = text;
+		   var node = modules.domUtils.createNodeWithText( 'div', text )
 		   return this.parse( doc, node, textFormat );
 		},
 		
