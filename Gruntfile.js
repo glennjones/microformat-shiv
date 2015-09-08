@@ -119,7 +119,7 @@ module.exports = function( grunt ) {
 		    all: ['test/mocha-tests.html']
 		},
 		watch: {
-			files: ['lib/**/*.js','umd/**/*.js','Gruntfile.js'],
+			files: ['lib/**/*.js','umd/**/*.js','Gruntfile.js','package.json'],
 			tasks: ['buildfile', 'concat:dist', 'copy', 'uglify']
 		}
 	});

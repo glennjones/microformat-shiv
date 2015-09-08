@@ -1,6 +1,6 @@
 /*
    microformat-shiv - v1.1.2
-   Built: 2015-09-03 03:09 - http://microformat-shiv.com
+   Built: 2015-09-08 08:09 - http://microformat-shiv.com
    Copyright (c) 2015 Glenn Jones
    Licensed MIT 
 */
@@ -153,9 +153,9 @@ var Microformats; // jshint ignore:line
 			options = (options)? options : {};
 			
 			// recursive calls
-		    if (arguments.length === 2) {
+		    if (recursive === undefined) {
 		        if (node.parentNode && node.nodeName !== 'HTML'){
-		            return this.getParentTreeWalk(node.parentNode, options, 1);
+		            return this.getParentTreeWalk(node.parentNode, options, true);
 				}else{
 		            return this.formatEmpty();
 				}
@@ -166,7 +166,7 @@ var Microformats; // jshint ignore:line
 					options.node = node;
 		            return this.get( options );
 		        }else{
-		            return this.getParentTreeWalk(node.parentNode, options, 1);
+		            return this.getParentTreeWalk(node.parentNode, options, true);
 		        }
 		    }else{
 		        return this.formatEmpty();
@@ -2471,10 +2471,10 @@ var Microformats; // jshint ignore:line
 			
 			
 			if(this.rootNode && this.document){
-				return {document: this.document, rootNode: this.rootNode}
+				return {document: this.document, rootNode: this.rootNode};
 			}
 			
-			return {document: null, rootNode: null}
+			return {document: null, rootNode: null};
 		},
 		
 		
@@ -3818,7 +3818,7 @@ b,d){return g(y(h(a,d),h(b,d),d,!0),d)},normalize:function(a,b){"string"===typeo
 		 * @return {String}
 		 */  
 		parseText: function( doc, text, textFormat ){
-		   var node = modules.domUtils.createNodeWithText( 'div', text )
+		   var node = modules.domUtils.createNodeWithText( 'div', text );
 		   return this.parse( doc, node, textFormat );
 		},
 		
