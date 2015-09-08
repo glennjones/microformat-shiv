@@ -89,6 +89,19 @@ describe('Microformat.count', function() {
         
    });
    
+   
+   it('count - options.html', function(){
+       
+       var  options = {},
+            result;
+            
+        options.html = '<a class="h-card" href="http://glennjones.net"><span class="p-name">Glenn</span></a><a class="h-card" href="http://janedoe.net"><span class="p-name">Jane</span></a><a class="h-event" href="http://janedoe.net"><span class="p-name">Event</span><span class="dt-start">2015-07-01</span></a>';     
+
+        result = Microformats.count(options);
+        assert.deepEqual( result, {'h-event': 1,'h-card': 2} );
+        
+   });
+   
   
    
  });

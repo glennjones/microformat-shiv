@@ -61,7 +61,8 @@ module.exports = function( grunt ) {
 						'lib/text.js',
 						'lib/html.js',
 						'lib/maps/*.js',
-						'umd/umd-end.js'
+						'umd/umd-end.js',
+						'lib/domparser.js'
 					]
 				}
 			}

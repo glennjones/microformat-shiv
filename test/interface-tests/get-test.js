@@ -566,6 +566,22 @@ describe('Microformat.get', function() {
         assert.deepEqual( result, altExpected );
         
    });
+   
+   
+    it('get - options.html', function(){
+       
+        var options,
+            result;
+ 
+        options ={
+            'html': html,
+            'baseUrl': 'http://example.com'
+        };
+
+        result = Microformats.get(options);
+        assert.deepEqual( result, expected );
+        
+   });
 
 
 

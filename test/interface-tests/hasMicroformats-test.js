@@ -178,6 +178,8 @@ describe('Microformat.hasMicroformats', function() {
         
    });
    
+  
+   
    
    
  });
