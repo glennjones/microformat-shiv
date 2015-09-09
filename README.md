@@ -42,7 +42,6 @@ Simple parse of HTML document or a selected section.
     </script>
 ```    
 
-
 Using options
 ```javascript
     <script src="microformat-shiv.min.js" type="text/javascript"></script>
@@ -72,10 +71,28 @@ Targeting just part of a page
     </script>    
 ```  
 
+Parsing a HTML string - The `baseUrl` is optional and is used to resolve relative URLs
+```javascript
+    <script src="microformat-shiv.min.js" type="text/javascript"></script>
+    <script type="text/javascript">
+        var items,
+            options;
+        
+        options = {
+            'baseUrl': 'http://glennjones.net',
+            'html': '<a class="h-card" href="/about.html">Glenn</a>'
+        };
+        var items = Microformats.get( options )
+        // do something with data `items`
+    </script>    
+```  
+Note: The `baseUrl` is optional and is used to resolve relative URLs
 
 Options
 -------
+* `html` - (String) the html to be parse (only `get` and `count` methods);
 * `node` - (DOM element) the element to be parse - default current browser document
+* `baseUrl` - (String) optional URL used to resolve relative URLs
 * `filter` - (Array) microformats types returned - i.e. `['h-card']` - always adds `rels`
 * `textFormat` - (String) text style `whitespacetrimmed` or `normalised` default is `whitespacetrimmed`
 * `dateFormat` - (String) the ISO date profile `auto`, `w3c` `rfc3339` or `html5` default is `auto`
@@ -86,8 +103,6 @@ __I would recommended always setting `textFormat` option to `normalised`. This i
 Experimental Options
 -------
 These options are part of ongoing specification development. They maybe removed or renamed in future.
-* `overlappingVersions` - (Boolean) block overlapping properties from different microformat versions default is `true`
-* `impliedPropertiesByVersion` (Boolean)  Set implied properties by microformat version default is `false`
 * `parseLatLonGeo` (Boolean)  Parse geo date writen as latlon i.e. 30.267991;-97.739568 
 default is `false`
 

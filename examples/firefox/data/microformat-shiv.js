@@ -1,6 +1,6 @@
 /*
-   microformat-shiv - v1.1.4
-   Built: 2015-09-09 02:09 - http://microformat-shiv.com
+   microformat-shiv - v1.2.0
+   Built: 2015-09-09 04:09 - http://microformat-shiv.com
    Copyright (c) 2015 Glenn Jones
    Licensed MIT 
 */
@@ -21,8 +21,8 @@ var Microformats; // jshint ignore:line
     var modules = {};
     
 
-	modules.version = '1.1.4';
-	modules.livingStandard = '2015-09-09T11:11:13Z';
+	modules.version = '1.2.0';
+	modules.livingStandard = '2015-09-09T14:47:13Z';
 
 	/**
 	 * constructor
@@ -138,6 +138,139 @@ var Microformats; // jshint ignore:line
 				this.errors.push(this.noContentErr);
 				return this.formatError();
 			}
+		},
+		
+		
+	    /**
+		 * get the count of microformats
+		 *
+		 * @param  {DOM Node} rootNode
+		 * @return {Int}
+		 */
+		count: function( options ) {
+			var out = {},
+				items,
+				classItems,
+				x,
+				i;
+				
+			this.init();
+			options = (options)? options : {};	
+			this.getDOMContext( options );
+			
+			// if we do not have any context create error
+			if(!this.rootNode || !this.document){
+				return {'errors': [this.noContentErr]};
+			}else{	
+					
+				items = this.findRootNodes( this.rootNode, true );	
+				i = items.length;
+				while(i--) {
+					classItems = modules.domUtils.getAttributeList(items[i], 'class');
+					x = classItems.length;
+					while(x--) {
+						// find v2 names
+						if(modules.utils.startWith( classItems[x], 'h-' )){
+							this.appendCount(classItems[x], 1, out);
+						}
+						// find v1 names
+						for(var key in modules.maps) {
+							// has v1 root but not also a v2 root so we dont double count
+							if(modules.maps[key].root === classItems[x] && classItems.indexOf(key) === -1) {
+								this.appendCount(key, 1, out);
+							}
+						}
+					}
+				}
+				var relCount = this.countRels( this.rootNode );
+				if(relCount > 0){
+					out.rels = relCount;
+				}
+	
+				return out;
+			}
+		},
+		
+		
+		/**
+		 * does a node have a class that marks it as a microformats root
+		 *
+		 * @param  {DOM Node} node
+		 * @param  {Objecte} options
+		 * @return {Boolean}
+		 */
+		isMicroformat: function( node, options ) {
+			var classes,
+				i;
+				
+			if(!node){
+				return false;
+			}
+
+			// if documemt get topmost node
+			node = modules.domUtils.getTopMostNode( node );
+			
+			// look for h-* microformats		
+			classes = this.getUfClassNames(node);
+			if(options && options.filters && modules.utils.isArray(options.filters)){
+				i = options.filters.length;
+				while(i--) {
+					if(classes.root.indexOf(options.filters[i]) > -1){
+						return true;
+					}
+				}
+				return false;
+			}else{
+				return (classes.root.length > 0);
+			}
+		},	
+		
+		
+		/**
+		 * does a node or its children have microformats
+		 *
+		 * @param  {DOM Node} node
+		 * @param  {Objecte} options
+		 * @return {Boolean}
+		 */
+		hasMicroformats: function( node, options ) {
+			var items,
+				i;
+			
+			if(!node){
+				return false;
+			}
+
+			// if browser based documemt get topmost node
+			node = modules.domUtils.getTopMostNode( node );
+			
+			// returns all microformats roots	
+			items = this.findRootNodes( node, true );
+			if(options && options.filters && modules.utils.isArray(options.filters)){
+				i = items.length;
+				while(i--) {
+					if( this.isMicroformat( items[i], options ) ){
+						return true;
+					}
+				}
+				return false;
+			}else{
+				return (items.length > 0);
+			}
+		},	
+		
+		
+		/**
+		 * add a new V1 mapping object to parser
+		 *
+		 * @param  {Array} maps
+		 */
+		add: function( maps ){
+			maps.forEach(function(map){
+				if(map && map.root && map.name && map.properties){
+				modules.maps[map.name] = JSON.parse(JSON.stringify(map));	
+				}
+			});
 		},
 		
 		
@@ -263,20 +396,6 @@ var Microformats; // jshint ignore:line
 		},
 		
 		
-		/**
-		 * add a new V1 mapping object to parser
-		 *
-		 * @param  {Array} maps
-		 */
-		add: function( maps ){
-			maps.forEach(function(map){
-				if(map && map.root && map.name && map.properties){
-				modules.maps[map.name] = JSON.parse(JSON.stringify(map));	
-				}
-			});
-		},
-
-		
 		// find uf's of a given type and return a dom and node structure of just that type of ufs
 		findFilterNodes: function(rootNode, filters) {
 			var newRootNode = modules.domUtils.createNode('div'),
@@ -314,57 +433,6 @@ var Microformats; // jshint ignore:line
 		
 		
 		/**
-		 * get the count of microformats
-		 *
-		 * @param  {DOM Node} rootNode
-		 * @return {Int}
-		 */
-		count: function( options ) {
-			var out = {},
-				items,
-				classItems,
-				x,
-				i;
-				
-			this.init();
-			options = (options)? options : {};	
-			this.getDOMContext( options );
-			
-			// if we do not have any context create error
-			if(!this.rootNode || !this.document){
-				return {'errors': [this.noContentErr]};
-			}else{	
-					
-				items = this.findRootNodes( this.rootNode, true );	
-				i = items.length;
-				while(i--) {
-					classItems = modules.domUtils.getAttributeList(items[i], 'class');
-					x = classItems.length;
-					while(x--) {
-						// find v2 names
-						if(modules.utils.startWith( classItems[x], 'h-' )){
-							this.appendCount(classItems[x], 1, out);
-						}
-						// find v1 names
-						for(var key in modules.maps) {
-							// has v1 root but not also a v2 root so we dont double count
-							if(modules.maps[key].root === classItems[x] && classItems.indexOf(key) === -1) {
-								this.appendCount(key, 1, out);
-							}
-						}
-					}
-				}
-				var relCount = this.countRels( this.rootNode );
-				if(relCount > 0){
-					out.rels = relCount;
-				}
-	
-				return out;
-			}
-		},
-		
-		
-		/**
 		 * appends data to output object for count
 		 *
 		 * @param  {string} name
@@ -378,83 +446,7 @@ var Microformats; // jshint ignore:line
 				out[name] = count;
 			}
 		},	
-		
-		
-		
-		/**
-		 * does a node have a class that marks it as a microformats root
-		 *
-		 * @param  {DOM Node} node
-		 * @param  {Objecte} options
-		 * @return {Boolean}
-		 */
-		isMicroformat: function( node, options ) {
-			var classes,
-				i;
-				
-			if(!node){
-				return false;
-			}
 
-			// if documemt get topmost node
-			node = modules.domUtils.getTopMostNode( node );
-			//if(node.nodeType && node.nodeType === 9){
-			//	node = modules.domUtils.querySelector(node, 'html');
-			//}
-			
-			// look for h-* microformats		
-			classes = this.getUfClassNames(node);
-			if(options && options.filters && modules.utils.isArray(options.filters)){
-				i = options.filters.length;
-				while(i--) {
-					if(classes.root.indexOf(options.filters[i]) > -1){
-						return true;
-					}
-				}
-				return false;
-			}else{
-				return (classes.root.length > 0);
-			}
-		},	
-		
-		
-		/**
-		 * does a node or its children have microformats
-		 *
-		 * @param  {DOM Node} node
-		 * @param  {Objecte} options
-		 * @return {Boolean}
-		 */
-		hasMicroformats: function( node, options ) {
-			var items,
-				i;
-			
-			if(!node){
-				return false;
-			}
-
-	
-			// if browser based documemt get topmost node
-			node = modules.domUtils.getTopMostNode( node );
-			//if(node.nodeType && node.nodeType === 9){
-			//	node = modules.domUtils.querySelector(node, 'html');
-			//}
-			
-			// returns all microformats roots	
-			items = this.findRootNodes( node, true );
-			if(options && options.filters && modules.utils.isArray(options.filters)){
-				i = items.length;
-				while(i--) {
-					if( this.isMicroformat( items[i], options ) ){
-						return true;
-					}
-				}
-				return false;
-			}else{
-				return (items.length > 0);
-			}
-		},		
-			
 	
 		/**
 		 * is the microformats type in the filter list
