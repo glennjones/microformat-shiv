@@ -1,7 +1,7 @@
 /*
-Microformats Test Suite - Downloaded from github repo: microformats/tests version v0.1.21 
+Microformats Test Suite - Downloaded from github repo: microformats/tests version v0.1.23 
 Mocha integration test from: microformats-v1/hcard/justaname
-The test was built on Thu Aug 20 2015 15:27:29 GMT+0100 (BST)
+The test was built on Wed Sep 09 2015 15:51:39 GMT+0100 (BST)
 */
 
 assert = chai.assert;
@@ -9,7 +9,7 @@ assert = chai.assert;
 
 describe('hcard', function() {
    var htmlFragment = "<p class=\"vcard\">Frances Berriman</p>";
-   var expected = {"items":[{"type":["h-card"],"properties":{"name":["Frances Berriman"]}}],"rels":{},"rel-urls":{}};
+   var expected = {"items":[{"type":["h-card"],"properties":{}}],"rels":{},"rel-urls":{}};
 
    it('justaname', function(){
        var doc, dom, node, options, parser, found;
@@ -18,7 +18,8 @@ describe('hcard', function() {
        options ={
        		'document': doc,
        		'node': doc,
-       		'baseUrl': 'http://example.com'
+       		'baseUrl': 'http://example.com',
+       		'dateFormat': 'html5'
        };
        found = Microformats.get( options );
        assert.deepEqual(found, expected);

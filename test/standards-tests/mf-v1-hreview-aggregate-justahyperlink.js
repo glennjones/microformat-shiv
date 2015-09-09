@@ -1,7 +1,7 @@
 /*
-Microformats Test Suite - Downloaded from github repo: microformats/tests version v0.1.21 
+Microformats Test Suite - Downloaded from github repo: microformats/tests version v0.1.23 
 Mocha integration test from: microformats-v1/hreview-aggregate/justahyperlink
-The test was built on Thu Aug 20 2015 15:27:29 GMT+0100 (BST)
+The test was built on Wed Sep 09 2015 15:51:39 GMT+0100 (BST)
 */
 
 assert = chai.assert;
@@ -9,7 +9,7 @@ assert = chai.assert;
 
 describe('hreview-aggregate', function() {
    var htmlFragment = "<p class=\"hreview-aggregate\">\n    <span class=\"item\">\n        <a class=\"fn url\" href=\"http://example.com/mediterraneanwraps\">Mediterranean Wraps</a>\n    </span> - Rated: \n    <span class=\"rating\">4.5</span> out of 5 (<span class=\"count\">6</span> reviews)\n</p>";
-   var expected = {"items":[{"type":["h-review-aggregate"],"properties":{"item":[{"value":"Mediterranean Wraps","type":["h-item"],"properties":{"name":["Mediterranean Wraps"],"url":["http://example.com/mediterraneanwraps"]}}],"rating":["4.5"],"count":["6"],"name":["Mediterranean Wraps\n     - Rated: \n    4.5 out of 5 (6 reviews)"]}}],"rels":{},"rel-urls":{}};
+   var expected = {"items":[{"type":["h-review-aggregate"],"properties":{"item":[{"value":"Mediterranean Wraps","type":["h-item"],"properties":{"name":["Mediterranean Wraps"],"url":["http://example.com/mediterraneanwraps"]}}],"rating":["4.5"],"count":["6"]}}],"rels":{},"rel-urls":{}};
 
    it('justahyperlink', function(){
        var doc, dom, node, options, parser, found;
@@ -18,7 +18,8 @@ describe('hreview-aggregate', function() {
        options ={
        		'document': doc,
        		'node': doc,
-       		'baseUrl': 'http://example.com'
+       		'baseUrl': 'http://example.com',
+       		'dateFormat': 'html5'
        };
        found = Microformats.get( options );
        assert.deepEqual(found, expected);

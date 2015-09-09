@@ -1,6 +1,6 @@
 /*
    microformat-shiv - v1.1.4
-   Built: 2015-09-08 02:09 - http://microformat-shiv.com
+   Built: 2015-09-09 02:09 - http://microformat-shiv.com
    Copyright (c) 2015 Glenn Jones
    Licensed MIT 
 */
@@ -22,7 +22,7 @@ var Microformats; // jshint ignore:line
     
 
 	modules.version = '1.1.4';
-	modules.livingStandard = '2015-08-20T13:50:36Z';
+	modules.livingStandard = '2015-09-09T11:11:13Z';
 
 	/**
 	 * constructor
@@ -49,9 +49,9 @@ var Microformats; // jshint ignore:line
 				'baseUrl': '',
 				'filters': [],
 				'textFormat': 'whitespacetrimmed',
-				'dateFormat': 'auto',
-				'overlappingVersions': true,
-				'impliedPropertiesByVersion': false,
+				'dateFormat': 'auto', // html5 for testing
+				'overlappingVersions': false,
+				'impliedPropertiesByVersion': true,
 				'parseLatLonGeo': false
 			};
 			this.rootID = 0;
@@ -2993,9 +2993,9 @@ var Microformats; // jshint ignore:line
 		*   @return {DOM node}
 		*/
 		createNodeWithText: function( tagName, text ){
-			return this.document
-							.createElement(tagName)
-							.appendChild(this.document.createTextNode(text));
+			var node = this.document.createElement(tagName);
+			node.innerHTML = text;
+			return node;
 		}
 		
 		

@@ -7,8 +7,7 @@
 
 var options = {
         'baseUrl': 'http://example.com',
-        'overlappingVersions': true,
-        'impliedPropertiesByVersion': false,
+        'dateFormat': 'html5',
         'parseLatLonGeo': false
     };
 

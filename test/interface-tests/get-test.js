@@ -69,7 +69,8 @@ describe('Microformat.get', function() {
         
         options ={
             'node': node,
-            'baseUrl': 'http://example.com'
+            'baseUrl': 'http://example.com',
+            'dateFormat': 'html5'
         };
 
         result = Microformats.get(options);
@@ -92,7 +93,8 @@ describe('Microformat.get', function() {
         
         options ={
             'node': doc,
-            'baseUrl': 'http://example.com'
+            'baseUrl': 'http://example.com',
+            'dateFormat': 'html5'
         };
 
         result = Microformats.get(options);
@@ -115,6 +117,7 @@ describe('Microformat.get', function() {
         
         options ={
             'node': node,
+            'dateFormat': 'html5'
         };
 
         result = Microformats.get(options);
@@ -138,6 +141,7 @@ describe('Microformat.get', function() {
         
         options ={
             'node': doc,
+            'dateFormat': 'html5'
         };
 
         result = Microformats.get(options);
@@ -165,7 +169,8 @@ describe('Microformat.get', function() {
         
         options ={
             'node': node,
-            'textFormat': 'normalised'
+            'textFormat': 'normalised',
+            'dateFormat': 'html5'
         };
 
         result = Microformats.get(options);
@@ -194,7 +199,8 @@ describe('Microformat.get', function() {
         
         options ={
             'node': node,
-            'textFormat': 'whitespace'
+            'textFormat': 'whitespace',
+            'dateFormat': 'html5'
         };
 
         result = Microformats.get(options);
@@ -224,7 +230,8 @@ describe('Microformat.get', function() {
         
         options ={
             'node': node,
-            'textFormat': 'whitespacetrimmed'
+            'textFormat': 'whitespacetrimmed',
+            'dateFormat': 'html5'
         };
         
         result = Microformats.get(options);
@@ -365,7 +372,8 @@ describe('Microformat.get', function() {
         
         options ={
             'node': node,
-            'filters': ['h-card']
+            'filters': ['h-card'],
+            'dateFormat': 'html5'
         };
  
         result = Microformats.get(options);
@@ -387,7 +395,7 @@ describe('Microformat.get', function() {
                 'type': ['h-event'],
                 'properties': {
                     'name': ['Pub'],
-                    'start': ['2015-07-01t17:30z']
+                    'start': ['2015-07-01 17:30Z']
                 }
             }],
             'rels': {},
@@ -402,7 +410,8 @@ describe('Microformat.get', function() {
         
         options ={
             'node': node,
-            'filters': ['h-event']
+            'filters': ['h-event'],
+            'dateFormat': 'html5'
         };
 
         result = Microformats.get(options);
@@ -424,7 +433,7 @@ describe('Microformat.get', function() {
                     'type': ['h-event'],
                     'properties': {
                         'name': ['Pub'],
-                        'start': ['2015-07-01t17:30z']
+                        'start': ['2015-07-01 17:30Z']
                     }
                 },
                 {
@@ -446,7 +455,8 @@ describe('Microformat.get', function() {
         
         options ={
             'node': node,
-            'filter': ['h-event']
+            'filter': ['h-event'],
+            'dateFormat': 'html5'
         };
 
         result = Microformats.get(options);
@@ -477,7 +487,8 @@ describe('Microformat.get', function() {
         
         options ={
             'node': node,
-            'filters': ['h-card']
+            'filters': ['h-card'],
+            'dateFormat': 'html5'
         };
 
         result = Microformats.get(options);
@@ -499,8 +510,7 @@ describe('Microformat.get', function() {
                 'items': [{
                     'type': ['h-card'],
                     'properties': {
-                        'name': ['Glenn Jones'],
-                        'url': ['http://glennjones.net']
+                        'name': ['Glenn Jones']
                     }
                 }],
                 'rels': {},
@@ -515,7 +525,8 @@ describe('Microformat.get', function() {
         
         options ={
             'node': node,
-            'filter': ['h-card']
+            'filter': ['h-card'],
+            'dateFormat': 'html5'
         };
 
         result = Microformats.get(options);
@@ -536,8 +547,7 @@ describe('Microformat.get', function() {
                 'items': [{
                     'type': ['h-payment'],
                     'properties': {
-                        'amount': ['36.78'],
-                        'name': ['£36.78']
+                        'amount': ['36.78']
                     }
                 }],
                 'rels': {},
@@ -559,7 +569,8 @@ describe('Microformat.get', function() {
         
         options ={
             'node': node,
-            'maps': v1Definition
+            'maps': v1Definition,
+            'dateFormat': 'html5'
         };
 
         result = Microformats.get(options);
@@ -575,7 +586,8 @@ describe('Microformat.get', function() {
  
         options ={
             'html': html,
-            'baseUrl': 'http://example.com'
+            'baseUrl': 'http://example.com',
+            'dateFormat': 'html5'
         };
 
         result = Microformats.get(options);

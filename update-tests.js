@@ -208,7 +208,8 @@ function buildMochaJSString( testData, testStructure, version, repo ){
     out += "       options ={\r\n";
     out += "       		'document': doc,\r\n";
     out += "       		'node': doc,\r\n";
-    out += "       		'baseUrl': 'http://example.com'\r\n";
+    out += "       		'baseUrl': 'http://example.com',\r\n";
+    out += "       		'dateFormat': 'html5'\r\n";
     out += "       };\r\n";
     out += "       found = Microformats.get( options );\r\n";
 	out += "       assert.deepEqual(found, expected);\r\n";   
@@ -310,6 +311,7 @@ function buildMochaJSString( testData, testStructure, version, repo ){
 		out += '<script src="' + dirPath  + 'interface-tests/count-test.js"></script>\r\n';
 		out += '<script src="' + dirPath  + 'interface-tests/isMicroformat-test.js"></script>\r\n';
 		out += '<script src="' + dirPath  + 'interface-tests/hasMicroformats-test.js"></script>\r\n\r\n';
+		out += '<script src="' + dirPath  + 'interface-tests/experimental-test.js"></script>\r\n\r\n';
 	}
 	
 	

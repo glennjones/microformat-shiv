@@ -37,6 +37,9 @@ describe('Modules.text', function() {
    
    it('parseText', function(){
        var text = '\n   <a href="http://glennjones.net">Glenn\n Jones  \n</a>   \n';
+       
+       // create DOM context first
+       Modules.domUtils.getDOMContext( {} );
                 
        assert.equal( Modules.text.parseText( document, text, 'whitespacetrimmed' ), 'Glenn\n Jones' );
        assert.equal( Modules.text.parseText( document, text, 'whitespace' ), '\n   Glenn\n Jones  \n   \n' );

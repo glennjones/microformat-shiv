@@ -24,7 +24,7 @@ describe('Microformat.getParent', function() {
                             "Pub"
                         ],
                         "start": [
-                            "2015-07-01t17:30z"
+                            "2015-07-01 17:30Z"
                         ]
                     }
                 }
@@ -32,6 +32,7 @@ describe('Microformat.getParent', function() {
             "rels": {},
             "rel-urls": {}
         };
+        var options = {'dateFormat': 'html5'};
      
         
     
@@ -49,7 +50,7 @@ describe('Microformat.getParent', function() {
         doc.body.appendChild(node);
         span = doc.querySelector('.dt-start');    
         
-        result = Microformats.getParent(span);
+        result = Microformats.getParent(span,options);
         assert.deepEqual( result, expected );
         
    });
@@ -68,7 +69,7 @@ describe('Microformat.getParent', function() {
         node.innerHTML = HTML;
         doc.body.appendChild(node);
     
-        result = Microformats.getParent(node);
+        result = Microformats.getParent(node,options);
         assert.deepEqual( result, emptyExpected );
         
    });
@@ -87,7 +88,7 @@ describe('Microformat.getParent', function() {
         doc.body.appendChild(node);
         span = doc.querySelector('.dt-start');    
         
-        result = Microformats.getParent( span, {'filters': ['h-event']} );
+        result = Microformats.getParent( span, {'filters': ['h-event'], 'dateFormat': 'html5'} );
         assert.deepEqual( result, expected );
         
    });
@@ -106,7 +107,7 @@ describe('Microformat.getParent', function() {
         doc.body.appendChild(node);
         span = doc.querySelector('.dt-start');   
 
-        result = Microformats.getParent( span, {'filters': ['h-card']} );
+        result = Microformats.getParent( span, {'filters': ['h-card'], 'dateFormat': 'html5'} );
         assert.deepEqual( result, emptyExpected );
         
    });
@@ -153,7 +154,7 @@ describe('Microformat.getParent', function() {
                             }
                         ],
                         "publish": [
-                            "2015-07-01t17:30z"
+                            "2015-07-01 17:30Z"
                         ]
                     }
                 }
@@ -169,7 +170,7 @@ describe('Microformat.getParent', function() {
         doc.body.appendChild(node);
         span = doc.querySelector('.h-card .p-name');    
         
-        result = Microformats.getParent( span, {'filters': ['h-entry']} );
+        result = Microformats.getParent( span, {'filters': ['h-entry'], 'dateFormat': 'html5'} );
         assert.deepEqual( result, altExpected );
         
    });
@@ -210,7 +211,7 @@ describe('Microformat.getParent', function() {
         doc.body.appendChild(node);
         span = doc.querySelector('.h-card .p-name');    
         
-        result = Microformats.getParent( span );
+        result = Microformats.getParent( span, options );
         assert.deepEqual( result, altExpected );
         
    });

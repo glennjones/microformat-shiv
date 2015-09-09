@@ -39,8 +39,8 @@ window.onload = function() {
         baseUrl = document.getElementById('baseurl').value;
         filters = document.getElementById('filters').value;
         collapsewhitespace = document.getElementById('collapsewhitespace').checked;  
-        overlappingversions = document.getElementById('overlappingversions').checked;
-        impliedPropertiesByVersion  = document.getElementById('impliedPropertiesByVersion').checked; 
+        //overlappingversions = document.getElementById('overlappingversions').checked;
+        //impliedPropertiesByVersion  = document.getElementById('impliedPropertiesByVersion').checked; 
         parseLatLonGeo = document.getElementById('parseLatLonGeo').checked; 
         dateformatElt = document.getElementById("dateformat");
         dateformat = dateformatElt.options[dateformatElt.selectedIndex].value;
@@ -54,8 +54,6 @@ window.onload = function() {
             'document': doc,
             'node': doc,
             'dateFormat': dateformat,
-            'overlappingVersions': true,
-            'impliedPropertiesByVersion': false,
             'parseLatLonGeo': false
         };
         
@@ -75,6 +73,7 @@ window.onload = function() {
             options.textFormat = 'normalised';
         }
         
+        /*
         if(overlappingversions === true){
             options.overlappingVersions = false;
         }
@@ -82,6 +81,7 @@ window.onload = function() {
         if(impliedPropertiesByVersion === true){
             options.impliedPropertiesByVersion = true;
         }
+        */
         
         if(parseLatLonGeo === true){
             options.parseLatLonGeo = true
