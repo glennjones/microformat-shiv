@@ -1,7 +1,7 @@
 /*
-Microformats Test Suite - Downloaded from github repo: microformats/tests version v0.1.23 
+Microformats Test Suite - Downloaded from github repo: microformats/tests version v0.1.24 
 Mocha integration test from: microformats-v1/hcard/hyperlinkedphoto
-The test was built on Wed Sep 09 2015 15:51:39 GMT+0100 (BST)
+The test was built on Fri Sep 25 2015 13:26:26 GMT+0100 (BST)
 */
 
 assert = chai.assert;

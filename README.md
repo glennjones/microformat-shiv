@@ -71,7 +71,7 @@ Targeting just part of a page
     </script>    
 ```  
 
-Parsing a HTML string - The `baseUrl` is optional and is used to resolve relative URLs
+Parsing a HTML string
 ```javascript
     <script src="microformat-shiv.min.js" type="text/javascript"></script>
     <script type="text/javascript">
@@ -87,6 +87,7 @@ Parsing a HTML string - The `baseUrl` is optional and is used to resolve relativ
     </script>    
 ```  
 Note: The `baseUrl` is optional and is used to resolve relative URLs
+
 
 Options
 -------
@@ -242,7 +243,7 @@ Mobile
 * Android Firefox 39 (Only verision I could test)
 * Android Chrome 43	(Only verision I could test)
 
-Note some earlier browser will need ES6-shim.js
+Note some earlier browser will need ES5-shim.js
 
 
 Microformats definitions object

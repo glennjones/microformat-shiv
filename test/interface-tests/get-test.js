@@ -32,14 +32,7 @@ describe('Microformat.get', function() {
                 'text': 'French mobile homepage',
                 'rels': ['alternate', 'home']
             }
-        },
-        'alternates': [{
-            'media': 'handheld',
-            'hreflang': 'fr',
-            'text': 'French mobile homepage',
-            'url': 'http://example.com/fr',
-            'rel': 'home'
-        }]
+        }
     },
     html = '<div class="h-card"><a class="p-name u-url" rel="bookmark" href="http://glennjones.net">Glenn Jones</a></div><a rel="alternate home" href="http://example.com/fr" media="handheld" hreflang="fr">French mobile homepage</a>';
 

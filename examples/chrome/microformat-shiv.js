@@ -1,6 +1,6 @@
 /*
-   microformat-shiv - v1.2.0
-   Built: 2015-09-09 04:09 - http://microformat-shiv.com
+   microformat-shiv - v1.3.0
+   Built: 2015-09-25 01:09 - http://microformat-shiv.com
    Copyright (c) 2015 Glenn Jones
    Licensed MIT 
 */
@@ -21,8 +21,8 @@ var Microformats; // jshint ignore:line
     var modules = {};
     
 
-	modules.version = '1.2.0';
-	modules.livingStandard = '2015-09-09T14:47:13Z';
+	modules.version = '1.3.0';
+	modules.livingStandard = '2015-09-25T12:26:04Z';
 
 	/**
 	 * constructor
@@ -107,9 +107,6 @@ var Microformats; // jshint ignore:line
 					rels = this.findRels(this.rootNode);
 					out.rels = rels.rels;
 					out['rel-urls'] = rels['rel-urls'];
-					if(rels.alternate){
-						out.alternates = rels.alternate;
-					}
 				}
 				
 			}
@@ -2103,29 +2100,7 @@ var Microformats; // jshint ignore:line
 					if(url && out['rel-urls'][url] === undefined){
 						out['rel-urls'][url] = relUrl;
 					}
-					
-					if(relList.toLowerCase().indexOf('alternate') > -1){	
-						// if its an alternate add 
-						var obj = this.getRelProperties(arr[x]);
-						if(url){
-							obj.url = url;
-						}
 	
-						if(items.length > 1){
-							if(modules.domUtils.hasAttribute(arr[x], 'rel')){
-								var clonedRelList = relList;
-								obj.rel = modules.utils.trim( clonedRelList.toLowerCase().replace('alternate','') );
-							}
-						}
-						// create the key
-						if(!out.alternate) {
-							out.alternate = [];
-						}
-						out.alternate.push( obj );
-					}
-						
-	
-					
 			
 				}
 				x++;
@@ -3781,7 +3756,7 @@ b,d){return g(y(h(a,d),h(b,d),d,!0),d)},normalize:function(a,b){"string"===typeo
 			'tfoot', 'th', 'thead', 'tr', 'td', 'ul', 'ol', 'dl', 'details'],
 
 		// tags which have code metadata 
-		excludeTags: ['noframe', 'noscript', 'script', 'style', 'frames', 'frameset'],
+		excludeTags: ['noframe', 'noscript', 'template', 'script', 'style', 'frames', 'frameset'],
  
 	
 		/**
@@ -4559,19 +4534,23 @@ b,d){return g(y(h(a,d),h(b,d),d,!0),d)},normalize:function(a,b){"string"===typeo
     var htmlElInnerHTML;  // Flag for support for setting html element's innerHTML
 
     // Stop here if DOMParser not defined
-    if (!DOMParser) return;
+    if (!DOMParser) {
+        return;
+    }
 
     // Firefox, Opera and IE throw errors on unsupported types
     try {
         // WebKit returns null on unsupported types
-        textHTML = !!(new DOMParser).parseFromString('', 'text/html');
+        textHTML = !!(new DOMParser()).parseFromString('', 'text/html');
 
     } catch (er) {
       textHTML = false;
     }
 
     // If text/html supported, don't need to do anything.
-    if (textHTML) return;
+    if (textHTML) {
+        return;
+    }
 
     // Next try setting innerHTML of a created document
     // IE 9 and lower will throw an error (can't set innerHTML of its HTML element)
@@ -4588,7 +4567,7 @@ b,d){return g(y(h(a,d),h(b,d),d,!0),d)},normalize:function(a,b){"string"===typeo
     if (!htmlElInnerHTML) {
 
         try {
-            textXML = !!(new DOMParser).parseFromString('', 'text/xml');
+            textXML = !!(new DOMParser()).parseFromString('', 'text/xml');
 
         } catch (er) {
             textHTML = false;
@@ -4609,7 +4588,7 @@ b,d){return g(y(h(a,d),h(b,d),d,!0),d)},normalize:function(a,b){"string"===typeo
 
                 // Use innerHTML if supported
                 if (htmlElInnerHTML) {
-                    doc = document.implementation.createHTMLDocument("");
+                    doc = document.implementation.createHTMLDocument('');
                     doc_el = doc.documentElement;
                     doc_el.innerHTML = markup;
                     first_el = doc_el.firstElementChild;
@@ -4622,13 +4601,13 @@ b,d){return g(y(h(a,d),h(b,d),d,!0),d)},normalize:function(a,b){"string"===typeo
                     if (!(/^<html.*html>$/i.test(markup))) {
                         markup = '<html>' + markup + '<\/html>'; 
                     }
-                    doc = (new DOMParser).parseFromString(markup, 'text/xml');
+                    doc = (new DOMParser()).parseFromString(markup, 'text/xml');
                     doc_el = doc.documentElement;
                     first_el = doc_el.firstElementChild;
                 }
 
                 // Is this an entire document or a fragment?
-                if (doc_el.childElementCount == 1 && first_el.localName.toLowerCase() == 'html') {
+                if (doc_el.childElementCount === 1 && first_el.localName.toLowerCase() === 'html') {
                     doc.replaceChild(first_el, doc_el);
                 }
 

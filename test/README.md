@@ -57,7 +57,7 @@ Pulling [microfomats test suite](https://github.com/microformats/tests) updates
 There is a script to pull updated from microfomats test suite and rebuild all the test files.
 
 ```sh 
-    $ node update-test
+    $ node update-tests
 ```  
 
 Within this file you can configure the github repo you pull from so forks of [microfomats test suite](https://github.com/microformats/tests) can also be used.
