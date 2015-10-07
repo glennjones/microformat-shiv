@@ -68,10 +68,10 @@ describe('Modules.utilities', function() {
    });
    
    
-   it('removeWhiteSpace', function(){
-       assert.equal( Modules.utils.removeWhiteSpace( '  '), ' ' );
-       assert.equal( Modules.utils.removeWhiteSpace( '  \n\r'), ' ' );
-       assert.equal( Modules.utils.removeWhiteSpace( '  text\n\r'), ' text ' );
+   it('collapseWhiteSpace', function(){
+       assert.equal( Modules.utils.collapseWhiteSpace( '  '), ' ' );
+       assert.equal( Modules.utils.collapseWhiteSpace( '  \n\r'), ' ' );
+       assert.equal( Modules.utils.collapseWhiteSpace( '  text\n\r'), ' text ' );
    }); 
    
    

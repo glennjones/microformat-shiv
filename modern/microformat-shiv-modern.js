@@ -2345,7 +2345,7 @@ var Microformats; // jshint ignore:line
 		 * @param  {String} text
 		 * @return {Sring}
 		 */
-		removeWhiteSpace: function( text ){
+		collapseWhiteSpace: function( text ){
 			return text.replace(/[\t\n\r ]+/g, ' ');
 		},
 	
@@ -3787,7 +3787,7 @@ var Microformats; // jshint ignore:line
 		 */ 
 		normalise: function( doc, text ){
 			text = text.replace( /&nbsp;/g, ' ') ;    // exchanges html entity for space into space char
-			text = modules.utils.removeWhiteSpace( text );     // removes linefeeds, tabs and addtional spaces
+			text = modules.utils.collapseWhiteSpace( text );     // removes linefeeds, tabs and addtional spaces
 			text = modules.domUtils.decodeEntities( doc, text );  // decode HTML entities
 			text = text.replace( '–', '-' );          // correct dash decoding
 			return modules.utils.trim( text );
