@@ -1,4 +1,4 @@
-# Browser Extension Examples
+# Browser extension examples
 
 This GitHub project contains browser extension examples for Chrome, Firefox and Opera. These are provided, as developer demonstrations on how to use the library, they are not meant for everyday use by end users. 
 
@@ -7,7 +7,7 @@ This GitHub project contains browser extension examples for Chrome, Firefox and 
 
 <img src="http://microformatshiv.com/images/chrome-ext.png" />
 
-They’re only a few simple steps to installing the browser extension example for Chrome:
+There are a few simple steps to install the example for Chrome:
 
 * First download this GitHub repo to your local hard drive
 * Open the Extensions management tool/page of Chrome, this can be done through the menus or by typing `chrome://extensions/` into the address bar
@@ -20,7 +20,7 @@ They’re only a few simple steps to installing the browser extension example fo
 
 There are a few more steps to installing the Firefox addon:
 
-* Install the `jpm` its a [node.js](https://nodejs.org/) application so node.js needs to be install first. At the command line run: 
+* Install the `jpm` it's a [node.js](https://nodejs.org/) application so node.js needs to be installed first. At the command line run: 
 ```sh
  npm install jpm -g
  ```
@@ -36,14 +36,14 @@ jpm run
 ```sh
 jpm xpi
  ```
-Once built you can drag the file into Firefox to intall it
+Once built you can drag the file into Firefox to install it.
 
 
 ### Opera
 
 <img src="http://microformatshiv.com/images/opera-ext.png" />
 
-They’re only a couple of steps to installing the browser extension example for Opera:
+There are a couple of steps to install the example for Opera:
 
 * First download this GitHub repo to your local hard drive
 
@@ -51,11 +51,11 @@ They’re only a couple of steps to installing the browser extension example for
 
 
 
-### Support or Contact
+### Support and contact
 
-Having trouble, please raise an issue at: [https://github.com/glennjones/microformat-shiv/issues](https://github.com/glennjones/microformat-shiv/issues)
+If you are having trouble, please raise an issue at: [https://github.com/glennjones/microformat-shiv/issues](https://github.com/glennjones/microformat-shiv/issues)
 
 
 ### License
 
-The project is open sourced under MIT license. See the [license.txt](https://raw.github.com/glennjones/microformat-shiv/master/license.txt "license.txt") file within the project source.
+The project is open-sourced under MIT license. See the [license.txt](https://raw.github.com/glennjones/microformat-shiv/master/license.txt "license.txt") file within the project source.

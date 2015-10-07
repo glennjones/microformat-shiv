@@ -1,9 +1,10 @@
-Test and Coverage
+Tests and coverage
 -----------------
 
 Web server for local testing
 ----------------------------
-The project includes a node.js web server to run the test tools locally. To run the test server download and install node.js and npm. From the command line move the project directory and excute the following commands:
+The project includes a Node.js web server to run the test tools locally. To run the test server download and install Node.js and NPM. 
+From the command line move the project directory and execute the following commands:
 
 ```sh 
     $ npm install
@@ -13,8 +14,9 @@ The project includes a node.js web server to run the test tools locally. To run 
 
 Client-side interface and standards tests
 --------------------------------------
-The page below run the full [microfomats test suite](https://github.com/microformats/tests) as well as the libraries own unit test for each modules interface. 
-The tests are created in [mocha](http://mochajs.org/) and test coverage is provides by [blanket](http://blanketjs.org/).
+The page below runs the full [microfomats test suite](https://github.com/microformats/tests) as well as the libraries own unit tests for 
+each modules interface. 
+The tests are created in [Mocha](http://mochajs.org/) and test coverage is provided by [Blanket](http://blanketjs.org/).
 
 * http://localhost:3000/coverage.html
 
@@ -22,30 +24,30 @@ The tests are created in [mocha](http://mochajs.org/) and test coverage is provi
 
 Client-side debugging tools
 ---------------------------
-There are also a number of other debugging and tests tools:
+There are also a number of other debugging and test tools:
 
-* http://localhost:3000/testrunner.html (clients side version microfomats test suite testrunner)
-* http://localhost:3000/parse.html (clients side form to for parsing and debugging)
-* http://localhost:3000/parse-umd.html (clients side form to test the full umd wrapped version of the code)
-* http://localhost:3000/count.html (clients side form to test count function)
+* http://localhost:3000/testrunner.html (client side version of microfomats testrunner)
+* http://localhost:3000/parse.html (client side form for parsing and debugging)
+* http://localhost:3000/parse-umd.html (client side form to test the full UMD wrapped version of the code)
+* http://localhost:3000/count.html (client side web page to test the count function)
 
 
-Server-side test
+Server-side tests
 --------------------------------------
-You can run mocho html test from the command line
+You can run Mocha html test from the command line
 ```sh 
     $ mocha-phantomjs -R dot /test/ci.html
 ```   
     
 Server-side test coverage reports
 --------------------------------------
-You can run test coverage reports using [poncho](https://github.com/deepsweet/poncho) from the command line
+You can run test coverage reports using [Poncho](https://github.com/deepsweet/poncho) from the command line
 
 ```sh 
     $ ./node_modules/.bin/poncho --reporter lcov test/ci.html
 ```  
 
-or to send the data to codacy.com or coveralls.io - you will need to add a token to your environment.
+or send the data to codacy.com or coveralls.io - you will need to add a token to your environment.
 
 ```sh
     $ ./node_modules/.bin/poncho --reporter lcov test/ci.html | ./node_modules/codacy-coverage/bin/codacy-coverage.js
@@ -54,17 +56,17 @@ or to send the data to codacy.com or coveralls.io - you will need to add a token
 
 Pulling [microfomats test suite](https://github.com/microformats/tests) updates
 -------------------------------------------------------------------------------
-There is a script to pull updated from microfomats test suite and rebuild all the test files.
+There is a script to pull updated test files from the microfomats test suite and rebuild them for this project.
 
 ```sh 
     $ node update-tests
 ```  
 
-Within this file you can configure the github repo you pull from so forks of [microfomats test suite](https://github.com/microformats/tests) can also be used.
+Within this file you can configure the GitHub repo you pull from. So forks of [microfomats test suite](https://github.com/microformats/tests) can also be used.
 
 
 
-Exernal links
+External links
 -------------
 
 * https://travis-ci.org/glennjones/microformat-shiv

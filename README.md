@@ -6,12 +6,12 @@
 
 microformat-shiv
 ================
-A cross browser javascript microformats parser, which can also be used to build [browser extensions](https://github.com/glennjones/microformat-shiv/tree/master/examples).
+A cross browser JavaScript microformats parser, which can also be used to build [browser extensions](https://github.com/glennjones/microformat-shiv/tree/master/examples).
 
 Installation
 ------------
 
-Using bower:
+Using Bower:
 
 ```sh
 $ bower install microformat-shiv
@@ -31,7 +31,7 @@ Methods
 get
 -----
 
-Simple parse of HTML document or a selected section. 
+Simple parse of a HTML document or a selected part of a HTML document. 
 ```javascript
     <script src="microformat-shiv.min.js" type="text/javascript"></script>
     <script type="text/javascript">
@@ -55,7 +55,7 @@ Using options
     </script>
 ``` 
 
-Targeting just part of a page
+Targeting just part of a HTML document
 ```javascript
     <script src="microformat-shiv.min.js" type="text/javascript"></script>
     <script type="text/javascript">
@@ -91,20 +91,20 @@ Note: The `baseUrl` is optional and is used to resolve relative URLs
 
 Options
 -------
-* `html` - (String) the html to be parse (only `get` and `count` methods);
-* `node` - (DOM element) the element to be parse - default current browser document
+* `html` - (String) the HTML to be parsed (only `get` and `count` methods);
+* `node` - (DOM element) the element to be parsed - the default is the current browser document
 * `baseUrl` - (String) optional URL used to resolve relative URLs
-* `filter` - (Array) microformats types returned - i.e. `['h-card']` - always adds `rels`
+* `filter` - (Array) microformat types returned - i.e. `['h-card']` - always adds `rels`
 * `textFormat` - (String) text style `whitespacetrimmed` or `normalised` default is `whitespacetrimmed`
 * `dateFormat` - (String) the ISO date profile `auto`, `w3c` `rfc3339` or `html5` default is `auto`
 * `add` - (Array) adds microformat version 1 definitions
 
-__I would recommended always setting `textFormat` option to `normalised`. This is not part of the microformat parsing rules, but in most cases provides more usable output.__
+__I would recommend always setting the `textFormat` option to `normalised`. This is not part of the microformat parsing rules, but in most cases provides more usable output.__
 
-Experimental Options
+Experimental options
 -------
-These options are part of ongoing specification development. They maybe removed or renamed in future.
-* `parseLatLonGeo` (Boolean)  Parse geo date writen as latlon i.e. 30.267991;-97.739568 
+These options are part of ongoing specification development. They maybe removed or renamed in the future.
+* `parseLatLonGeo` (Boolean)  Parse geo date written as latlon i.e. 30.267991;-97.739568 
 default is `false`
 
 
@@ -151,7 +151,7 @@ Given an HTML DOM node it will return its first parent microformat.
         // do something with data `items`
     </script>
 ```  
-The `getParent` method takes the same `options` as the `get` method. The one difference is how the `options.filters` property affects the output. Adding a filter list to `getParent` will allow the search for a parent to pass throught microformats you do not want to target.
+The `getParent` method takes the same `options` as the `get` method. The one difference is how the `options.filters` property affects the output. Adding a filter list to `getParent` will allow the search for a parent to pass through microformats you do not want to target.
 
 ```javascript
     <script src="microformat-shiv.min.js" type="text/javascript"></script>
@@ -169,7 +169,7 @@ The `getParent` method takes the same `options` as the `get` method. The one dif
 Count
 -----
 The `count` method returns the number of each microformat type found. It does not do a full parse so it is much quicker 
-than get and can be used for tasks such as adding notifications to the UI. The method can take a `options` object as a parameter.
+than `get` and can be used for tasks such as adding notifications to the UI. The method can take an `options` object as a parameter.
 ```javascript
     <script src="microformat-shiv.min.js" type="text/javascript"></script>
     <script type="text/javascript">
@@ -188,8 +188,8 @@ Output
 
 isMicroformat
 -------------
-The `isMicroformat` method returns weather a node has a valid microformats class. It currently does not work consider 
-`rel=*` a microformats. The method can take a `options` object as a second parameter.
+The `isMicroformat` method returns whether a node has a valid microformats class. It currently does not consider 
+`rel=*` a microformat. The method can take an `options` object as a second parameter.
 ```javascript
     <script src="microformat-shiv.min.js" type="text/javascript"></script>
     <script type="text/javascript">
@@ -202,8 +202,8 @@ The `isMicroformat` method returns weather a node has a valid microformats class
 
 hasMicroformats
 -------------
-The `hasMicroformats` method returns weather a document or node has any valid microformats class. It currently does 
-not take rel=* microformats into account. The method can take a `options` object as a second parameter.
+The `hasMicroformats` method returns whether a document or node has any valid microformats class. It currently does 
+not take `rel=*` microformats into account. The method can take an `options` object as a second parameter.
 ```javascript
     <script src="microformat-shiv.min.js" type="text/javascript"></script>
     <script type="text/javascript">
@@ -219,36 +219,36 @@ not take rel=* microformats into account. The method can take a `options` object
 
 Version and livingStandard
 --------------------------
-The library has two properties to help identify now up todate it is:
+The library has two properties to help identify how up-to-date it is:
 
-*  `version` (String) interanl version number
+*  `version` (String) internal version number
 *  `livingStandard` (String ISO Date) the current https://github.com/microformats/tests used.
  
 
-Browser Support
+Browser support
 ---------------
 Desktop
 
-* Firefox 42-11
-* Chrome 43-14
-* Opera 30-19 (18 > passes 84% of tests)
-* Safari 8-6 (5 pass 97% of tests)
-* IE 11-8 
+* Firefox 11-42
+* Chrome 14-43
+* Opera 19-30 (Version 18 > passes 84% of tests)
+* Safari 6-8 (Version 5 passes 97% of tests)
+* IE 8-11 
 * Edge 
 
 Mobile
 ----------------------
-* iOS 8.3, 7, 6, 5.1 (4 pass 97% of tests)	
-* Andriod 5, 4.4, 4.2 (Only verisions I could test)
-* Android Firefox 39 (Only verision I could test)
-* Android Chrome 43	(Only verision I could test)
+* iOS 5.1-8.3 (Version 4 passes 97% of tests)	
+* Andriod 4.2-5 (The only versions I could test)
+* Android Firefox 39 (The only versions I could test)
+* Android Chrome 43	(The only versions I could test)
 
-Note some earlier browser will need ES5-shim.js
+Note some earlier browsers will need the ES5-shim.js file.
 
 
 Microformats definitions object
 -------------------------------
-The library has built-in version 1 microformats definitions, but you can add new definitions using `options.add` if you wish. Below is an example of a definitions object. More can be found in the directory `lib/maps`. definitions. You not need definitions object if your using the microformats version 2 schema.
+The library has all the version 1 definitions built-in, but you can add new definitions using `options.add` if you wish. Below is an example of a definitions object. More can be found in the directory `lib/maps`. You do not need to add new definition objects if you are using microformats version 2.
 ```javascript
     {
 		root: 'hpayment',
