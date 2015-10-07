@@ -4,7 +4,7 @@ module.exports = function( grunt ) {
 	grunt.initConfig({
 		pkg: grunt.file.readJSON('package.json'),
 		meta: {
-			banner: '/*\n   <%= pkg.title || pkg.name %> - v<%= pkg.version %>\n' +
+			banner: '  <%= pkg.title || pkg.name %> - v<%= pkg.version %>\n' +
 			'   Built: <%= grunt.template.today("yyyy-mm-dd hh:mm") %> - ' + '<%= pkg.homepage %>\n' +
 			'   Copyright (c) <%= grunt.template.today("yyyy") %> <%= pkg.author %>\n' +
 			'   Licensed <%= pkg.license %> \n*/\n\n\n',
@@ -14,16 +14,15 @@ module.exports = function( grunt ) {
 			version: {
 				dest: 'lib/version.js',
 				content: '<%= meta.version %>'
-				
 			}
 		},
 		example: {
 		    'compiled.js': ['lib/*.js'],
 		 },
 		concat: {
-			dist: {
+			standard: {
 				options: {
-					banner: '<%= meta.banner %>',
+					banner: '/*\n <%= meta.banner %>',
 					process: function(src, filename) {
 					  console.log(filename);
 					  if(filename.indexOf('maps') > -1){
@@ -65,6 +64,50 @@ module.exports = function( grunt ) {
 						'lib/domparser.js'
 					]
 				}
+			},
+			modern: {
+				options: {
+					banner: '/*\n   Modern\n <%= meta.banner %>',
+					process: function(src, filename) {
+					  console.log(filename);
+					  if(filename.indexOf('maps') > -1){
+						  src = src.replace('modules.maps = (modules.maps)? modules.maps : {};','');  
+					  }
+					  if(filename.indexOf('umd') === -1){
+						  src = src.replace(/(^|\n)[ \t]*('use strict'|"use strict");?\s*/g, '');
+						  src = src.replace('var Modules = (function (modules) {','');
+						  src = src.replace('return modules;','');
+						  src = src.replace('} (Modules || {}));','');
+						  if(src.indexOf('*/') > -1){
+						  	src = '\n	' + src.substr(src.indexOf('*/')+2).trim() + '\n';
+						  }
+					  }
+					  if(filename.indexOf('parser.js') === -1){
+					  	src = src.replace('var Modules', 'Modules');
+					  }
+					  return src;
+			        },
+				},
+				files:{
+					'modern/<%= pkg.name %>-modern.js': [
+						'umd/umd-start.js', 
+						'lib/version.js',
+						'lib/living-standard.js',
+						'lib/parser.js',
+						'lib/parser-implied.js', 
+						'lib/parser-includes.js', 
+						'lib/parser-rels.js', 
+						'lib/utilities.js', 
+						'lib/domutils.js',
+						'lib/modern/url.js',
+						'lib/isodate.js',
+						'lib/dates.js',
+						'lib/text.js',
+						'lib/html.js',
+						'lib/maps/*.js',
+						'umd/umd-end.js'
+					]
+				}
 			}
 		},
 		copy: {
@@ -83,7 +126,7 @@ module.exports = function( grunt ) {
 	    },
 	    uglify: {
 			options: {
-		      banner: '<%= meta.banner %>',
+		      banner: '/*\n <%= meta.banner %>',
 			  sourceMap: true,
         	  sourceMapName: '<%= pkg.name %>.min.js.map'
 		    },
@@ -121,7 +164,7 @@ module.exports = function( grunt ) {
 		},
 		watch: {
 			files: ['lib/**/*.js','umd/**/*.js','Gruntfile.js','package.json'],
-			tasks: ['buildfile', 'concat:dist', 'copy', 'uglify']
+			tasks: ['buildfile', 'concat:standard', 'concat:modern', 'copy', 'uglify']
 		}
 	});
 
@@ -143,7 +186,7 @@ module.exports = function( grunt ) {
 
 
 	// Default task.
-	grunt.registerTask( 'default', ['buildfile', 'concat:dist', 'copy', 'uglify']);
+	grunt.registerTask( 'default', ['buildfile', 'concat:standard', 'concat:modern', 'copy', 'uglify']);
 	grunt.registerTask( 'test', ['mocha_phantomjs:all']);
 	grunt.registerTask( 'umd', ['umd:default']);
 	

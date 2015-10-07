@@ -260,6 +260,12 @@ The library has all the version 1 definitions built-in, but you can add new defi
 	}
 ```  
 
+Standard vs Modern
+-------------------------------
+The library code comes in two versions `microformats-shiv.js` and `microformat-shiv-modern.js`. The modern version used by Mozilla in Firefox does not include the polyfills for 
+[DOMParser](https://developer.mozilla.org/en-US/docs/Web/API/DOMParser) and [URL](https://developer.mozilla.org/en-US/docs/Web/API/URL/URL). 
+This version of the library can only be used with modern browser which support these features.
+
 
 License
 -------
