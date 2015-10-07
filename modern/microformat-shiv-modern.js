@@ -4291,7 +4291,10 @@ var Microformats; // jshint ignore:line
 					'map': 'dt-published'
 				},
 				'nutrition': {},
-				'tag': {}
+				'category': {
+					'map': 'p-category',
+					'relAlt': ['tag']
+				},
 			}
 		};
 

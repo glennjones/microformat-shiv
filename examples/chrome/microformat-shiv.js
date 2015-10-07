@@ -4329,7 +4329,10 @@ b,d){return g(y(h(a,d),h(b,d),d,!0),d)},normalize:function(a,b){"string"===typeo
 					'map': 'dt-published'
 				},
 				'nutrition': {},
-				'tag': {}
+				'category': {
+					'map': 'p-category',
+					'relAlt': ['tag']
+				},
 			}
 		};
 
