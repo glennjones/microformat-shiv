@@ -1,6 +1,6 @@
 /*
-   microformat-shiv - v1.3.0
-   Built: 2015-10-07 05:10 - http://microformat-shiv.com
+   microformat-shiv - v1.3.1
+   Built: 2015-10-08 10:10 - http://microformat-shiv.com
    Copyright (c) 2015 Glenn Jones
    Licensed MIT 
 */
@@ -21,7 +21,7 @@ var Microformats; // jshint ignore:line
     var modules = {};
     
 
-	modules.version = '1.3.0';
+	modules.version = '1.3.1';
 	modules.livingStandard = '2015-09-25T12:26:04Z';
 
 	/**
