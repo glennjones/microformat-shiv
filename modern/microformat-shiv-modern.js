@@ -1,7 +1,7 @@
 /*
    Modern
-   microformat-shiv - v1.3.1
-   Built: 2015-10-08 10:10 - http://microformat-shiv.com
+   microformat-shiv - v1.3.2
+   Built: 2015-12-28 01:12 - http://microformat-shiv.com
    Copyright (c) 2015 Glenn Jones
    Licensed MIT 
 */
@@ -22,7 +22,7 @@ var Microformats; // jshint ignore:line
     var modules = {};
     
 
-	modules.version = '1.3.1';
+	modules.version = '1.3.2';
 	modules.livingStandard = '2015-09-25T12:26:04Z';
 
 	/**
@@ -2967,26 +2967,58 @@ var Microformats; // jshint ignore:line
 
 
 	modules.url = {
-		
+
+
 		/**
-		 * resolves URL to absolute version using baseUrl
+		 * creates DOM objects needed to resolve URLs
+		 */
+        init: function(){
+            this._dom = new DOMParser();
+            this._html = '<head><base id="base" href=""></head><a id="link" href=""></a>';
+            this._nodes = this._dom.parseFromString( this._html, 'text/html' );
+            this._baseNode =  modules.domUtils.getElementById(this._nodes,'base');
+            this._linkNode =  modules.domUtils.getElementById(this._nodes,'link');
+        },
+
+
+		/**
+		 * resolves url to absolute version using baseUrl
 		 *
 		 * @param  {String} url
 		 * @param  {String} baseUrl
 		 * @return {String}
 		 */
 		resolve: function(url, baseUrl) {
-			// use URL web API 
+			// use modern URL web API where we can
 			if(modules.utils.isString(url) && modules.utils.isString(baseUrl) && url.indexOf('://') === -1){
-					return new URL(url, baseUrl).toString();
+				// this try catch is required as IE has an URL object but no constuctor support
+				// http://glennjones.net/articles/the-problem-with-window-url
+				try {
+					var resolved = new URL(url, baseUrl).toString();
+					// deal with early Webkit not throwing an error - for Safari
+					if(resolved === '[object URL]'){
+						resolved = URI.resolve(baseUrl, url);
+					}
+					return resolved;
+				}catch(e){
+                    // otherwise fallback to DOM
+                    if(this._dom === undefined){
+                        this.init();
+                    }
+					modules.domUtils.setAttribute(this._baseNode,'href',baseUrl);
+                    modules.domUtils.setAttribute(this._linkNode,'href',url);
+
+                    // dont use getAttribute as it returns orginal value not resolved
+                    return this._linkNode.href;
+				}
 			}else{
 				if(modules.utils.isString(url)){
 					return url;
 				}
 				return '';
 			}
-		}
-		
+		},
+
 	};
 
 

@@ -21,7 +21,7 @@ Methods
 -----
 * Parsing
     * [`get`](#get)
-    * [`getParent`](#getParent) 
+    * [`getParent`](#getParent)
 * Discovery
     * [`count`](#count)
     * [`isMicroformat`](#isMicroformat)
@@ -31,7 +31,7 @@ Methods
 get
 -----
 
-Simple parse of a HTML document or a selected part of a HTML document. 
+Simple parse of a HTML document or a selected part of a HTML document.
 ```javascript
     <script src="microformat-shiv.min.js" type="text/javascript"></script>
     <script type="text/javascript">
@@ -40,7 +40,7 @@ Simple parse of a HTML document or a selected part of a HTML document.
         items = Microformats.get()
         // do something with data `items`
     </script>
-```    
+```
 
 Using options
 ```javascript
@@ -48,12 +48,12 @@ Using options
     <script type="text/javascript">
         var items,
             options;
-        
+
         options = {'filters': ['h-card']};
         var items = Microformats.get( options )
         // do something with data `items`
     </script>
-``` 
+```
 
 Targeting just part of a HTML document
 ```javascript
@@ -61,15 +61,15 @@ Targeting just part of a HTML document
     <script type="text/javascript">
         var items,
             options;
-        
+
         options = {
             'filters': ['h-card'],
             'node': document.getElementById('target')
         };
         var items = Microformats.get( options )
         // do something with data `items`
-    </script>    
-```  
+    </script>
+```
 
 Parsing a HTML string
 ```javascript
@@ -77,15 +77,15 @@ Parsing a HTML string
     <script type="text/javascript">
         var items,
             options;
-        
+
         options = {
             'baseUrl': 'http://glennjones.net',
             'html': '<a class="h-card" href="/about.html">Glenn</a>'
         };
         var items = Microformats.get( options )
         // do something with data `items`
-    </script>    
-```  
+    </script>
+```
 Note: The `baseUrl` is optional and is used to resolve relative URLs
 
 
@@ -104,7 +104,7 @@ __I would recommend always setting the `textFormat` option to `normalised`. This
 Experimental options
 -------
 These options are part of ongoing specification development. They maybe removed or renamed in the future.
-* `parseLatLonGeo` (Boolean)  Parse geo date written as latlon i.e. 30.267991;-97.739568 
+* `parseLatLonGeo` (Boolean)  Parse geo date written as latlon i.e. 30.267991;-97.739568
 default is `false`
 
 
@@ -126,8 +126,8 @@ JSON output. This is an example of a parsed `h-card` microformat.
         "rels": {},
         "rel-urls": {}
     }
-```  
-JSON output with error. 
+```
+JSON output with error.
 ```javascript
     {
         "items":[],
@@ -135,7 +135,7 @@ JSON output with error.
         "rel-urls": {}
         "errors":["No options.node was provided and no global document object could be found."]
     }
-```  
+```
 
 getParent
 -----
@@ -150,7 +150,7 @@ Given an HTML DOM node it will return its first parent microformat.
         items = Microformats.getParent( node )
         // do something with data `items`
     </script>
-```  
+```
 The `getParent` method takes the same `options` as the `get` method. The one difference is how the `options.filters` property affects the output. Adding a filter list to `getParent` will allow the search for a parent to pass through microformats you do not want to target.
 
 ```javascript
@@ -163,57 +163,57 @@ The `getParent` method takes the same `options` as the `get` method. The one dif
         items = Microformats.getParent( node, options )
         // do something with data `items`
     </script>
-```  
+```
 
 
 Count
 -----
-The `count` method returns the number of each microformat type found. It does not do a full parse so it is much quicker 
+The `count` method returns the number of each microformat type found. It does not do a full parse so it is much quicker
 than `get` and can be used for tasks such as adding notifications to the UI. The method can take an `options` object as a parameter.
 ```javascript
     <script src="microformat-shiv.min.js" type="text/javascript"></script>
     <script type="text/javascript">
         var counts = Microformats.count()
-        // do something with counts data 
-    </script>    
-```  
-Output 
+        // do something with counts data
+    </script>
+```
+Output
 ```javascript
     {
         'h-event': 1,
         'h-card': 2,
         'rels': 6
     }
-```  
+```
 
 isMicroformat
 -------------
-The `isMicroformat` method returns whether a node has a valid microformats class. It currently does not consider 
+The `isMicroformat` method returns whether a node has a valid microformats class. It currently does not consider
 `rel=*` a microformat. The method can take an `options` object as a second parameter.
 ```javascript
     <script src="microformat-shiv.min.js" type="text/javascript"></script>
     <script type="text/javascript">
         var node = document.getElementById('target');
         var isVaild = Microformats.isMicroformat( node );
-        // do something with isVaild boolean 
-    </script>    
-```  
+        // do something with isVaild boolean
+    </script>
+```
 
 
 hasMicroformats
 -------------
-The `hasMicroformats` method returns whether a document or node has any valid microformats class. It currently does 
+The `hasMicroformats` method returns whether a document or node has any valid microformats class. It currently does
 not take `rel=*` microformats into account. The method can take an `options` object as a second parameter.
 ```javascript
     <script src="microformat-shiv.min.js" type="text/javascript"></script>
     <script type="text/javascript">
         var isVaild,
             node = document.getElementById('target');
-            
+
         isVaild = Microformats.isMicroformat( node );
-        // do something with isVaild boolean 
-    </script>    
-```  
+        // do something with isVaild boolean
+    </script>
+```
 
 
 
@@ -223,7 +223,7 @@ The library has two properties to help identify how up-to-date it is:
 
 *  `version` (String) internal version number
 *  `livingStandard` (String ISO Date) the current https://github.com/microformats/tests used.
- 
+
 
 Browser support
 ---------------
@@ -233,12 +233,12 @@ Desktop
 * Chrome 14-43
 * Opera 19-30 (Version 18 > passes 84% of tests)
 * Safari 6-8 (Version 5 passes 97% of tests)
-* IE 8-11 
-* Edge 
+* IE 9-11
+* Edge
 
 Mobile
 ----------------------
-* iOS 5.1-8.3 (Version 4 passes 97% of tests)	
+* iOS 5.1-8.3 (Version 4 passes 97% of tests)
 * Andriod 4.2-5 (The only versions I could test)
 * Android Firefox 39 (The only versions I could test)
 * Android Chrome 43	(The only versions I could test)
@@ -258,12 +258,12 @@ The library has all the version 1 definitions built-in, but you can add new defi
 			'currency': {}
 		}
 	}
-```  
+```
 
 Standard vs Modern
 -------------------------------
-The library code comes in two versions `microformats-shiv.js` and `microformat-shiv-modern.js`. The modern version used by Mozilla in Firefox does not include the polyfills for 
-[DOMParser](https://developer.mozilla.org/en-US/docs/Web/API/DOMParser) and [URL](https://developer.mozilla.org/en-US/docs/Web/API/URL/URL). 
+The library code comes in two versions `microformats-shiv.js` and `microformat-shiv-modern.js`. The modern version used by Mozilla in Firefox does not include the polyfills for
+[DOMParser](https://developer.mozilla.org/en-US/docs/Web/API/DOMParser).
 This version of the library can only be used with modern browser which support these features.
 
 

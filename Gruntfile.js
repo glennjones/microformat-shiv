@@ -26,7 +26,7 @@ module.exports = function( grunt ) {
 					process: function(src, filename) {
 					  console.log(filename);
 					  if(filename.indexOf('maps') > -1){
-						  src = src.replace('modules.maps = (modules.maps)? modules.maps : {};','');  
+						  src = src.replace('modules.maps = (modules.maps)? modules.maps : {};','');
 					  }
 					  if(filename.indexOf('umd') === -1){
 						  src = src.replace(/(^|\n)[ \t]*('use strict'|"use strict");?\s*/g, '');
@@ -45,14 +45,14 @@ module.exports = function( grunt ) {
 				},
 				files:{
 					'<%= pkg.name %>.js': [
-						'umd/umd-start.js', 
+						'umd/umd-start.js',
 						'lib/version.js',
 						'lib/living-standard.js',
 						'lib/parser.js',
-						'lib/parser-implied.js', 
-						'lib/parser-includes.js', 
-						'lib/parser-rels.js', 
-						'lib/utilities.js', 
+						'lib/parser-implied.js',
+						'lib/parser-includes.js',
+						'lib/parser-rels.js',
+						'lib/utilities.js',
 						'lib/domutils.js',
 						'lib/url.js',
 						'lib/isodate.js',
@@ -71,7 +71,7 @@ module.exports = function( grunt ) {
 					process: function(src, filename) {
 					  console.log(filename);
 					  if(filename.indexOf('maps') > -1){
-						  src = src.replace('modules.maps = (modules.maps)? modules.maps : {};','');  
+						  src = src.replace('modules.maps = (modules.maps)? modules.maps : {};','');
 					  }
 					  if(filename.indexOf('umd') === -1){
 						  src = src.replace(/(^|\n)[ \t]*('use strict'|"use strict");?\s*/g, '');
@@ -90,16 +90,16 @@ module.exports = function( grunt ) {
 				},
 				files:{
 					'modern/<%= pkg.name %>-modern.js': [
-						'umd/umd-start.js', 
+						'umd/umd-start.js',
 						'lib/version.js',
 						'lib/living-standard.js',
 						'lib/parser.js',
-						'lib/parser-implied.js', 
-						'lib/parser-includes.js', 
-						'lib/parser-rels.js', 
-						'lib/utilities.js', 
+						'lib/parser-implied.js',
+						'lib/parser-includes.js',
+						'lib/parser-rels.js',
+						'lib/utilities.js',
 						'lib/domutils.js',
-						'lib/modern/url.js',
+						'lib/url.js',
 						'lib/isodate.js',
 						'lib/dates.js',
 						'lib/text.js',
@@ -189,9 +189,9 @@ module.exports = function( grunt ) {
 	grunt.registerTask( 'default', ['buildfile', 'concat:standard', 'concat:modern', 'copy', 'uglify']);
 	grunt.registerTask( 'test', ['mocha_phantomjs:all']);
 	grunt.registerTask( 'umd', ['umd:default']);
-	
-	
-	
+
+
+
 
 
 };

@@ -4,8 +4,8 @@ var Hapi            = require('hapi');
 // Create a server with a host and port
 var server = new Hapi.Server();
 
-server.connection({ 
-    host: (process.env.PORT)? '0.0.0.0' : 'localhost', 
+server.connection({
+    host: (process.env.PORT)? '0.0.0.0' : 'localhost',
     port: parseInt(process.env.PORT, 10) || 3000
 });
 
@@ -79,6 +79,15 @@ server.route([{
 	}
 },{
 	method: 'GET',
+	path: '/url/{path*}',
+	handler: {
+		directory: {
+			path: './url',
+			listing: true,
+		}
+	}
+},{
+	method: 'GET',
 	path: '/thirdparty/{path*}',
 	handler: {
 		directory: {
@@ -110,10 +119,10 @@ var goodOptions = {
 
 // Register plug-in and start
 server.register([{
-    register: require('good'), 
+    register: require('good'),
     options: goodOptions
   },{
-    register: require('blipp'), 
+    register: require('blipp'),
   }], function (err) {
       if (err) {
           console.error(err);
