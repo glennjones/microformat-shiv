@@ -1,0 +1,66 @@
+
+
+<!doctype html>
+
+<html dir="ltr" lang="en-GB">
+
+	<head>
+
+		<meta charset="UTF-8">
+		<title>Test for IE9</title>
+		<meta name="description" content="microformat-shiv - A cross browser javascript microformats parser" />
+
+        <link rel="stylesheet" href="static/css/testrunner.css">
+
+        <script type='text/javascript' src='http://html5shiv.googlecode.com/svn/trunk/html5.js?ver=3.0.5'></script>
+        <script type="text/javascript" src="/static/javascript/beautify.js"></script>
+        <script src="../microformat-shiv.js"></script>
+
+	</head>
+
+	<body>
+
+
+        <h1>Test for IE9</h1>
+
+        <input id="button" type="button" class="button indented-button" value="Parse" >
+        <div id="example">
+        <p class="h-adr">
+            <span class="p-extended-address">Suite 300</span>,
+            <span class="p-street-address">650 Castro Street</span>,
+            <span class="p-locality">Mountain View</span>,
+            <span class="p-region">CA</span>
+            <span class="p-postal-code">94041</span>,
+            <span class="p-country-name">United States</span>
+        </p>
+        </div>
+
+
+
+
+        <script id="example-script">
+            var button;
+            button = document.getElementById('button');
+
+            button.onclick = function(){
+                var node,
+                    options,
+                    items,
+                    jsonString;
+
+                node = document.getElementById('example');
+                options ={
+                    'node': node,
+                    'filters': ['h-adr'],
+                    'textFormat': 'normalised'
+                }
+                items = Microformats.get( options );
+
+                jsonString = JSON.stringify( items );
+                jsonString = js_beautify( jsonString );
+                alert( jsonString );
+            }
+        </script>
+
+	</body>
+</html>

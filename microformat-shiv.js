@@ -1,6 +1,6 @@
 /*
-   microformat-shiv - v1.3.2
-   Built: 2015-12-28 01:12 - http://microformat-shiv.com
+   microformat-shiv - v1.3.3
+   Built: 2015-12-31 01:12 - http://microformat-shiv.com
    Copyright (c) 2015 Glenn Jones
    Licensed MIT 
 */
@@ -21,7 +21,7 @@ var Microformats; // jshint ignore:line
     var modules = {};
     
 
-	modules.version = '1.3.2';
+	modules.version = '1.3.3';
 	modules.livingStandard = '2015-09-25T12:26:04Z';
 
 	/**
@@ -33,15 +33,15 @@ var Microformats; // jshint ignore:line
 		this.propertyPrefixes = ['p-', 'dt-', 'u-', 'e-'];
 		this.excludeTags = ['br', 'hr'];
 	};
-	
-	
+
+
 	// create objects incase the v1 map modules don't load
 	modules.maps = (modules.maps)? modules.maps : {};
 	modules.rels = (modules.rels)? modules.rels : {};
-	
-	
+
+
 	modules.Parser.prototype = {
-		
+
 		init: function(){
 			this.rootNode = null;
 			this.document = null;
@@ -58,10 +58,10 @@ var Microformats; // jshint ignore:line
 			this.errors = [];
 			this.noContentErr = 'No options.node or options.html was provided and no document object could be found.';
 		},
-		
-		
+
+
 		/**
-		 * internal parse function 
+		 * internal parse function
 		 *
 		 * @param  {Object} options
 		 * @return {Object}
@@ -70,22 +70,22 @@ var Microformats; // jshint ignore:line
 			var out = this.formatEmpty(),
 				data = [],
 				rels;
-	
+
 			this.init();
 			options = (options)? options : {};
 			this.mergeOptions(options);
 			this.getDOMContext( options );
-				
+
 			// if we do not have any context create error
 			if(!this.rootNode || !this.document){
 				this.errors.push(this.noContentErr);
 			}else{
-			
+
 				// only parse h-* microformats if we need to
-				// this is added to speed up parsing 
+				// this is added to speed up parsing
 				if(this.hasMicroformats(this.rootNode, options)){
 					this.prepareDOM( options );
-			
+
 					if(this.options.filters.length > 0){
 						// parse flat list of items
 						var newRootNode = this.findFilterNodes(this.rootNode, this.options.filters);
@@ -94,21 +94,21 @@ var Microformats; // jshint ignore:line
 						// parse whole document from root
 						data = this.walkRoot(this.rootNode);
 					}
-		
+
 					out.items = data;
 					// don't clear-up DOM if it was cloned
 					if(modules.domUtils.canCloneDocument(this.document) === false){
 						this.clearUpDom(this.rootNode);
 					}
 				}
-				
+
 				// find any rels
 				if(this.findRels){
 					rels = this.findRels(this.rootNode);
 					out.rels = rels.rels;
 					out['rel-urls'] = rels['rel-urls'];
 				}
-				
+
 			}
 
 			if(this.errors.length > 0){
@@ -116,8 +116,8 @@ var Microformats; // jshint ignore:line
 			}
 			return out;
 		},
-		
-		
+
+
 		/**
 		 * parse to get parent microformat of passed node
 		 *
@@ -128,7 +128,7 @@ var Microformats; // jshint ignore:line
 		getParent: function(node, options) {
 			this.init();
 			options = (options)? options : {};
-			
+
 			if(node){
 				return this.getParentTreeWalk(node, options);
 			}else{
@@ -136,8 +136,8 @@ var Microformats; // jshint ignore:line
 				return this.formatError();
 			}
 		},
-		
-		
+
+
 	    /**
 		 * get the count of microformats
 		 *
@@ -150,17 +150,17 @@ var Microformats; // jshint ignore:line
 				classItems,
 				x,
 				i;
-				
+
 			this.init();
-			options = (options)? options : {};	
+			options = (options)? options : {};
 			this.getDOMContext( options );
-			
+
 			// if we do not have any context create error
 			if(!this.rootNode || !this.document){
 				return {'errors': [this.noContentErr]};
-			}else{	
-					
-				items = this.findRootNodes( this.rootNode, true );	
+			}else{
+
+				items = this.findRootNodes( this.rootNode, true );
 				i = items.length;
 				while(i--) {
 					classItems = modules.domUtils.getAttributeList(items[i], 'class');
@@ -183,12 +183,12 @@ var Microformats; // jshint ignore:line
 				if(relCount > 0){
 					out.rels = relCount;
 				}
-	
+
 				return out;
 			}
 		},
-		
-		
+
+
 		/**
 		 * does a node have a class that marks it as a microformats root
 		 *
@@ -199,15 +199,15 @@ var Microformats; // jshint ignore:line
 		isMicroformat: function( node, options ) {
 			var classes,
 				i;
-				
+
 			if(!node){
 				return false;
 			}
 
 			// if documemt gets topmost node
 			node = modules.domUtils.getTopMostNode( node );
-			
-			// look for h-* microformats		
+
+			// look for h-* microformats
 			classes = this.getUfClassNames(node);
 			if(options && options.filters && modules.utils.isArray(options.filters)){
 				i = options.filters.length;
@@ -220,9 +220,9 @@ var Microformats; // jshint ignore:line
 			}else{
 				return (classes.root.length > 0);
 			}
-		},	
-		
-		
+		},
+
+
 		/**
 		 * does a node or its children have microformats
 		 *
@@ -233,15 +233,15 @@ var Microformats; // jshint ignore:line
 		hasMicroformats: function( node, options ) {
 			var items,
 				i;
-			
+
 			if(!node){
 				return false;
 			}
 
 			// if browser based documemt get topmost node
 			node = modules.domUtils.getTopMostNode( node );
-			
-			// returns all microformat roots	
+
+			// returns all microformat roots
 			items = this.findRootNodes( node, true );
 			if(options && options.filters && modules.utils.isArray(options.filters)){
 				i = items.length;
@@ -254,9 +254,9 @@ var Microformats; // jshint ignore:line
 			}else{
 				return (items.length > 0);
 			}
-		},	
-		
-		
+		},
+
+
 		/**
 		 * add a new v1 mapping object to parser
 		 *
@@ -265,12 +265,12 @@ var Microformats; // jshint ignore:line
 		add: function( maps ){
 			maps.forEach(function(map){
 				if(map && map.root && map.name && map.properties){
-				modules.maps[map.name] = JSON.parse(JSON.stringify(map));	
+				modules.maps[map.name] = JSON.parse(JSON.stringify(map));
 				}
 			});
 		},
-		
-		
+
+
 		/**
 		 * internal parse to get parent microformats by walking up the tree
 		 *
@@ -281,7 +281,7 @@ var Microformats; // jshint ignore:line
 		 */
 		getParentTreeWalk: function (node, options, recursive) {
 			options = (options)? options : {};
-			
+
 			// recursive calls
 		    if (recursive === undefined) {
 		        if (node.parentNode && node.nodeName !== 'HTML'){
@@ -303,20 +303,20 @@ var Microformats; // jshint ignore:line
 		    }
 		},
 
-		
-				
+
+
 		/**
 		 * configures what are the base DOM objects for parsing
 		 *
 		 * @param  {Object} options
 		 */
-		getDOMContext: function( options ){	
-			var nodes = modules.domUtils.getDOMContext( options );		
-			this.rootNode = nodes.rootNode;		
+		getDOMContext: function( options ){
+			var nodes = modules.domUtils.getDOMContext( options );
+			this.rootNode = nodes.rootNode;
 			this.document = nodes.document;
 		},
-		
-		
+
+
 		/**
 		 * prepares DOM before the parse begins
 		 *
@@ -326,12 +326,17 @@ var Microformats; // jshint ignore:line
 		prepareDOM: function( options ){
 			var baseTag,
 				href;
-				
-			// use current document to define baseUrl
-			if(!options.baseUrl && this.document && this.document.location){
-				this.options.baseUrl = this.document.location.href;
-			}
-			
+
+            // use current document to define baseUrl, try/catch needed for IE10+ error
+            try {
+                if (!options.baseUrl && this.document && this.document.location) {
+                    this.options.baseUrl = this.document.location.href;
+                }
+            } catch (e) {
+                // there is no alt action
+            }
+
+
 			// find base tag to set baseUrl
 			baseTag = modules.domUtils.querySelector(this.document,'base');
 			if(baseTag) {
@@ -340,33 +345,33 @@ var Microformats; // jshint ignore:line
 					this.options.baseUrl = href;
 				}
 			}
-			
-			// get path to rootNode 
+
+			// get path to rootNode
 			// then clone document
 			// then reset the rootNode to its cloned version in a new document
 			var path,
 				newDocument,
-				newRootNode; 
-			
+				newRootNode;
+
 			path = modules.domUtils.getNodePath(this.rootNode);
 			newDocument = modules.domUtils.cloneDocument(this.document);
 			newRootNode = modules.domUtils.getNodeByPath(newDocument, path);
-			
+
 			// check results as early IE fails
 			if(newDocument && newRootNode){
 				this.document = newDocument;
-				this.rootNode = newRootNode;	
+				this.rootNode = newRootNode;
 			}
-			
+
 			// add includes
 			if(this.addIncludes){
 				this.addIncludes( this.document );
 			}
-						
+
 			return (this.rootNode && this.document);
 		},
 
-							
+
 		/**
 		 * returns an empty structure with errors
 		 *
@@ -377,8 +382,8 @@ var Microformats; // jshint ignore:line
 			out.errors = this.errors;
 			return out;
 		},
-		
-		
+
+
 		/**
 		 * returns an empty structure
 		 *
@@ -391,8 +396,8 @@ var Microformats; // jshint ignore:line
 			    'rel-urls': {}
 			};
 		},
-		
-		
+
+
 		// find microformats of a given type and return node structures
 		findFilterNodes: function(rootNode, filters) {
 			var newRootNode = modules.domUtils.createNode('div'),
@@ -400,9 +405,9 @@ var Microformats; // jshint ignore:line
 				i = 0,
 				x = 0,
 				y = 0;
-	
+
 			if(items){
-				i = items.length;		
+				i = items.length;
 				while(x < i) {
 					// add v1 names
 					y = filters.length;
@@ -423,12 +428,12 @@ var Microformats; // jshint ignore:line
 					}
 					x++;
 				}
-			}	
-	
+			}
+
 			return newRootNode;
 		},
-		
-		
+
+
 		/**
 		 * appends data to output object for count
 		 *
@@ -442,9 +447,9 @@ var Microformats; // jshint ignore:line
 			}else{
 				out[name] = count;
 			}
-		},	
+		},
 
-	
+
 		/**
 		 * is the microformats type in the filter list
 		 *
@@ -454,7 +459,7 @@ var Microformats; // jshint ignore:line
 		 */
 		shouldInclude: function(uf, filters) {
 			var i;
-	
+
 			if(modules.utils.isArray(filters) && filters.length > 0) {
 				i = filters.length;
 				while(i--) {
@@ -467,8 +472,8 @@ var Microformats; // jshint ignore:line
 				return true;
 			}
 		},
-	
-	
+
+
 		/**
 		 * finds all microformat roots in a rootNode
 		 *
@@ -477,60 +482,60 @@ var Microformats; // jshint ignore:line
 		 * @return {Array}
 		 */
 		findRootNodes: function(rootNode, includeRoot) {
-			var arr = null,			
-				out = [], 
+			var arr = null,
+				out = [],
 				classList = [],
 				items,
 				x,
 				i,
 				y,
 				key;
-	
-	
-			// build an array of v1 root names    
+
+
+			// build an array of v1 root names
 			for(key in modules.maps) {
 				if (modules.maps.hasOwnProperty(key)) {
 					classList.push(modules.maps[key].root);
 				}
 			}
-	
-			// get all elements that have a class attribute  
+
+			// get all elements that have a class attribute
 			includeRoot = (includeRoot) ? includeRoot : false;
 			if(includeRoot && rootNode.parentNode) {
 				arr = modules.domUtils.getNodesByAttribute(rootNode.parentNode, 'class');
 			} else {
 				arr = modules.domUtils.getNodesByAttribute(rootNode, 'class');
 			}
-	
+
 			// loop elements that have a class attribute
-			x = 0;    
+			x = 0;
 			i = arr.length;
 			while(x < i) {
-	
+
 				items = modules.domUtils.getAttributeList(arr[x], 'class');
-	
+
 				// loop classes on an element
 				y = items.length;
 				while(y--) {
-					// match v1 root names 
+					// match v1 root names
 					if(classList.indexOf(items[y]) > -1) {
 						out.push(arr[x]);
 						break;
 					}
-	
+
 					// match v2 root name prefix
 					if(modules.utils.startWith(items[y], 'h-')) {
 						out.push(arr[x]);
 						break;
 					}
 				}
-	
+
 				x++;
 			}
 			return out;
 		},
-		
-		
+
+
 		/**
 		 * starts the tree walk to find microformats
 		 *
@@ -544,12 +549,12 @@ var Microformats; // jshint ignore:line
 				classes,
 				items = [],
 				out = [];
-	
+
 			classes = this.getUfClassNames(node);
 			// if it is a root microformat node
 			if(classes && classes.root.length > 0){
 				items = this.walkTree(node);
-	
+
 				if(items.length > 0){
 					out = out.concat(items);
 				}
@@ -568,8 +573,8 @@ var Microformats; // jshint ignore:line
 			}
 			return out;
 		},
-	
-	
+
+
 		/**
 		 * starts the tree walking for a single microformat
 		 *
@@ -581,27 +586,27 @@ var Microformats; // jshint ignore:line
 				out = [],
 				obj,
 				itemRootID;
-	
+
 			// loop roots found on one element
 			classes = this.getUfClassNames(node);
 			if(classes && classes.root.length && classes.root.length > 0){
-	
+
 				this.rootID++;
 				itemRootID = this.rootID;
 				obj = this.createUfObject(classes.root, classes.typeVersion);
-	
+
 				this.walkChildren(node, obj, classes.root, itemRootID, classes);
 				if(this.impliedRules){
 					this.impliedRules(node, obj, classes);
 				}
 				out.push( this.cleanUfObject(obj) );
-			
-				
+
+
 			}
 			return out;
 		},
-	
-	
+
+
 		/**
 		 * finds child properties of microformat
 		 *
@@ -622,19 +627,19 @@ var Microformats; // jshint ignore:line
 				i,
 				x,
 				y,
-				z, 
+				z,
 				child;
-				
+
 			children = modules.domUtils.getChildren( node );
-	
+
 			y = 0;
 			z = children.length;
 			while(y < z) {
 				child = children[y];
-		
+
 				// get microformat classes for this single element
 				var classes = context.getUfClassNames(child, ufName);
-	
+
 				// a property which is a microformat
 				if(classes.root.length > 0 && classes.properties.length > 0 && !child.addedAsRoot) {
 					// create object with type, property and value
@@ -643,28 +648,28 @@ var Microformats; // jshint ignore:line
 						classes.typeVersion,
 						modules.text.parse(this.document, child, context.options.textFormat)
 					);
-					
+
 					// add the microformat as an array of properties
 					propertyName = context.removePropPrefix(classes.properties[0][0]);
-					
+
 					// modifies value with "implied value rule"
 					if(parentClasses && parentClasses.root.length === 1 && parentClasses.properties.length === 1){
 						if(context.impliedValueRule){
 							out = context.impliedValueRule(out, parentClasses.properties[0][0], classes.properties[0][0], value);
 						}
 					}
-					
+
 					if(out.properties[propertyName]) {
 						out.properties[propertyName].push(rootItem);
 					} else {
 						out.properties[propertyName] = [rootItem];
 					}
-					
+
 					context.rootID++;
 					// used to stop duplication in heavily nested structures
 					child.addedAsRoot = true;
-					
-	
+
+
 					x = 0;
 					i = rootItem.type.length;
 					itemRootID = context.rootID;
@@ -676,32 +681,32 @@ var Microformats; // jshint ignore:line
 						context.impliedRules(child, rootItem, classes);
 					}
 					this.cleanUfObject(rootItem);
-	
+
 				}
-	
+
 				// a property which is NOT a microformat and has not been used for a given root element
 				if(classes.root.length === 0 && classes.properties.length > 0) {
-					
+
 					x = 0;
 					i = classes.properties.length;
 					while(x < i) {
-	
+
 						value = context.getValue(child, classes.properties[x][0], out);
 						propertyName = context.removePropPrefix(classes.properties[x][0]);
 						propertyVersion = classes.properties[x][1];
-						
+
 						// modifies value with "implied value rule"
 						if(parentClasses && parentClasses.root.length === 1 && parentClasses.properties.length === 1){
 							if(context.impliedValueRule){
 								out = context.impliedValueRule(out, parentClasses.properties[0][0], classes.properties[x][0], value);
 							}
 						}
-	
+
 						// if we have not added this value into a property with the same name already
 						if(!context.hasRootID(child, rootID, propertyName)) {
 							// check the root and property is the same version or if overlapping versions are allowed
 							if( context.isAllowedPropertyVersion( out.typeVersion, propertyVersion ) ){
-								// add the property as an array of properties	 
+								// add the property as an array of properties
 								if(out.properties[propertyName]) {
 									out.properties[propertyName].push(value);
 								} else {
@@ -711,25 +716,25 @@ var Microformats; // jshint ignore:line
 								context.appendRootID(child, rootID, propertyName);
 							}
 						}
-				
+
 						x++;
 					}
-	
+
 					context.walkChildren(child, out, ufName, rootID, classes);
 				}
-	
+
 				// if the node has no microformat classes, see if its children have
 				if(classes.root.length === 0 && classes.properties.length === 0) {
 					context.walkChildren(child, out, ufName, rootID, classes);
 				}
-				
-				// if the node is a child root add it to the children tree				
+
+				// if the node is a child root add it to the children tree
 				if(classes.root.length > 0 && classes.properties.length === 0) {
-		
+
 					// create object with type, property and value
 					rootItem = context.createUfObject(
 						classes.root,
-						classes.typeVersion, 
+						classes.typeVersion,
 						modules.text.parse(this.document, child, context.options.textFormat)
 					);
 
@@ -755,19 +760,19 @@ var Microformats; // jshint ignore:line
 						context.impliedRules(child, rootItem, classes);
 					}
 					context.cleanUfObject( rootItem );
-					
+
 				}
-				
-	
-	
+
+
+
 				y++;
 			}
-	
-		},
-		
-		
 
-	
+		},
+
+
+
+
 		/**
 		 * gets the value of a property from a node
 		 *
@@ -778,26 +783,26 @@ var Microformats; // jshint ignore:line
 		 */
 		getValue: function(node, className, uf) {
 			var value = '';
-	
+
 			if(modules.utils.startWith(className, 'p-')) {
 				value = this.getPValue(node, true);
 			}
-	
+
 			if(modules.utils.startWith(className, 'e-')) {
 				value = this.getEValue(node);
 			}
-	
+
 			if(modules.utils.startWith(className, 'u-')) {
 				value = this.getUValue(node, true);
 			}
-	
+
 			if(modules.utils.startWith(className, 'dt-')) {
 				value = this.getDTValue(node, className, uf, true);
 			}
 			return value;
 		},
-	
-	
+
+
 		/**
 		 * gets the value of a node which contains a 'p-' property
 		 *
@@ -810,35 +815,35 @@ var Microformats; // jshint ignore:line
 			if(valueParse) {
 				out = this.getValueClass(node, 'p');
 			}
-	
+
 			if(!out && valueParse) {
 				out = this.getValueTitle(node);
 			}
-	
+
 			if(!out) {
 				out = modules.domUtils.getAttrValFromTagList(node, ['abbr'], 'title');
 			}
-	
+
 			if(!out) {
 				out = modules.domUtils.getAttrValFromTagList(node, ['data','input'], 'value');
 			}
-	
+
 			if(node.name === 'br' || node.name === 'hr') {
 				out = '';
 			}
-	
+
 			if(!out) {
 				out = modules.domUtils.getAttrValFromTagList(node, ['img', 'area'], 'alt');
 			}
-	
+
 			if(!out) {
 				out = modules.text.parse(this.document, node, this.options.textFormat);
 			}
-	
+
 			return(out) ? out : '';
 		},
-	
-	
+
+
 		/**
 		 * gets the value of a node which contains the 'e-' property
 		 *
@@ -846,19 +851,19 @@ var Microformats; // jshint ignore:line
 		 * @return {Object}
 		 */
 		getEValue: function(node) {
-					
+
 			var out = {value: '', html: ''};
-			
+
 			this.expandURLs(node, 'src', this.options.baseUrl);
 			this.expandURLs(node, 'href', this.options.baseUrl);
-	
+
 			out.value = modules.text.parse(this.document, node, this.options.textFormat);
 			out.html = modules.html.parse(node);
-	
+
 			return out;
 		},
-		
-		
+
+
 		/**
 		 * gets the value of a node which contains the 'u-' property
 		 *
@@ -871,43 +876,43 @@ var Microformats; // jshint ignore:line
 			if(valueParse) {
 				out = this.getValueClass(node, 'u');
 			}
-	
+
 			if(!out && valueParse) {
 				out = this.getValueTitle(node);
 			}
-	
+
 			if(!out) {
 				out = modules.domUtils.getAttrValFromTagList(node, ['a', 'area'], 'href');
 			}
-	
+
 			if(!out) {
 				out = modules.domUtils.getAttrValFromTagList(node, ['img','audio','video','source'], 'src');
 			}
-	
+
 			if(!out) {
 				out = modules.domUtils.getAttrValFromTagList(node, ['object'], 'data');
 			}
-	
+
 			// if we have no protocol separator, turn relative url to absolute url
 			if(out && out !== '' && out.indexOf('://') === -1) {
 				out = modules.url.resolve(out, this.options.baseUrl);
 			}
-	
+
 			if(!out) {
 				out = modules.domUtils.getAttrValFromTagList(node, ['abbr'], 'title');
 			}
-	
+
 			if(!out) {
 				out = modules.domUtils.getAttrValFromTagList(node, ['data','input'], 'value');
 			}
-	
+
 			if(!out) {
 				out = modules.text.parse(this.document, node, this.options.textFormat);
 			}
-	
+
 			return(out) ? out : '';
 		},
-	
+
 
 		/**
 		 * gets the value of a node which contains the 'dt-' property
@@ -920,31 +925,31 @@ var Microformats; // jshint ignore:line
 		 */
 		getDTValue: function(node, className, uf, valueParse) {
 			var out = '';
-	
+
 			if(valueParse) {
 				out = this.getValueClass(node, 'dt');
 			}
-	
+
 			if(!out && valueParse) {
 				out = this.getValueTitle(node);
 			}
-	
+
 			if(!out) {
 				out = modules.domUtils.getAttrValFromTagList(node, ['time', 'ins', 'del'], 'datetime');
 			}
-	
+
 			if(!out) {
 				out = modules.domUtils.getAttrValFromTagList(node, ['abbr'], 'title');
 			}
-	
+
 			if(!out) {
 				out = modules.domUtils.getAttrValFromTagList(node, ['data', 'input'], 'value');
 			}
-	
+
 			if(!out) {
 				out = modules.text.parse(this.document, node, this.options.textFormat);
 			}
-	
+
 			if(out) {
 				if(modules.dates.isDuration(out)) {
 					// just duration
@@ -956,7 +961,7 @@ var Microformats; // jshint ignore:line
 					}
 					return modules.dates.parseAmPmTime(out, this.options.dateFormat);
 				} else {
-					// returns a date - microformat profile 
+					// returns a date - microformat profile
 					if(uf) {
 						uf.dates.push([className, new modules.ISODate(out).toString( this.options.dateFormat )]);
 					}
@@ -966,8 +971,8 @@ var Microformats; // jshint ignore:line
 				return '';
 			}
 		},
-	
-	
+
+
 		/**
 		 * appends a new rootid to a given node
 		 *
@@ -985,8 +990,8 @@ var Microformats; // jshint ignore:line
 				modules.domUtils.setAttribute(node, 'rootids', rootids.join(' '));
 			}
 		},
-	
-	
+
+
 		/**
 		 * does a given node already have a rootid
 		 *
@@ -1004,8 +1009,8 @@ var Microformats; // jshint ignore:line
 				return (rootids.indexOf('id' + id + '-' + propertyName) > -1);
 			}
 		},
-	
-	
+
+
 
 		/**
 		 * gets the text of any child nodes with a class value
@@ -1021,9 +1026,9 @@ var Microformats; // jshint ignore:line
 				child,
 				x,
 				i;
-				
-			children = modules.domUtils.getChildren( node );	
-	
+
+			children = modules.domUtils.getChildren( node );
+
 			x = 0;
 			i = children.length;
 			while(x < i) {
@@ -1061,11 +1066,11 @@ var Microformats; // jshint ignore:line
 				return null;
 			}
 		},
-		
-		
+
+
 		/**
-		 * returns a single string of the 'title' attr from all 
-		 * the child nodes with the class 'value-title' 
+		 * returns a single string of the 'title' attr from all
+		 * the child nodes with the class 'value-title'
 		 *
 		 * @param  {DOM Node} node
 		 * @return {String}
@@ -1075,10 +1080,10 @@ var Microformats; // jshint ignore:line
 				items,
 				i,
 				x;
-	
+
 			items = modules.domUtils.getNodesByAttributeValue(node, 'class', 'value-title');
 			x = 0;
-			i = items.length;		
+			i = items.length;
 			while(x < i) {
 				if(modules.domUtils.hasAttribute(items[x], 'title')) {
 					out.push(modules.domUtils.getAttribute(items[x], 'title'));
@@ -1087,10 +1092,10 @@ var Microformats; // jshint ignore:line
 			}
 			return out.join('');
 		},
-		
-		
+
+
 	   /**
-		 * finds out whether a node has h-* class v1 and v2 
+		 * finds out whether a node has h-* class v1 and v2
 		 *
 		 * @param  {DOM Node} node
 		 * @return {Boolean}
@@ -1103,8 +1108,8 @@ var Microformats; // jshint ignore:line
 				return false;
 			}
 		},
-	
-	
+
+
 		/**
 		 * get both the root and property class names from a node
 		 *
@@ -1132,10 +1137,10 @@ var Microformats; // jshint ignore:line
 				v2Name,
 				impiedRel,
 				ufName;
-	
+
 			// don't get classes from excluded list of tags
 			if(modules.domUtils.hasTagName(node, this.excludeTags) === false){
-				
+
 				// find classes for node
 				classNames = modules.domUtils.getAttribute(node, 'class');
 				if(classNames) {
@@ -1143,9 +1148,9 @@ var Microformats; // jshint ignore:line
 					x = 0;
 					i = items.length;
 					while(x < i) {
-		
+
 						item = modules.utils.trim(items[x]);
-		
+
 						// test for root prefix - v2
 						if(modules.utils.startWith(item, context.rootPrefix)) {
 							if(out.root.indexOf(item) === -1){
@@ -1153,7 +1158,7 @@ var Microformats; // jshint ignore:line
 							}
 							out.typeVersion = 'v2';
 						}
-						
+
 						// test for property prefix - v2
 						z = context.propertyPrefixes.length;
 						while(z--) {
@@ -1161,7 +1166,7 @@ var Microformats; // jshint ignore:line
 								out.properties.push([item,'v2']);
 							}
 						}
-		
+
 						// test for mapped root classnames v1
 						for(key in modules.maps) {
 							if(modules.maps.hasOwnProperty(key)) {
@@ -1180,9 +1185,9 @@ var Microformats; // jshint ignore:line
 								}
 							}
 						}
-	
-						
-						// test for mapped property classnames v1  
+
+
+						// test for mapped property classnames v1
 						if(ufNameArr){
 							for (var a = 0; a < ufNameArr.length; a++) {
 								ufName = ufNameArr[a];
@@ -1191,19 +1196,19 @@ var Microformats; // jshint ignore:line
 								if(map) {
 									for(key in map.properties) {
 										if (map.properties.hasOwnProperty(key)) {
-											
+
 											prop = map.properties[key];
 											propName = (prop.map) ? prop.map : 'p-' + key;
-		
+
 											if(key === item) {
 												if(prop.uf) {
-													// loop all the classList make sure 
+													// loop all the classList make sure
 													//   1. this property is a root
 													//   2. that there is not already an equivalent v2 property i.e. url and u-url on the same element
 													y = 0;
 													while(y < i) {
 														v2Name = context.getV2RootName(items[y]);
-														// add new root 
+														// add new root
 														if(prop.uf.indexOf(v2Name) > -1 && out.root.indexOf(v2Name) === -1) {
 															out.root.push(v2Name);
 															out.typeVersion = 'v1';
@@ -1221,20 +1226,20 @@ var Microformats; // jshint ignore:line
 												}
 											}
 										}
-	
+
 									}
 								}
 							}
-						
+
 						}
-						
+
 						x++;
-		
+
 					}
 				}
 			}
-	
-	
+
+
 			// finds any alt rel=* mappings for a given node/microformat
 			if(ufNameArr && this.findRelImpied){
 				for (var b = 0; b < ufNameArr.length; b++) {
@@ -1252,11 +1257,11 @@ var Microformats; // jshint ignore:line
 			//		out.typeVersion = 'v2';
 			//	}
 			//}
-			
+
 			return out;
 		},
 
-		
+
 		/**
 		 * given a v1 or v2 root name, return mapping object
 		 *
@@ -1272,8 +1277,8 @@ var Microformats; // jshint ignore:line
 			}
 			return null;
 		},
-	
-		
+
+
 		/**
 		 * given a v1 root name returns a v2 root name i.e. vcard >>> h-card
 		 *
@@ -1289,8 +1294,8 @@ var Microformats; // jshint ignore:line
 			}
 			return null;
 		},
-		
-		
+
+
 		/**
 		 * whether a property is the right microformats version for its root type
 		 *
@@ -1305,7 +1310,7 @@ var Microformats; // jshint ignore:line
 				return (typeVersion === propertyVersion);
 			}
 		},
-		
+
 
 		/**
 		 * creates a blank microformats object
@@ -1316,7 +1321,7 @@ var Microformats; // jshint ignore:line
 		 */
 		createUfObject: function(names, typeVersion, value) {
 			var out = {};
-	
+
 			// is more than just whitespace
 			if(value && modules.utils.isOnlyWhiteSpace(value) === false) {
 				out.value = value;
@@ -1333,11 +1338,11 @@ var Microformats; // jshint ignore:line
 			out.times = [];
 			out.dates = [];
 			out.altValue = null;
-			
+
 			return out;
 		},
-		
-		
+
+
 		/**
 		 * removes unwanted microformats property before output
 		 *
@@ -1350,9 +1355,9 @@ var Microformats; // jshint ignore:line
 			delete microformat.altValue;
 			return microformat;
 		},
-	
-	
-		
+
+
+
 		/**
 		 * removes microformat property prefixes from text
 		 *
@@ -1361,7 +1366,7 @@ var Microformats; // jshint ignore:line
 		 */
 		removePropPrefix: function(text) {
 			var i;
-	
+
 			i = this.propertyPrefixes.length;
 			while(i--) {
 				var prefix = this.propertyPrefixes[i];
@@ -1371,8 +1376,8 @@ var Microformats; // jshint ignore:line
 			}
 			return text;
 		},
-		
-		
+
+
 		/**
 		 * expands all relative URLs to absolute ones where it can
 		 *
@@ -1395,15 +1400,15 @@ var Microformats; // jshint ignore:line
 						//attr = urlParser.resolve(baseUrl, attr);
 						attr = modules.url.resolve(attr, baseUrl);
 						modules.domUtils.setAttribute(nodes[i], attrName, attr);
-					}	
+					}
 				}catch(err){
 					// do nothing - convert only the urls we can, leave the rest as they are
 				}
 			}
 		},
-	
-	
-		
+
+
+
 		/**
 		 * merges passed and default options -single level clone of properties
 		 *
@@ -1417,8 +1422,8 @@ var Microformats; // jshint ignore:line
 				}
 			}
 		},
-		
-		
+
+
 		/**
 		 * removes all rootid attributes
 		 *
@@ -1427,15 +1432,15 @@ var Microformats; // jshint ignore:line
 		removeRootIds: function(rootNode){
 			var arr,
 				i;
-				
+
 			arr = modules.domUtils.getNodesByAttribute(rootNode, 'rootids');
 			i = arr.length;
 			while(i--) {
 				modules.domUtils.removeAttribute(arr[i],'rootids');
 			}
 		},
-		
-		
+
+
 		/**
 		 * removes all changes made to the DOM
 		 *
@@ -1444,14 +1449,14 @@ var Microformats; // jshint ignore:line
 		clearUpDom: function(rootNode){
 			if(this.removeIncludes){
 				this.removeIncludes(rootNode);
-			}	
+			}
 			this.removeRootIds(rootNode);
 		}
-		
-	
+
+
 	};
-	
-	
+
+
 	modules.Parser.prototype.constructor = modules.Parser;
 
 
@@ -2392,12 +2397,31 @@ var Microformats; // jshint ignore:line
 
 
 	modules.domUtils = {
-		
+
 		// blank objects for DOM
 		document: null,
 		rootNode: null,
-		
-		
+
+
+	     /**
+		 * gets DOMParser object
+		 *
+         * @return {Object || undefined}
+		 */
+        getDOMParser: function () {
+            if (typeof DOMParser === undefined) {
+                try {
+                    return Components.classes["@mozilla.org/xmlextras/domparser;1"]
+                        .createInstance(Components.interfaces.nsIDOMParser);
+                } catch (e) {
+                    return;
+                }
+            } else {
+                return new DOMParser();
+            }
+        },
+
+
 	     /**
 		 * configures what are the base DOM objects for parsing
 		 *
@@ -2405,20 +2429,21 @@ var Microformats; // jshint ignore:line
 		 * @return {DOM Node} node
 		 */
 		getDOMContext: function( options ){
-				
-			// if a node is passed 
+
+			// if a node is passed
 			if(options.node){
 				this.rootNode = options.node;
 			}
-			
-			
+
+
 			// if a html string is passed
 			if(options.html){
-				var dom = new DOMParser();
-       			this.rootNode = dom.parseFromString( options.html, 'text/html' );
+				//var domParser = new DOMParser();
+                var domParser = this.getDOMParser();
+       			this.rootNode = domParser.parseFromString( options.html, 'text/html' );
 			}
-			
-			
+
+
 			// find top level document from rootnode
 			if(this.rootNode !== null){
 				if(this.rootNode.nodeType === 9){
@@ -2427,26 +2452,26 @@ var Microformats; // jshint ignore:line
 				}else{
 					// if it's DOM node get parent DOM Document
 					this.document = modules.domUtils.ownerDocument(this.rootNode);
-				} 
+				}
 			}
-			
+
 
 			// use global document object
 			if(!this.rootNode && document){
 				this.rootNode = modules.domUtils.querySelector(document, 'html');
 				this.document = document;
 			}
-			
-			
+
+
 			if(this.rootNode && this.document){
 				return {document: this.document, rootNode: this.rootNode};
 			}
-			
+
 			return {document: null, rootNode: null};
 		},
-		
-		
-				
+
+
+
 		/**
 		* gets the first DOM node
 		*
@@ -2460,8 +2485,8 @@ var Microformats; // jshint ignore:line
 			//}
 			return node;
 		},
-		
-		
+
+
 
 		 /**
 		 * abstracts DOM ownerDocument
@@ -2472,8 +2497,8 @@ var Microformats; // jshint ignore:line
 		ownerDocument: function(node){
 			return node.ownerDocument;
 		},
-		
-	
+
+
 		/**
 		 * abstracts DOM textContent
 		 *
@@ -2488,8 +2513,8 @@ var Microformats; // jshint ignore:line
 			}
 			return '';
 		},
-		
-	
+
+
 		/**
 		 * abstracts DOM innerHTML
 		 *
@@ -2499,7 +2524,7 @@ var Microformats; // jshint ignore:line
 		innerHTML: function(node){
 			return node.innerHTML;
 		},
-	
+
 
 		/**
 		 * abstracts DOM hasAttribute
@@ -2511,8 +2536,8 @@ var Microformats; // jshint ignore:line
 		hasAttribute: function(node, attributeName) {
 			return node.hasAttribute(attributeName);
 		},
-		
-		
+
+
 		/**
 		 * does an attribute contain a value
 		 *
@@ -2524,8 +2549,8 @@ var Microformats; // jshint ignore:line
 		hasAttributeValue: function(node, attributeName, value) {
 			return (this.getAttributeList(node, attributeName).indexOf(value) > -1);
 		},
-		
-	
+
+
 		/**
 		 * abstracts DOM getAttribute
 		 *
@@ -2536,8 +2561,8 @@ var Microformats; // jshint ignore:line
 		getAttribute: function(node, attributeName) {
 			return node.getAttribute(attributeName);
 		},
-		
-		
+
+
 		/**
 		 * abstracts DOM setAttribute
 		 *
@@ -2548,8 +2573,8 @@ var Microformats; // jshint ignore:line
 		setAttribute: function(node, attributeName, attributeValue){
 			node.setAttribute(attributeName, attributeValue);
 		},
-	
-	
+
+
 		/**
 		 * abstracts DOM removeAttribute
 		 *
@@ -2559,32 +2584,32 @@ var Microformats; // jshint ignore:line
 		removeAttribute: function(node, attributeName) {
 			node.removeAttribute(attributeName);
 		},
-		
-		
+
+
 		/**
 		 * abstracts DOM getElementById
 		 *
 		 * @param  {DOM Node || DOM Document} node
 		 * @param  {String} id
-		 * @return {DOM Node} 
+		 * @return {DOM Node}
 		 */
 		getElementById: function(docNode, id) {
 			return docNode.querySelector( '#' + id );
 		},
-		
-		
+
+
 		/**
 		 * abstracts DOM querySelector
 		 *
 		 * @param  {DOM Node || DOM Document} node
 		 * @param  {String} selector
-		 * @return {DOM Node} 
+		 * @return {DOM Node}
 		 */
 		querySelector: function(docNode, selector) {
 			return docNode.querySelector( selector );
 		},
-	
-	
+
+
 		/**
 		 * get value of a Node attribute as an array
 		 *
@@ -2595,7 +2620,7 @@ var Microformats; // jshint ignore:line
 		getAttributeList: function(node, attributeName) {
 			var out = [],
 				attList;
-	
+
 			attList = node.getAttribute(attributeName);
 			if(attList && attList !== '') {
 				if(attList.indexOf(' ') > -1) {
@@ -2606,8 +2631,8 @@ var Microformats; // jshint ignore:line
 			}
 			return out;
 		},
-	
-	
+
+
 		/**
 		 * gets all child nodes with a given attribute
 		 *
@@ -2619,8 +2644,8 @@ var Microformats; // jshint ignore:line
 			var selector = '[' + attributeName + ']';
 			return node.querySelectorAll(selector);
 		},
-	
-	
+
+
 		/**
 		 * gets all child nodes with a given attribute containing a given value
 		 *
@@ -2633,7 +2658,7 @@ var Microformats; // jshint ignore:line
 				x = 0,
 				i,
 				out = [];
-	
+
 			arr = this.getNodesByAttribute(rootNode, name);
 			if(arr) {
 				i = arr.length;
@@ -2646,8 +2671,8 @@ var Microformats; // jshint ignore:line
 			}
 			return out;
 		},
-	
-	
+
+
 		/**
 		 * gets attribute value from controlled list of tags
 		 *
@@ -2657,7 +2682,7 @@ var Microformats; // jshint ignore:line
 		 */
 		getAttrValFromTagList: function(node, tagNames, attributeName) {
 			var i = tagNames.length;
-	
+
 			while(i--) {
 				if(node.tagName.toLowerCase() === tagNames[i]) {
 					var attrValue = this.getAttribute(node, attributeName);
@@ -2668,10 +2693,10 @@ var Microformats; // jshint ignore:line
 			}
 			return null;
 		},
-	
-		
+
+
 	   /**
-		 * get node if it has no siblings. CSS equivalent is :only-child 
+		 * get node if it has no siblings. CSS equivalent is :only-child
 		 *
 		 * @param  {DOM Node} rootNode
 		 * @param  {Array} tagNames
@@ -2680,11 +2705,11 @@ var Microformats; // jshint ignore:line
 		getSingleDescendant: function(node){
 			return this.getDescendant( node, null, false );
 		},
-		
-		
+
+
         /**
 		 * get node if it has no siblings of the same type. CSS equivalent is :only-of-type
-		 * 
+		 *
 		 * @param  {DOM Node} rootNode
 		 * @param  {Array} tagNames
 		 * @return {DOM Node || null}
@@ -2692,10 +2717,10 @@ var Microformats; // jshint ignore:line
 		getSingleDescendantOfType: function(node, tagNames){
 			return this.getDescendant( node, tagNames, true );
 		},
-	
-	
+
+
 	    /**
-		 * get child node limited by presence of siblings - either CSS :only-of-type or :only-child 
+		 * get child node limited by presence of siblings - either CSS :only-of-type or :only-child
 		 *
 		 * @param  {DOM Node} rootNode
 		 * @param  {Array} tagNames
@@ -2707,7 +2732,7 @@ var Microformats; // jshint ignore:line
 				countOfType = 0,
 				child,
 				out = null;
-	
+
 			while(i--) {
 				child = node.children[i];
 				if(child.nodeType === 1) {
@@ -2716,7 +2741,7 @@ var Microformats; // jshint ignore:line
 						if(this.hasTagName(child, tagNames)){
 							out = child;
 							countOfType++;
-						}	
+						}
 					}else{
 						// count all elements
 						out = child;
@@ -2730,7 +2755,7 @@ var Microformats; // jshint ignore:line
 				return (countAll === 1)? out : null;
 			}
 		},
-	
+
 
 	   /**
 		 * is a node one of a list of tags
@@ -2738,7 +2763,7 @@ var Microformats; // jshint ignore:line
 		 * @param  {DOM Node} rootNode
 		 * @param  {Array} tagNames
 		 * @return {Boolean}
-		 */	
+		 */
 		hasTagName: function(node, tagNames){
 			var i = tagNames.length;
 			while(i--) {
@@ -2748,10 +2773,10 @@ var Microformats; // jshint ignore:line
 			}
 			return false;
 		},
-	
-	
+
+
 	   /**
-		 * abstracts DOM appendChild 
+		 * abstracts DOM appendChild
 		 *
 		 * @param  {DOM Node} node
 		 * @param  {DOM Node} childNode
@@ -2760,10 +2785,10 @@ var Microformats; // jshint ignore:line
 		appendChild: function(node, childNode){
 			return node.appendChild(childNode);
 		},
-	
-	
+
+
 	   /**
-		 * abstracts DOM removeChild 
+		 * abstracts DOM removeChild
 		 *
 		 * @param  {DOM Node} childNode
 		 * @return {DOM Node || null}
@@ -2775,8 +2800,8 @@ var Microformats; // jshint ignore:line
 				return null;
 			}
 		},
-	
-	
+
+
 		/**
 		 * abstracts DOM cloneNode
 		 *
@@ -2788,8 +2813,8 @@ var Microformats; // jshint ignore:line
 			newNode.removeAttribute('id');
 			return newNode;
 		},
-		
-		
+
+
 		/**
 		 * gets the text of a node
 		 *
@@ -2803,8 +2828,8 @@ var Microformats; // jshint ignore:line
 				return '';
 			}
 		},
-		
-		
+
+
 		/**
 		 * gets the attributes of a node - ordered by sequence in html
 		 *
@@ -2814,17 +2839,17 @@ var Microformats; // jshint ignore:line
 		getOrderedAttributes: function( node ){
 			var nodeStr = node.outerHTML,
 				attrs = [];
-				
+
 			for (var i = 0; i < node.attributes.length; i++) {
 				var attr = node.attributes[i];
 					attr.indexNum = nodeStr.indexOf(attr.name);
-					
+
 				attrs.push( attr );
 			}
 			return attrs.sort( modules.utils.sortObjects( 'indexNum' ) );
 		},
-		
-		
+
+
 		/**
 		 * decodes html entities in given text
 		 *
@@ -2836,56 +2861,56 @@ var Microformats; // jshint ignore:line
 			//return text;
 			return doc.createTextNode( text ).nodeValue;
 		},
-		
-		
+
+
 		/**
 		 * clones a DOM document
 		 *
-		 * @param  {DOM Document} document 
+		 * @param  {DOM Document} document
 		 * @return {DOM Document}
 		 */
 		cloneDocument: function( document ){
 			var newNode,
 				newDocument = null;
-				
+
 			if( this.canCloneDocument( document )){
 				newDocument = document.implementation.createHTMLDocument('');
 				newNode = newDocument.importNode( document.documentElement, true );
-				newDocument.replaceChild(newNode, newDocument.querySelector('html'));	
+				newDocument.replaceChild(newNode, newDocument.querySelector('html'));
 			}
 			return (newNode && newNode.nodeType && newNode.nodeType === 1)? newDocument : document;
 		},
-		
-		
+
+
 		/**
 		 * can environment clone a DOM document
 		 *
-		 * @param  {DOM Document} document 
+		 * @param  {DOM Document} document
 		 * @return {Boolean}
 		 */
 		canCloneDocument: function( document ){
 			return (document && document.importNode && document.implementation && document.implementation.createHTMLDocument);
 		},
-		
-	
+
+
 		/**
-		 * get the child index of a node. Used to create a node path 
+		 * get the child index of a node. Used to create a node path
 		 *
 		 *   @param  {DOM Node} node
 		 *   @return {Int}
 		 */
 		getChildIndex: function (node) {
-		  	var parent = node.parentNode, 
-		  		i = -1, 
+		  	var parent = node.parentNode,
+		  		i = -1,
 		  		child;
 	  		while (parent && (child = parent.childNodes[++i])){
 				 if (child === node){
 					 return i;
-				 } 
-			} 
+				 }
+			}
 	  		return -1;
 		},
-		
+
 
 		/**
 		 * get a node's path
@@ -2894,10 +2919,10 @@ var Microformats; // jshint ignore:line
 		 *   @return {Array}
 		 */
 		getNodePath: function  (node) {
-		  	var parent = node.parentNode, 
-			  	path = [], 
+		  	var parent = node.parentNode,
+			  	path = [],
 			  	index = this.getChildIndex(node);
-				  
+
 		  if(parent && (path = this.getNodePath(parent))){
 			   if(index > -1){
 				   path.push(index);
@@ -2905,8 +2930,8 @@ var Microformats; // jshint ignore:line
 		  }
 		  return path;
 		},
-		
-		
+
+
 		/**
 		 * get a node from a path.
 		 *
@@ -2915,18 +2940,18 @@ var Microformats; // jshint ignore:line
 		 *   @return {DOM Node}
 		 */
 		getNodeByPath: function (document, path) {
-		  	var node = document.documentElement, 
-		  		i = 0, 
+		  	var node = document.documentElement,
+		  		i = 0,
 		  		index;
 		  while ((index = path[++i]) > -1){
 			  node = node.childNodes[index];
-		  } 
+		  }
 		  return node;
 		},
-		
-		
+
+
 		/**
-		* get an array/nodeList of child nodes 
+		* get an array/nodeList of child nodes
 		*
 		*   @param  {DOM node} node
 		*   @return {Array}
@@ -2934,8 +2959,8 @@ var Microformats; // jshint ignore:line
 		getChildren: function( node ){
 			return node.children;
 		},
-		
-		
+
+
 		/**
 		* create a node
 		*
@@ -2944,9 +2969,9 @@ var Microformats; // jshint ignore:line
 		*/
 		createNode: function( tagName ){
 			return this.document.createElement(tagName);
-		},	
-		
-		
+		},
+
+
 		/**
 		* create a node with text content
 		*
@@ -2959,8 +2984,8 @@ var Microformats; // jshint ignore:line
 			node.innerHTML = text;
 			return node;
 		}
-		
-		
+
+
 
 	};
 
@@ -2972,9 +2997,11 @@ var Microformats; // jshint ignore:line
 		 * creates DOM objects needed to resolve URLs
 		 */
         init: function(){
-            this._dom = new DOMParser();
-            this._html = '<head><base id="base" href=""></head><a id="link" href=""></a>';
-            this._nodes = this._dom.parseFromString( this._html, 'text/html' );
+            //this._domParser = new DOMParser();
+            this._domParser = modules.domUtils.getDOMParser();
+            // do not use a head tag it does not work with IE9
+            this._html = '<base id="base" href=""></base><a id="link" href=""></a>';
+            this._nodes = this._domParser.parseFromString( this._html, 'text/html' );
             this._baseNode =  modules.domUtils.getElementById(this._nodes,'base');
             this._linkNode =  modules.domUtils.getElementById(this._nodes,'link');
         },
@@ -3001,11 +3028,13 @@ var Microformats; // jshint ignore:line
 					return resolved;
 				}catch(e){
                     // otherwise fallback to DOM
-                    if(this._dom === undefined){
+                    if(this._domParser === undefined){
                         this.init();
                     }
-					modules.domUtils.setAttribute(this._baseNode,'href',baseUrl);
-                    modules.domUtils.setAttribute(this._linkNode,'href',url);
+
+                    // do not use setAttribute it does not work with IE9
+                    this._baseNode.href = baseUrl;
+                    this._linkNode.href = url;
 
                     // dont use getAttribute as it returns orginal value not resolved
                     return this._linkNode.href;
@@ -4567,7 +4596,7 @@ var Microformats; // jshint ignore:line
 
     // Mess with DOMParser.prototype (less than optimal...) if one of the above worked
     // Assume can write to the prototype, if not, make this a stand alone function
-    if (DOMParser.prototype && (htmlElInnerHTML || textXML)) { 
+    if (DOMParser.prototype && (htmlElInnerHTML || textXML)) {
         DOMParser_proto = DOMParser.prototype;
         real_parseFromString = DOMParser_proto.parseFromString;
 
@@ -4590,7 +4619,7 @@ var Microformats; // jshint ignore:line
                     // Make sure markup is wrapped in HTML tags
                     // Should probably allow for a DOCTYPE
                     if (!(/^<html.*html>$/i.test(markup))) {
-                        markup = '<html>' + markup + '<\/html>'; 
+                        markup = '<html>' + markup + '<\/html>';
                     }
                     doc = (new DOMParser()).parseFromString(markup, 'text/xml');
                     doc_el = doc.documentElement;

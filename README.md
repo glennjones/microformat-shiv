@@ -229,17 +229,17 @@ Browser support
 ---------------
 Desktop
 
-* Firefox 11-42
-* Chrome 14-43
-* Opera 19-30 (Version 18 > passes 84% of tests)
-* Safari 6-8 (Version 5 passes 97% of tests)
-* IE 9-11
+* Firefox 45-11
+* Chrome 48-14
+* Opera 30-19 (Version 18 > passes 84% of tests)
+* Safari 9-6 (Version 5 passes 97% of tests)
+* IE 11-9
 * Edge
 
 Mobile
 ----------------------
-* iOS 5.1-8.3 (Version 4 passes 97% of tests)
-* Andriod 4.2-5 (The only versions I could test)
+* iOS 9-5.1 (Version 4 passes 97% of tests)
+* Andriod 5-4 (The only versions I could test)
 * Android Firefox 39 (The only versions I could test)
 * Android Chrome 43	(The only versions I could test)
 

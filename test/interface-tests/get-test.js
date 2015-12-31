@@ -6,8 +6,8 @@ assert = chai.assert;
 
 
 describe('Microformat.get', function() {
-    
-    
+
+
     var expected = {
         'items': [{
             'type': ['h-card'],
@@ -46,20 +46,20 @@ describe('Microformat.get', function() {
         result = Microformats.get({});
         assert.deepEqual( result.items, [] );
    });
-  
-    
+
+
    it('get - standard', function(){
-       
+
         var doc,
             node,
             options,
             result;
-       
+
         doc = document.implementation.createHTMLDocument('New Document');
         node =  document.createElement('div');
         node.innerHTML = html;
-        doc.body.appendChild(node);    
-        
+        doc.body.appendChild(node);
+
         options ={
             'node': node,
             'baseUrl': 'http://example.com',
@@ -68,22 +68,22 @@ describe('Microformat.get', function() {
 
         result = Microformats.get(options);
         assert.deepEqual( result, expected );
-        
+
    });
-   
-   
+
+
    it('get - doc pass to node', function(){
-       
+
        var  doc,
             node,
             options,
             result;
-       
+
         doc = document.implementation.createHTMLDocument('New Document');
         node =  document.createElement('div');
         node.innerHTML = html;
-        doc.body.appendChild(node);    
-        
+        doc.body.appendChild(node);
+
         options ={
             'node': doc,
             'baseUrl': 'http://example.com',
@@ -92,22 +92,22 @@ describe('Microformat.get', function() {
 
         result = Microformats.get(options);
         assert.deepEqual( result, expected );
- 
+
    });
-   
-   
+
+
     it('get - pass base tag', function(){
-       
+
        var  doc,
             node,
             options,
             result;
-       
+
         doc = document.implementation.createHTMLDocument('New Document');
         node =  document.createElement('div');
         node.innerHTML = html + '<base href="http://example.com">';
-        doc.body.appendChild(node);    
-        
+        doc.body.appendChild(node);
+
         options ={
             'node': node,
             'dateFormat': 'html5'
@@ -115,23 +115,23 @@ describe('Microformat.get', function() {
 
         result = Microformats.get(options);
         assert.deepEqual( result, expected );
- 
+
    });
-   
-   
+
+
    it('get - pass no document', function(){
-       
+
        var  doc,
             node,
             options,
             parser,
             result;
-       
+
         doc = document.implementation.createHTMLDocument('New Document');
         node =  document.createElement('div');
         node.innerHTML = html + '<base href="http://example.com">';
-        doc.body.appendChild(node);    
-        
+        doc.body.appendChild(node);
+
         options ={
             'node': doc,
             'dateFormat': 'html5'
@@ -139,27 +139,27 @@ describe('Microformat.get', function() {
 
         result = Microformats.get(options);
         assert.deepEqual( result, expected );
- 
+
    });
-   
-   
+
+
    it('get - textFormat: normalised', function(){
-       
+
        var  doc,
             node,
             options,
             result;
-            
+
         var altHTML = '<a class="h-card" href="http://glennjones.net">\n';
         altHTML += '     <span class="p-given-name">Glenn</span>\n';
         altHTML += '     <span class="p-family-name">Jones</span>\n';
         altHTML += '</a>\n';
- 
+
         doc = document.implementation.createHTMLDocument('New Document');
         node =  document.createElement('div');
         node.innerHTML = altHTML;
-        doc.body.appendChild(node);    
-        
+        doc.body.appendChild(node);
+
         options ={
             'node': node,
             'textFormat': 'normalised',
@@ -168,28 +168,28 @@ describe('Microformat.get', function() {
 
         result = Microformats.get(options);
         assert.equal( result.items[0].properties.name[0], 'Glenn Jones' );
-        
+
    });
-   
-   
+
+
    it('get - textFormat: whitespace', function(){
-       
+
        var  doc,
             node,
             options,
             parser,
             result;
-            
+
         var altHTML = '<a class="h-card" href="http://glennjones.net">\n';
         altHTML += '     <span class="p-given-name">Glenn</span>\n';
         altHTML += '     <span class="p-family-name">Jones</span>\n';
         altHTML += '</a>\n';
- 
+
         doc = document.implementation.createHTMLDocument('New Document');
         node =  document.createElement('div');
         node.innerHTML = altHTML;
-        doc.body.appendChild(node);    
-        
+        doc.body.appendChild(node);
+
         options ={
             'node': node,
             'textFormat': 'whitespace',
@@ -198,55 +198,55 @@ describe('Microformat.get', function() {
 
         result = Microformats.get(options);
         assert.equal( result.items[0].properties.name[0], '\n     Glenn\n     Jones\n' );
-        
+
    });
-   
-   
-   
+
+
+
    it('get - textFormat: whitespacetrimmed', function(){
-       
+
        var  doc,
             node,
             options,
             result;
-            
+
         var altHTML = '<a class="h-card" href="http://glennjones.net">\n';
         altHTML += '     <span class="p-given-name">Glenn</span>\n';
         altHTML += '     <span class="p-family-name">Jones</span>\n';
         altHTML += '</a>\n';
 
- 
+
         doc = document.implementation.createHTMLDocument('New Document');
         node =  document.createElement('div');
         node.innerHTML = altHTML;
-        doc.body.appendChild(node);    
-        
+        doc.body.appendChild(node);
+
         options ={
             'node': node,
             'textFormat': 'whitespacetrimmed',
             'dateFormat': 'html5'
         };
-        
+
         result = Microformats.get(options);
         assert.equal( result.items[0].properties.name[0], 'Glenn\n     Jones' );
-        
+
    });
-   
-   
+
+
     it('get - dateFormat: auto', function(){
-       
+
        var  doc,
             node,
             options,
             result;
-            
+
         var altHTML = '<div class="h-event"><span class="p-name">Pub</span><span class="dt-start">2015-07-01t17:30z</span></div>';
 
         doc = document.implementation.createHTMLDocument('New Document');
         node =  document.createElement('div');
         node.innerHTML = altHTML;
-        doc.body.appendChild(node);    
-        
+        doc.body.appendChild(node);
+
         options ={
             'node': node,
             'dateFormat': 'auto'
@@ -254,24 +254,24 @@ describe('Microformat.get', function() {
 
         result = Microformats.get(options);
         assert.equal( result.items[0].properties.start[0], '2015-07-01t17:30z' );
-        
+
    });
-   
-   
+
+
    it('get - dateFormat: w3c', function(){
-       
+
        var  doc,
             node,
             options,
             result;
-            
+
         var altHTML = '<div class="h-event"><span class="p-name">Pub</span><span class="dt-start">2015-07-01t17:30z</span></div>';
 
         doc = document.implementation.createHTMLDocument('New Document');
         node =  document.createElement('div');
         node.innerHTML = altHTML;
-        doc.body.appendChild(node);    
-        
+        doc.body.appendChild(node);
+
         options ={
             'node': node,
             'dateFormat': 'w3c'
@@ -279,24 +279,24 @@ describe('Microformat.get', function() {
 
         result = Microformats.get(options);
         assert.equal( result.items[0].properties.start[0], '2015-07-01T17:30Z' );
-        
+
    });
-   
-   
+
+
    it('get - dateFormat: html5', function(){
-       
+
        var  doc,
             node,
             options,
             result;
-            
+
         var altHTML = '<div class="h-event"><span class="p-name">Pub</span><span class="dt-start">2015-07-01t17:30z</span></div>';
 
         doc = document.implementation.createHTMLDocument('New Document');
         node =  document.createElement('div');
         node.innerHTML = altHTML;
-        doc.body.appendChild(node);    
-        
+        doc.body.appendChild(node);
+
         options ={
             'node': node,
             'dateFormat': 'html5'
@@ -304,26 +304,26 @@ describe('Microformat.get', function() {
 
         result = Microformats.get(options);
         assert.equal( result.items[0].properties.start[0], '2015-07-01 17:30Z' );
-        
+
    });
 
-   
-   
+
+
    it('get - dateFormat: rfc3339', function(){
-       
+
        var  doc,
             node,
             options,
 
             result;
-            
+
         var altHTML = '<div class="h-event"><span class="p-name">Pub</span><span class="dt-start">2015-07-01t17:30z</span></div>';
 
         doc = document.implementation.createHTMLDocument('New Document');
         node =  document.createElement('div');
         node.innerHTML = altHTML;
-        doc.body.appendChild(node);    
-        
+        doc.body.appendChild(node);
+
         options ={
             'node': node,
             'dateFormat': 'rfc3339'
@@ -331,21 +331,21 @@ describe('Microformat.get', function() {
 
         result = Microformats.get(options);
         assert.equal( result.items[0].properties.start[0], '20150701T1730Z' );
-        
+
    });
-   
-   
-   
+
+
+
    it('get - filters h-card', function(){
-       
+
        var  doc,
             node,
             options,
             parser,
             result;
-            
+
         var altHTML = '<div class="h-event"><span class="p-name">Pub</span><span class="dt-start">2015-07-01t17:30z</span></div><a class="h-card" href="http://glennjones.net">Glenn Jones</a>';
-        var altExpected = {   
+        var altExpected = {
             'items': [{
                 'type': ['h-card'],
                 'properties': {
@@ -361,29 +361,29 @@ describe('Microformat.get', function() {
         doc = document.implementation.createHTMLDocument('New Document');
         node =  document.createElement('div');
         node.innerHTML = altHTML;
-        doc.body.appendChild(node);    
-        
+        doc.body.appendChild(node);
+
         options ={
             'node': node,
             'filters': ['h-card'],
             'dateFormat': 'html5'
         };
- 
+
         result = Microformats.get(options);
         assert.deepEqual( result, altExpected );
-        
+
    });
-   
-      
+
+
    it('get - filters h-event', function(){
-       
+
        var  doc,
             node,
             options,
             result;
-            
+
         var altHTML = '<div class="h-event"><span class="p-name">Pub</span><span class="dt-start">2015-07-01t17:30z</span></div><a class="h-card" href="http://glennjones.net">Glenn Jones</a>';
-        var altExpected = {   
+        var altExpected = {
             'items': [{
                 'type': ['h-event'],
                 'properties': {
@@ -399,8 +399,8 @@ describe('Microformat.get', function() {
         doc = document.implementation.createHTMLDocument('New Document');
         node =  document.createElement('div');
         node.innerHTML = altHTML;
-        doc.body.appendChild(node);    
-        
+        doc.body.appendChild(node);
+
         options ={
             'node': node,
             'filters': ['h-event'],
@@ -409,19 +409,19 @@ describe('Microformat.get', function() {
 
         result = Microformats.get(options);
         assert.deepEqual( result, altExpected );
-        
+
    });
-   
-   
+
+
     it('get - filters h-card and h-event', function(){
-       
+
        var  doc,
             node,
             options,
             result;
-            
+
         var altHTML = '<div class="h-event"><span class="p-name">Pub</span><span class="dt-start">2015-07-01t17:30z</span></div><a class="h-card" href="http://glennjones.net">Glenn Jones</a>';
-        var altExpected = {   
+        var altExpected = {
                 'items': [{
                     'type': ['h-event'],
                     'properties': {
@@ -444,8 +444,8 @@ describe('Microformat.get', function() {
         doc = document.implementation.createHTMLDocument('New Document');
         node =  document.createElement('div');
         node.innerHTML = altHTML;
-        doc.body.appendChild(node);    
-        
+        doc.body.appendChild(node);
+
         options ={
             'node': node,
             'filter': ['h-event'],
@@ -454,19 +454,19 @@ describe('Microformat.get', function() {
 
         result = Microformats.get(options);
         assert.deepEqual( result, altExpected );
-        
+
    });
-   
-   
+
+
    it('get - filters h-card no result', function(){
-       
+
        var  doc,
             node,
             options,
             result;
-            
+
         var altHTML = '<div class="h-event"><span class="p-name">Pub</span><span class="dt-start">2015-07-01t17:30z</span></div>';
-        var altExpected = {   
+        var altExpected = {
                 'items': [],
                 'rels': {},
                 'rel-urls': {}
@@ -476,8 +476,8 @@ describe('Microformat.get', function() {
         doc = document.implementation.createHTMLDocument('New Document');
         node =  document.createElement('div');
         node.innerHTML = altHTML;
-        doc.body.appendChild(node);    
-        
+        doc.body.appendChild(node);
+
         options ={
             'node': node,
             'filters': ['h-card'],
@@ -486,20 +486,20 @@ describe('Microformat.get', function() {
 
         result = Microformats.get(options);
         assert.deepEqual( result, altExpected );
-        
+
    });
-   
-   
+
+
     it('get - filters h-card match v1 format', function(){
-       
+
        var  doc,
             node,
             options,
             parser,
             result;
-            
+
         var altHTML = '<a class="vcard" href="http://glennjones.net"><span class="fn">Glenn Jones</span></a>';
-        var altExpected = {   
+        var altExpected = {
                 'items': [{
                     'type': ['h-card'],
                     'properties': {
@@ -514,8 +514,8 @@ describe('Microformat.get', function() {
         doc = document.implementation.createHTMLDocument('New Document');
         node =  document.createElement('div');
         node.innerHTML = altHTML;
-        doc.body.appendChild(node);    
-        
+        doc.body.appendChild(node);
+
         options ={
             'node': node,
             'filter': ['h-card'],
@@ -524,19 +524,19 @@ describe('Microformat.get', function() {
 
         result = Microformats.get(options);
         assert.deepEqual( result, altExpected );
-        
+
    });
-   
-   
+
+
    it('get - add new v1 format through options', function(){
-       
+
        var  doc,
             node,
             options,
             result;
-            
+
         var altHTML = '<div class="hpayment">£<span class="amount">36.78</span></div>';
-        var altExpected = {   
+        var altExpected = {
                 'items': [{
                     'type': ['h-payment'],
                     'properties': {
@@ -558,8 +558,8 @@ describe('Microformat.get', function() {
         doc = document.implementation.createHTMLDocument('New Document');
         node =  document.createElement('div');
         node.innerHTML = altHTML;
-        doc.body.appendChild(node);    
-        
+        doc.body.appendChild(node);
+
         options ={
             'node': node,
             'maps': v1Definition,
@@ -568,15 +568,15 @@ describe('Microformat.get', function() {
 
         result = Microformats.get(options);
         assert.deepEqual( result, altExpected );
-        
+
    });
-   
-   
+
+
     it('get - options.html', function(){
-       
+
         var options,
             result;
- 
+
         options ={
             'html': html,
             'baseUrl': 'http://example.com',
@@ -585,11 +585,11 @@ describe('Microformat.get', function() {
 
         result = Microformats.get(options);
         assert.deepEqual( result, expected );
-        
+
    });
 
 
 
-   
-  
+
+
 });
