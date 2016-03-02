@@ -1,8 +1,8 @@
 /*
    Modern
-   microformat-shiv - v1.3.3
-   Built: 2015-12-31 01:12 - http://microformat-shiv.com
-   Copyright (c) 2015 Glenn Jones
+   microformat-shiv - v1.4.0
+   Built: 2016-03-02 10:03 - http://microformat-shiv.com
+   Copyright (c) 2016 Glenn Jones
    Licensed MIT 
 */
 
@@ -22,7 +22,7 @@ var Microformats; // jshint ignore:line
     var modules = {};
     
 
-	modules.version = '1.3.3';
+	modules.version = '1.4.0';
 	modules.livingStandard = '2015-09-25T12:26:04Z';
 
 	/**
@@ -401,23 +401,27 @@ var Microformats; // jshint ignore:line
 
 		// find microformats of a given type and return node structures
 		findFilterNodes: function(rootNode, filters) {
+            if(modules.utils.isString(filters)){
+                filters = [filters];
+            }
 			var newRootNode = modules.domUtils.createNode('div'),
 				items = this.findRootNodes(rootNode, true),
 				i = 0,
 				x = 0,
 				y = 0;
 
+            // add v1 names
+            y = filters.length;
+            while (y--) {
+                if(this.getMapping(filters[y])){
+                    var v1Name = this.getMapping(filters[y]).root;
+                    filters.push(v1Name);
+                }
+            }
+
 			if(items){
 				i = items.length;
 				while(x < i) {
-					// add v1 names
-					y = filters.length;
-					while (y--) {
-						if(this.getMapping(filters[y])){
-							var v1Name = this.getMapping(filters[y]).root;
-							filters.push(v1Name);
-						}
-					}
 					// append matching nodes into newRootNode
 					y = filters.length;
 					while (y--) {
@@ -2210,7 +2214,7 @@ var Microformats; // jshint ignore:line
 
 
 	modules.utils = {
-		
+
 		/**
 		 * is the object a string
 		 *
@@ -2220,7 +2224,7 @@ var Microformats; // jshint ignore:line
 		isString: function( obj ) {
 			return typeof( obj ) === 'string';
 		},
-		
+
 		/**
 		 * is the object a number
 		 *
@@ -2230,8 +2234,8 @@ var Microformats; // jshint ignore:line
 		isNumber: function( obj ) {
 			return !isNaN(parseFloat( obj )) && isFinite( obj );
 		},
-		
-		
+
+
 		/**
 		 * is the object an array
 		 *
@@ -2241,8 +2245,8 @@ var Microformats; // jshint ignore:line
 		isArray: function( obj ) {
 			return obj && !( obj.propertyIsEnumerable( 'length' ) ) && typeof obj === 'object' && typeof obj.length === 'number';
 		},
-		
-		
+
+
 		/**
 		 * is the object a function
 		 *
@@ -2252,8 +2256,8 @@ var Microformats; // jshint ignore:line
 		isFunction: function(obj) {
 			return !!(obj && obj.constructor && obj.call && obj.apply);
 		},
-	
-	
+
+
 		/**
 		 * does the text start with a test string
 		 *
@@ -2264,8 +2268,8 @@ var Microformats; // jshint ignore:line
 		startWith: function( text, test ) {
 			return(text.indexOf(test) === 0);
 		},
-	
-		
+
+
 		/**
 		 * removes spaces at front and back of text
 		 *
@@ -2279,8 +2283,8 @@ var Microformats; // jshint ignore:line
 				return '';
 			}
 		},
-		
-		
+
+
 		/**
 		 * replaces a character in text
 		 *
@@ -2291,13 +2295,13 @@ var Microformats; // jshint ignore:line
 		 */
 		replaceCharAt: function( text, index, character ) {
 			if(text && text.length > index){
-			   return text.substr(0, index) + character + text.substr(index+character.length); 
+			   return text.substr(0, index) + character + text.substr(index+character.length);
 			}else{
 				return text;
 			}
 		},
-		
-		
+
+
 		/**
 		 * removes whitespace, tabs and returns from start and end of text
 		 *
@@ -2308,7 +2312,7 @@ var Microformats; // jshint ignore:line
 			if(text && text.length){
 				var i = text.length,
 					x = 0;
-				
+
 				// turn all whitespace chars at end into spaces
 				while (i--) {
 					if(this.isOnlyWhiteSpace(text[i])){
@@ -2317,7 +2321,7 @@ var Microformats; // jshint ignore:line
 						break;
 					}
 				}
-				
+
 				// turn all whitespace chars at start into spaces
 				i = text.length;
 				while (x < i) {
@@ -2331,8 +2335,8 @@ var Microformats; // jshint ignore:line
 			}
 			return this.trim(text);
 		},
-	
-	
+
+
 		/**
 		 * does text only contain whitespace characters
 		 *
@@ -2342,8 +2346,8 @@ var Microformats; // jshint ignore:line
 		isOnlyWhiteSpace: function( text ){
 			return !(/[^\t\n\r ]/.test( text ));
 		},
-		
-		
+
+
 		/**
 		 * removes whitespace from text (leaves a single space)
 		 *
@@ -2353,14 +2357,14 @@ var Microformats; // jshint ignore:line
 		collapseWhiteSpace: function( text ){
 			return text.replace(/[\t\n\r ]+/g, ' ');
 		},
-	
-	
+
+
 		/**
 		 * does an object have any of its own properties
 		 *
 		 * @param  {Object} obj
 		 * @return {Boolean}
-		 */ 
+		 */
 		hasProperties: function( obj ) {
 			var key;
 			for(key in obj) {
@@ -2370,15 +2374,15 @@ var Microformats; // jshint ignore:line
 			}
 			return false;
 		},
-		
-		
+
+
 		/**
 		 * a sort function - to sort objects in an array by a given property
 		 *
 		 * @param  {String} property
 		 * @param  {Boolean} reverse
 		 * @return {Int}
-		 */ 
+		 */
 		sortObjects: function(property, reverse) {
 			reverse = (reverse) ? -1 : 1;
 			return function (a, b) {
@@ -2393,7 +2397,7 @@ var Microformats; // jshint ignore:line
 				return 0;
 			};
 		}
-		
+
 	};
 
 
@@ -3515,7 +3519,7 @@ var Microformats; // jshint ignore:line
 
 	modules.dates = {
 
-		
+
 		/**
 		 * does text contain am
 		 *
@@ -3526,8 +3530,8 @@ var Microformats; // jshint ignore:line
 			text = text.toLowerCase();
 			return(text.indexOf('am') > -1 || text.indexOf('a.m.') > -1);
 		},
-	
-	
+
+
 		/**
 		 * does text contain pm
 		 *
@@ -3538,8 +3542,8 @@ var Microformats; // jshint ignore:line
 			text = text.toLowerCase();
 			return(text.indexOf('pm') > -1 || text.indexOf('p.m.') > -1);
 		},
-	
-	
+
+
 		/**
 		 * remove am and pm from text and return it
 		 *
@@ -3549,8 +3553,8 @@ var Microformats; // jshint ignore:line
 		removeAMPM: function( text ) {
 			return text.replace('pm', '').replace('p.m.', '').replace('am', '').replace('a.m.', '');
 		},
-	
-	   
+
+
 	   /**
 		 * simple test of whether ISO date string is a duration  i.e.  PY17M or PW12
 		 *
@@ -3566,15 +3570,15 @@ var Microformats; // jshint ignore:line
 			}
 			return false;
 		},
-	
-	
+
+
 	   /**
 		 * is text a time or timezone
 		 * i.e. HH-MM-SS or z+-HH-MM-SS 08:43 | 15:23:00:0567 | 10:34pm | 10:34 p.m. | +01:00:00 | -02:00 | z15:00 | 0843
 		 *
 		 * @param  {String} text
 		 * @return {Boolean}
-		 */ 
+		 */
 		isTime: function( text ) {
 			if(modules.utils.isString(text)){
 				text = text.toLowerCase();
@@ -3584,7 +3588,7 @@ var Microformats; // jshint ignore:line
 					return true;
 				}
 				// has ante meridiem or post meridiem
-				if( text.match(/^[0-9]/) && 
+				if( text.match(/^[0-9]/) &&
 					( this.hasAM(text) || this.hasPM(text) )) {
 					return true;
 				}
@@ -3592,7 +3596,7 @@ var Microformats; // jshint ignore:line
 				if( text.match(':') && !text.match(/t|\s/) ) {
 					return true;
 				}
-				
+
 				// if it's a number of 2, 4 or 6 chars
 				if(modules.utils.isNumber(text)){
 					if(text.length === 2 || text.length === 4 || text.length === 6){
@@ -3602,7 +3606,7 @@ var Microformats; // jshint ignore:line
 			}
 			return false;
 		},
-	
+
 
 		/**
 		 * parses a time from text and returns 24hr time string
@@ -3610,18 +3614,18 @@ var Microformats; // jshint ignore:line
 		 *
 		 * @param  {String} text
 		 * @return {String}
-		 */ 
+		 */
 		parseAmPmTime: function( text ) {
 			var out = text,
 				times = [];
-	
+
 			// if the string has a text : or am or pm
 			if(modules.utils.isString(out)) {
 				//text = text.toLowerCase();
 				text = text.replace(/[ ]+/g, '');
-	
+
 				if(text.match(':') || this.hasAM(text) || this.hasPM(text)) {
-	
+
 					if(text.match(':')) {
 						times = text.split(':');
 					} else {
@@ -3629,31 +3633,31 @@ var Microformats; // jshint ignore:line
 						times[0] = text;
 						times[0] = this.removeAMPM(times[0]);
 					}
-					
+
 					// change pm hours to 24hr number
 					if(this.hasPM(text)) {
 						if(times[0] < 12) {
 							times[0] = parseInt(times[0], 10) + 12;
 						}
 					}
-	
+
 					// add leading zero's where needed
 					if(times[0] && times[0].length === 1) {
 						times[0] = '0' + times[0];
 					}
-					
+
 					// rejoin text elements together
 					if(times[0]) {
 						text = times.join(':');
 					}
 				}
 			}
-			
+
 			// remove am/pm strings
 			return this.removeAMPM(text);
 		},
-	
-	
+
+
 	   /**
 		 * overlays a time on a date to return the union of the two
 		 *
@@ -3661,11 +3665,11 @@ var Microformats; // jshint ignore:line
 		 * @param  {String} time
 		 * @param  {String} format ( Modules.ISODate profile format )
 		 * @return {Object} Modules.ISODate
-		 */ 
+		 */
 		dateTimeUnion: function(date, time, format) {
 			var isodate = new modules.ISODate(date, format),
 				isotime = new modules.ISODate();
-	
+
 			isotime.parseTime(this.parseAmPmTime(time), format);
 			if(isodate.hasFullDate() && isotime.hasTime()) {
 				isodate.tH = isotime.tH;
@@ -3680,8 +3684,8 @@ var Microformats; // jshint ignore:line
 				return new modules.ISODate();
 			}
 		},
-	
-	
+
+
 	   /**
 		 * concatenate an array of date and time text fragments to create an ISODate object
 		 * used for microformat value and value-title rules
@@ -3689,65 +3693,65 @@ var Microformats; // jshint ignore:line
 		 * @param  {Array} arr ( Array of Strings )
 		 * @param  {String} format ( Modules.ISODate profile format )
 		 * @return {Object} Modules.ISODate
-		 */ 
+		 */
 		concatFragments: function (arr, format) {
 			var out = new modules.ISODate(),
 				i = 0,
 				value = '';
-			
-			// if the fragment already contains a full date just return it once 
+
+			// if the fragment already contains a full date just return it once
 			if(arr[0].toUpperCase().match('T')) {
 				return new modules.ISODate(arr[0], format);
 			}else{
 				for(i = 0; i < arr.length; i++) {
 				value = arr[i];
-	  
+
 				// date pattern
 				if( value.charAt(4) === '-' && out.hasFullDate() === false ){
 					out.parseDate(value);
 				}
-				
+
 				// time pattern
 				if( (value.indexOf(':') > -1 || modules.utils.isNumber( this.parseAmPmTime(value) )) && out.hasTime() === false ) {
 					// split time and timezone
 					var items = this.splitTimeAndZone(value);
 					value = items[0];
-					
+
 					// parse any use of am/pm
 					value = this.parseAmPmTime(value);
 					out.parseTime(value);
-					
-					// parse any timezone 
+
+					// parse any timezone
 					if(items.length > 1){
 						 out.parseTimeZone(items[1], format);
 					}
 				}
-				
+
 				// timezone pattern
 				if(value.charAt(0) === '-' || value.charAt(0) === '+' || value.toUpperCase() === 'Z') {
 					if( out.hasTimeZone() === false ){
 						out.parseTimeZone(value);
 					}
 				}
-	
+
 			}
 			return out;
-				
+
 			}
 		},
-		
-		
+
+
 	   /**
 		 * parses text by splitting it into an array of time and timezone strings
 		 *
 		 * @param  {String} text
 		 * @return {Array} Modules.ISODate
-		 */ 
+		 */
 		splitTimeAndZone: function ( text ){
 		   var out = [text],
 			   chars = ['-','+','z','Z'],
 			   i = chars.length;
-			   
+
 			while (i--) {
 			  if(text.indexOf(chars[i]) > -1){
 				  out[0] = text.slice( 0, text.indexOf(chars[i]) );
@@ -3757,7 +3761,7 @@ var Microformats; // jshint ignore:line
 			}
 		   return out;
 		}
-		
+
 	};
 
 

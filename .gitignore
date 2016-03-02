@@ -11,6 +11,7 @@ pids
 logs
 node_modules
 url
+eslint
 
 npm-debug.log
 _site
