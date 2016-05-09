@@ -2,7 +2,7 @@
 	"author": "Glenn Jones",
 	"name": "microformat-shiv",
 	"description": "A cross browser JavaScript Microformats 2 parser",
-	"version": "1.4.1",
+	"version": "1.4.2",
 	"license": "MIT",
 	"homepage": "http://microformat-shiv.com",
 	"repository": {

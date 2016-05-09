@@ -1,6 +1,6 @@
 /*
    Modern
-   microformat-shiv - v1.4.1
+   microformat-shiv - v1.4.2
    Built: 2016-05-09 11:05 - http://microformat-shiv.com
    Copyright (c) 2016 Glenn Jones
    Licensed MIT 
@@ -22,7 +22,7 @@ var Microformats; // jshint ignore:line
     var modules = {};
     
 
-	modules.version = '1.4.1';
+	modules.version = '1.4.2';
 	modules.livingStandard = '2015-09-25T12:26:04Z';
 
 	/**
@@ -1158,7 +1158,7 @@ var Microformats; // jshint ignore:line
 						item = modules.utils.trim(items[x]);
 
 						// test for root prefix - v2
-						if(modules.utils.startWith(item, context.rootPrefix)) {
+						if(modules.utils.startWith(item, context.rootPrefix) && modules.utils.isLowerCase(item)) {
 							if(out.root.indexOf(item) === -1){
 								out.root.push(item);
 							}
@@ -1168,7 +1168,7 @@ var Microformats; // jshint ignore:line
 						// test for property prefix - v2
 						z = context.propertyPrefixes.length;
 						while(z--) {
-							if(modules.utils.startWith(item, context.propertyPrefixes[z])) {
+							if(modules.utils.startWith(item, context.propertyPrefixes[z]) && modules.utils.isLowerCase(item)) {
 								out.properties.push([item,'v2']);
 							}
 						}
@@ -1376,7 +1376,7 @@ var Microformats; // jshint ignore:line
 			i = this.propertyPrefixes.length;
 			while(i--) {
 				var prefix = this.propertyPrefixes[i];
-				if(modules.utils.startWith(text, prefix)) {
+				if(modules.utils.startWith(text, prefix) && modules.utils.isLowerCase(text)) {
 					text = text.substr(prefix.length);
 				}
 			}
@@ -2270,6 +2270,18 @@ var Microformats; // jshint ignore:line
 		startWith: function( text, test ) {
 			return(text.indexOf(test) === 0);
 		},
+
+
+		/**
+		 * is string all lowerCase - just checks letters
+		 *
+		 * @param  {String} text
+		 * @return {Boolean}
+		 */
+		isLowerCase: function( text ) {
+			return text === text.toLowerCase();
+		},
+
 
 
 		/**
