@@ -1,6 +1,6 @@
 /*
-   microformat-shiv - v1.4.2
-   Built: 2016-05-09 11:05 - http://microformat-shiv.com
+   microformat-shiv - v1.4.3
+   Built: 2016-05-09 01:05 - http://microformat-shiv.com
    Copyright (c) 2016 Glenn Jones
    Licensed MIT 
 */
@@ -21,8 +21,8 @@ var Microformats; // jshint ignore:line
     var modules = {};
     
 
-	modules.version = '1.4.2';
-	modules.livingStandard = '2015-09-25T12:26:04Z';
+	modules.version = '1.4.3';
+	modules.livingStandard = '2016-05-09T12:01:23Z';
 
 	/**
 	 * constructor
@@ -891,6 +891,10 @@ var Microformats; // jshint ignore:line
 
 			if(!out) {
 				out = modules.domUtils.getAttrValFromTagList(node, ['img','audio','video','source'], 'src');
+			}
+
+			if(!out) {
+				out = modules.domUtils.getAttrValFromTagList(node, ['video'], 'poster');
 			}
 
 			if(!out) {
@@ -2834,6 +2838,24 @@ var Microformats; // jshint ignore:line
 
 
 		/**
+		 * removes all the descendant tags by name
+		 *
+		 * @param  {DOM Node} node
+		 * @param  {Array} tagNames
+		 * @return {DOM Node}
+		 */
+		removeDescendantsByTagName: function(node, tagNames) {
+			for (var i = 0; i < tagNames.length; i++) {
+				var elements = node.getElementsByTagName(tagNames[i]);
+				while (elements[0]) {
+					elements[0].parentNode.removeChild(elements[0])
+				}
+			}
+			return node;
+		},
+
+
+		/**
 		 * gets the text of a node
 		 *
 		 * @param  {DOM Node} node
@@ -3779,23 +3801,23 @@ var Microformats; // jshint ignore:line
 
 
 	modules.text = {
-		
+
 		// normalised or whitespace or whitespacetrimmed
-		textFormat: 'whitespacetrimmed', 
-		
+		textFormat: 'whitespacetrimmed',
+
 		// block level tags, used to add line returns
 		blockLevelTags: ['h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'p', 'hr', 'pre', 'table',
-			'address', 'article', 'aside', 'blockquote', 'caption', 'col', 'colgroup', 'dd', 'div', 
-			'dt', 'dir', 'fieldset', 'figcaption', 'figure', 'footer', 'form',  'header', 'hgroup', 'hr', 
-			'li', 'map', 'menu', 'nav', 'optgroup', 'option', 'section', 'tbody', 'testarea', 
+			'address', 'article', 'aside', 'blockquote', 'caption', 'col', 'colgroup', 'dd', 'div',
+			'dt', 'dir', 'fieldset', 'figcaption', 'figure', 'footer', 'form',  'header', 'hgroup', 'hr',
+			'li', 'map', 'menu', 'nav', 'optgroup', 'option', 'section', 'tbody', 'testarea',
 			'tfoot', 'th', 'thead', 'tr', 'td', 'ul', 'ol', 'dl', 'details'],
 
-		// tags to exclude 
+		// tags to exclude
 		excludeTags: ['noframe', 'noscript', 'template', 'script', 'style', 'frames', 'frameset'],
- 
-	
+
+
 		/**
-		 * parses the text from the DOM Node 
+		 * parses the text from the DOM Node
 		 *
 		 * @param  {DOM Node} node
 		 * @param  {String} textFormat
@@ -3812,57 +3834,60 @@ var Microformats; // jshint ignore:line
 					return '';
 				}
 			}else{
-			   return this.formatText( doc, modules.domUtils.textContent(node), this.textFormat );
+				var clonedNode = modules.domUtils.clone(node);
+				var trimmedNode = modules.domUtils.removeDescendantsByTagName( clonedNode, this.excludeTags );
+
+			   return this.formatText( doc, modules.domUtils.textContent(trimmedNode), this.textFormat );
 			}
 		},
-		
-		
+
+
 		/**
-		 * parses the text from a html string 
+		 * parses the text from a html string
 		 *
 		 * @param  {DOM Document} doc
 		 * @param  {String} text
 		 * @param  {String} textFormat
 		 * @return {String}
-		 */  
+		 */
 		parseText: function( doc, text, textFormat ){
 		   var node = modules.domUtils.createNodeWithText( 'div', text );
 		   return this.parse( doc, node, textFormat );
 		},
-		
-		
+
+
 		/**
 		 * parses the text from a html string - only for whitespace or whitespacetrimmed formats
 		 *
 		 * @param  {String} text
 		 * @param  {String} textFormat
 		 * @return {String}
-		 */  
+		 */
 		formatText: function( doc, text, textFormat ){
 		   this.textFormat = (textFormat)? textFormat : this.textFormat;
 		   if(text){
 			  var out = '',
 				  regex = /(<([^>]+)>)/ig;
-				
-			  out = text.replace(regex, '');   
-			  if(this.textFormat === 'whitespacetrimmed') {    
+
+			  out = text.replace(regex, '');
+			  if(this.textFormat === 'whitespacetrimmed') {
 				 out = modules.utils.trimWhitespace( out );
 			  }
-			  
+
 			  //return entities.decode( out, 2 );
 			  return modules.domUtils.decodeEntities( doc, out );
 		   }else{
-			  return ''; 
+			  return '';
 		   }
 		},
-		
-		
+
+
 		/**
-		 * normalises whitespace in given text 
+		 * normalises whitespace in given text
 		 *
 		 * @param  {String} text
 		 * @return {String}
-		 */ 
+		 */
 		normalise: function( doc, text ){
 			text = text.replace( /&nbsp;/g, ' ') ;    // exchanges html entity for space into space char
 			text = modules.utils.collapseWhiteSpace( text );     // removes linefeeds, tabs and addtional spaces
@@ -3870,27 +3895,27 @@ var Microformats; // jshint ignore:line
 			text = text.replace( '–', '-' );          // correct dash decoding
 			return modules.utils.trim( text );
 		},
-		
-	 
+
+
 		/**
 		 * walks DOM tree parsing the text from DOM Nodes
 		 *
 		 * @param  {DOM Node} node
 		 * @return {String}
-		 */ 
+		 */
 		walkTreeForText: function( node ) {
 			var out = '',
 				j = 0;
-	
+
 			if(node.tagName && this.excludeTags.indexOf( node.tagName.toLowerCase() ) > -1){
 				return out;
 			}
-	
+
 			// if node is a text node get its text
 			if(node.nodeType && node.nodeType === 3){
-				out += modules.domUtils.getElementText( node ); 
+				out += modules.domUtils.getElementText( node );
 			}
-	
+
 			// get the text of the child nodes
 			if(node.childNodes && node.childNodes.length > 0){
 				for (j = 0; j < node.childNodes.length; j++) {
@@ -3900,15 +3925,15 @@ var Microformats; // jshint ignore:line
 					}
 				}
 			}
-	
+
 			// if it's a block level tag add an additional space at the end
 			if(node.tagName && this.blockLevelTags.indexOf( node.tagName.toLowerCase() ) !== -1){
 				out += ' ';
-			} 
-			
+			}
+
 			return (out === '')? undefined : out ;
 		}
-		
+
 	};
 
 
