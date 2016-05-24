@@ -1,7 +1,7 @@
 /*
 Microformats Test Suite - Downloaded from github repo: microformats/tests version v0.1.26 
 Mocha integration test from: microformats-v2/h-event/time
-The test was built on Mon May 09 2016 13:03:31 GMT+0100 (BST)
+The test was built on Tue May 24 2016 16:01:17 GMT+0100 (BST)
 */
 
 assert = chai.assert;

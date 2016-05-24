@@ -1,7 +1,7 @@
 /*
    Modern
    microformat-shiv - v2.0.0
-   Built: 2016-05-24 01:05 - http://microformat-shiv.com
+   Built: 2016-05-24 04:05 - http://microformat-shiv.com
    Copyright (c) 2016 Glenn Jones
    Licensed MIT 
 */
@@ -23,7 +23,7 @@ var Microformats; // jshint ignore:line
     
 
 	modules.version = '2.0.0';
-	modules.livingStandard = '2016-05-09T12:01:23Z';
+	modules.livingStandard = '2016-05-24T15:00:22Z';
 
 	/**
 	 * constructor
@@ -1078,7 +1078,7 @@ var Microformats; // jshint ignore:line
 			}
 			if(out.length > 0) {
 				if(propertyType === 'p') {
-					return modules.text.parseText( this.document, out.join(' '), this.options.textFormat);
+					return modules.text.parseText( this.document, out.join(''), this.options.textFormat);
 				}
 				if(propertyType === 'u') {
 					return out.join('');
@@ -3787,39 +3787,42 @@ var Microformats; // jshint ignore:line
 				return new modules.ISODate(arr[0], format);
 			}else{
 				for(i = 0; i < arr.length; i++) {
-				value = arr[i];
+					value = arr[i];
 
-				// date pattern
-				if( value.charAt(4) === '-' && out.hasFullDate() === false ){
-					out.parseDate(value);
-				}
-
-				// time pattern
-				if( (value.indexOf(':') > -1 || modules.utils.isNumber( this.parseAmPmTime(value) )) && out.hasTime() === false ) {
-					// split time and timezone
-					var items = this.splitTimeAndZone(value);
-					value = items[0];
-
-					// parse any use of am/pm
-					value = this.parseAmPmTime(value);
-					out.parseTime(value);
-
-					// parse any timezone
-					if(items.length > 1){
-						 out.parseTimeZone(items[1], format);
+					// date pattern
+					if( value.charAt(4) === '-' && out.hasFullDate() === false ){
+						out.parseDate(value);
 					}
-				}
 
-				// timezone pattern
-				if(value.charAt(0) === '-' || value.charAt(0) === '+' || value.toUpperCase() === 'Z') {
-					if( out.hasTimeZone() === false ){
-						out.parseTimeZone(value);
+					// time pattern
+					if( (value.indexOf(':') > -1 || modules.utils.isNumber( this.parseAmPmTime(value) )) && out.hasTime() === false ) {
+						// split time and timezone
+						var items = this.splitTimeAndZone(value);
+						value = items[0];
+
+						// parse any use of am/pm
+						value = this.parseAmPmTime(value);
+						out.parseTime(value);
+
+						// parse any timezone
+						if(items.length > 1){
+							out.parseTimeZone(items[1], format);
+						}
 					}
+
+					// timezone pattern
+					if(value.charAt(0) === '-' || value.charAt(0) === '+' || value.toUpperCase() === 'Z') {
+						if( out.hasTimeZone() === false ){
+							out.parseTimeZone(value);
+						}
+					}
+
 				}
-
-			}
-			return out;
-
+				// alway imply minutes
+				if(out.tM === -1){
+					out.tM = '00';
+				}
+				return out;
 			}
 		},
 
