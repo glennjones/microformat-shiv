@@ -104,6 +104,7 @@ __I would recommend always setting the `textFormat` option to `normalised`. This
 Experimental options
 -------
 These options are part of ongoing specification development. They maybe removed or renamed in the future.
+* `lang` (Boolean) Parses and adds the language value to e-* default is false
 * `parseLatLonGeo` (Boolean)  Parse geo date written as latlon i.e. 30.267991;-97.739568
 default is `false`
 

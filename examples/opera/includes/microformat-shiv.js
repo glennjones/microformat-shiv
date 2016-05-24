@@ -1,6 +1,6 @@
 /*
-   microformat-shiv - v1.4.3
-   Built: 2016-05-09 01:05 - http://microformat-shiv.com
+   microformat-shiv - v2.0.0
+   Built: 2016-05-24 01:05 - http://microformat-shiv.com
    Copyright (c) 2016 Glenn Jones
    Licensed MIT 
 */
@@ -21,7 +21,7 @@ var Microformats; // jshint ignore:line
     var modules = {};
     
 
-	modules.version = '1.4.3';
+	modules.version = '2.0.0';
 	modules.livingStandard = '2016-05-09T12:01:23Z';
 
 	/**
@@ -52,7 +52,8 @@ var Microformats; // jshint ignore:line
 				'dateFormat': 'auto', // html5 for testing
 				'overlappingVersions': false,
 				'impliedPropertiesByVersion': true,
-				'parseLatLonGeo': false
+				'parseLatLonGeo': false,
+				'lang': false
 			};
 			this.rootID = 0;
 			this.errors = [];
@@ -603,6 +604,13 @@ var Microformats; // jshint ignore:line
 				if(this.impliedRules){
 					this.impliedRules(node, obj, classes);
 				}
+
+				if(this.options.lang === true){
+					var lang = modules.domUtils.getFirstAncestorAttribute(node, 'lang');
+					if(lang){
+						obj.lang = lang;
+					}
+				}
 				out.push( this.cleanUfObject(obj) );
 
 
@@ -863,6 +871,13 @@ var Microformats; // jshint ignore:line
 
 			out.value = modules.text.parse(this.document, node, this.options.textFormat);
 			out.html = modules.html.parse(node);
+
+			if(this.options.lang === true){
+				var lang = modules.domUtils.getFirstAncestorAttribute(node, 'lang');
+				if(lang){
+					out.lang = lang;
+				}
+			}
 
 			return out;
 		},
@@ -2556,7 +2571,11 @@ var Microformats; // jshint ignore:line
 		 * @return {Boolean}
 		 */
 		hasAttribute: function(node, attributeName) {
-			return node.hasAttribute(attributeName);
+			if(node.hasAttribute){
+				return node.hasAttribute(attributeName);
+			}else{
+				return false;
+			}
 		},
 
 
@@ -2832,7 +2851,9 @@ var Microformats; // jshint ignore:line
 		 */
 		clone: function(node) {
 			var newNode = node.cloneNode(true);
-			newNode.removeAttribute('id');
+			if(this.hasAttribute(node, 'id')){
+				this.removeAttribute(node, 'id')
+			}
 			return newNode;
 		},
 
@@ -2846,9 +2867,11 @@ var Microformats; // jshint ignore:line
 		 */
 		removeDescendantsByTagName: function(node, tagNames) {
 			for (var i = 0; i < tagNames.length; i++) {
-				var elements = node.getElementsByTagName(tagNames[i]);
-				while (elements[0]) {
-					elements[0].parentNode.removeChild(elements[0])
+				if(node.getElementsByTagName){
+					var elements = node.getElementsByTagName(tagNames[i]);
+					while (elements[0]) {
+						elements[0].parentNode.removeChild(elements[0])
+					}
 				}
 			}
 			return node;
@@ -2969,6 +2992,30 @@ var Microformats; // jshint ignore:line
 			   }
 		  }
 		  return path;
+		},
+
+
+		/**
+		 * get a node's path
+		 *
+		 *   @param  {DOM Node} node
+		 *   @param  {String} attributeName
+		 *   @return {String || null}
+		 */
+		getFirstAncestorAttribute: function  (node, attributeName) {
+			if(!node){
+				return null;
+			}
+			if(this.hasAttribute(node, attributeName)){
+				return this.getAttribute(node, attributeName);
+			}else{
+				var parent = node.parentNode;
+				if(parent){
+					return this.getFirstAncestorAttribute(parent, attributeName);
+				}else{
+					return null;
+				}
+			}
 		},
 
 
@@ -3866,16 +3913,11 @@ var Microformats; // jshint ignore:line
 		formatText: function( doc, text, textFormat ){
 		   this.textFormat = (textFormat)? textFormat : this.textFormat;
 		   if(text){
-			  var out = '',
-				  regex = /(<([^>]+)>)/ig;
-
-			  out = text.replace(regex, '');
+			  var out = text
 			  if(this.textFormat === 'whitespacetrimmed') {
 				 out = modules.utils.trimWhitespace( out );
 			  }
-
-			  //return entities.decode( out, 2 );
-			  return modules.domUtils.decodeEntities( doc, out );
+			  return out;
 		   }else{
 			  return '';
 		   }
@@ -3938,21 +3980,21 @@ var Microformats; // jshint ignore:line
 
 
 	modules.html = {
-		
+
 		// elements which are self-closing
 		selfClosingElt: ['area', 'base', 'br', 'col', 'hr', 'img', 'input', 'link', 'meta', 'param', 'command', 'keygen', 'source'],
-	
+
 
 		/**
 		 * parse the html string from DOM Node
 		 *
 		 * @param  {DOM Node} node
 		 * @return {String}
-		 */ 
+		 */
 		parse: function( node ){
 			var out = '',
 				j = 0;
-	
+
 			// we do not want the outer container
 			if(node.childNodes && node.childNodes.length > 0){
 				for (j = 0; j < node.childNodes.length; j++) {
@@ -3962,47 +4004,50 @@ var Microformats; // jshint ignore:line
 					}
 				}
 			}
-	
+
 			return out;
 		},
-	
-  
+
+
 		/**
 		 * walks the DOM tree parsing the html string from the nodes
 		 *
 		 * @param  {DOM Document} doc
 		 * @param  {DOM Node} node
 		 * @return {String}
-		 */ 
+		 */
 		walkTreeForHtml: function( node ) {
 			var out = '',
 				j = 0;
-	
+
 			// if node is a text node get its text
 			if(node.nodeType && node.nodeType === 3){
-				out += modules.domUtils.getElementText( node ); 
+				//out += modules.domUtils.getElementText( node );
+				var containerNode = modules.domUtils.createNode('div');
+				modules.domUtils.appendChild(containerNode, modules.domUtils.clone(node));
+				out += modules.domUtils.innerHTML(containerNode);
 			}
-	
-		
-			// exclude text which has been added with include pattern  - 
+
+
+			// exclude text which has been added with include pattern  -
 			if(node.nodeType && node.nodeType === 1 && modules.domUtils.hasAttribute(node, 'data-include') === false){
-	
+
 				// begin tag
-				out += '<' + node.tagName.toLowerCase();  
-	
+				out += '<' + node.tagName.toLowerCase();
+
 				// add attributes
 				var attrs = modules.domUtils.getOrderedAttributes(node);
 				for (j = 0; j < attrs.length; j++) {
 					out += ' ' + attrs[j].name +  '=' + '"' + attrs[j].value + '"';
 				}
-	
+
 				if(this.selfClosingElt.indexOf(node.tagName.toLowerCase()) === -1){
 					out += '>';
 				}
-	
+
 				// get the text of the child nodes
 				if(node.childNodes && node.childNodes.length > 0){
-					
+
 					for (j = 0; j < node.childNodes.length; j++) {
 						var text = this.walkTreeForHtml( node.childNodes[j] );
 						if(text !== undefined){
@@ -4010,19 +4055,19 @@ var Microformats; // jshint ignore:line
 						}
 					}
 				}
-	
+
 				// end tag
 				if(this.selfClosingElt.indexOf(node.tagName.toLowerCase()) > -1){
-					out += ' />'; 
+					out += ' />';
 				}else{
-					out += '</' + node.tagName.toLowerCase() + '>'; 
+					out += '</' + node.tagName.toLowerCase() + '>';
 				}
-			} 
-			
+			}
+
 			return (out === '')? undefined : out;
-		}    
-	
-	
+		}
+
+
 	};
 
 
