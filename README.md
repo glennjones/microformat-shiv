@@ -96,7 +96,7 @@ Options
 * `baseUrl` - (String) optional URL used to resolve relative URLs
 * `filter` - (Array) microformat types returned - i.e. `['h-card']` - always adds `rels`
 * `textFormat` - (String) text style `whitespacetrimmed` or `normalised` default is `whitespacetrimmed`
-* `dateFormat` - (String) the ISO date profile `auto`, `w3c` `rfc3339` or `html5` default is `auto`
+* `dateFormat` - (String) the ISO date profile `auto`, `microformats2`, `w3c` `rfc3339` or `html5` default is `auto`
 * `add` - (Array) adds microformat version 1 definitions
 
 __I would recommend always setting the `textFormat` option to `normalised`. This is not part of the microformat parsing rules, but in most cases provides more usable output.__
