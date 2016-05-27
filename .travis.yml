@@ -1,10 +1,10 @@
 language: node_js
 node_js:
-  - "0.10"
+  - "5.0"
 install:
   - npm install
 before_script:
-  - git config user.name "Travis CI" 
+  - git config user.name "Travis CI"
   - phantomjs --version
   - mocha-phantomjs --version
   - grunt &

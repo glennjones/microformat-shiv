@@ -1,7 +1,7 @@
 /*
    Modern
-   microformat-shiv - v2.0.0
-   Built: 2016-05-25 10:05 - http://microformat-shiv.com
+   microformat-shiv - v2.0.1
+   Built: 2016-05-27 11:05 - http://microformat-shiv.com
    Copyright (c) 2016 Glenn Jones
    Licensed MIT 
 */
@@ -22,7 +22,7 @@ var Microformats; // jshint ignore:line
     var modules = {};
     
 
-	modules.version = '2.0.0';
+	modules.version = '2.0.1';
 	modules.livingStandard = '2016-05-25T09:22:18Z';
 
 	/**
@@ -1649,7 +1649,6 @@ var Microformats; // jshint ignore:line
 			// http://microformats.org/wiki/microformats2-parsing-issues#implied_date_for_dt_properties_both_mf2_and_backcompat
 			var newDate;
 			if(uf.times.length > 0 && uf.dates.length > 0) {
-				console.log(this.options.dateFormat)
 				newDate = modules.dates.dateTimeUnion(uf.dates[0][1], uf.times[0][1], 'microformat2');
 				uf.properties[this.removePropPrefix(uf.times[0][0])][0] = newDate.toString('microformat2');
 			}
