@@ -1,6 +1,6 @@
 /*
-   microformat-shiv - v2.0.1
-   Built: 2016-05-27 11:05 - http://microformat-shiv.com
+   microformat-shiv - v2.0.2
+   Built: 2016-05-27 05:05 - http://microformat-shiv.com
    Copyright (c) 2016 Glenn Jones
    Licensed MIT 
 */
@@ -21,7 +21,7 @@ var Microformats; // jshint ignore:line
     var modules = {};
     
 
-	modules.version = '2.0.1';
+	modules.version = '2.0.2';
 	modules.livingStandard = '2016-05-25T09:22:18Z';
 
 	/**
@@ -3157,7 +3157,7 @@ var Microformats; // jshint ignore:line
 
 		// optional should be full iso date/time string
 		if(arguments[0]) {
-			this.parse(dateString, format);
+			this.parse(dateString, this.format);
 		}
 	};
 
@@ -3236,7 +3236,9 @@ var Microformats; // jshint ignore:line
 		 * @return {String}
 		 */
 		parse: function( dateString, format ) {
+
 			this.clear();
+			this.setFormat(format);
 
 			var parts = [],
 				tzArray = [],
@@ -3244,11 +3246,6 @@ var Microformats; // jshint ignore:line
 				datePart = '',
 				timePart = '',
 				timeZonePart = '';
-
-			if(format){
-				this.format = format;
-			}
-
 
 
 			// discover date time separtor for auto profile
@@ -3314,7 +3311,7 @@ var Microformats; // jshint ignore:line
 					}
 				}
 			}
-			return this.toString( format );
+			return this.toString( this.format );
 		},
 
 
@@ -3326,8 +3323,9 @@ var Microformats; // jshint ignore:line
 		 * @return {String}
 		 */
 		parseDate: function( dateString, format ) {
-			this.clearDate();
 
+			this.setFormat(format);
+			this.clearDate();
 			var parts = [];
 
 			// discover timezone separtor for auto profile // default is ':'
@@ -3359,7 +3357,7 @@ var Microformats; // jshint ignore:line
 					this.dD = parts[3];
 				}
 			}
-			return this.toString(format);
+			return this.toString(this.format);
 		},
 
 
@@ -3371,6 +3369,8 @@ var Microformats; // jshint ignore:line
 		 * @return {String}
 		 */
 		parseTime: function( timeString, format ) {
+
+			this.setFormat(format);
 			this.clearTime();
 			var parts = [];
 
@@ -3393,7 +3393,7 @@ var Microformats; // jshint ignore:line
 			if(parts[4]) {
 				this.tD = parts[4];
 			}
-			return this.toTimeString(format);
+			return this.toTimeString(this.format);
 		},
 
 
@@ -3405,6 +3405,8 @@ var Microformats; // jshint ignore:line
 		 * @return {String}
 		 */
 		parseTimeZone: function( timeString, format ) {
+
+			this.setFormat(format);
 			this.clearTimeZone();
 			var parts = [];
 
@@ -3434,7 +3436,7 @@ var Microformats; // jshint ignore:line
 
 			}
 			this.tzZulu = 'z';
-			return this.toTimeString( format );
+			return this.toTimeString( this.format );
 		},
 
 
@@ -3445,12 +3447,9 @@ var Microformats; // jshint ignore:line
 		 * @return {String}
 		 */
 		toString: function( format ) {
-			var output = '';
 
-			if(format){
-				this.format = format;
-			}
-			this.setFormatSep();
+			this.setFormat(format);
+			var output = '';
 
 			if(this.dY  > -1) {
 				output = this.dY;
@@ -3459,7 +3458,7 @@ var Microformats; // jshint ignore:line
 					if(this.dD > 0 && this.dD < 32) {
 						output += this.dsep + this.dD;
 						if(this.tH > -1 && this.tH < 25) {
-							output += this.sep + this.toTimeString( format );
+							output += this.sep + this.toTimeString( this.format );
 						}
 					}
 				}
@@ -3467,7 +3466,7 @@ var Microformats; // jshint ignore:line
 					output += this.dsep + this.dDDD;
 				}
 			} else if(this.tH > -1) {
-				output += this.toTimeString( format );
+				output += this.toTimeString( this.format );
 			}
 
 			return output;
@@ -3482,12 +3481,9 @@ var Microformats; // jshint ignore:line
 		 * @return {String}
 		 */
 		toTimeString: function( format ) {
-			var out = '';
 
-			if(format){
-				this.format = format;
-			}
-			this.setFormatSep();
+			this.setFormat(format);
+			var out = '';
 
 			// time can only be created with a full date
 			if(this.tH) {
@@ -3519,6 +3515,19 @@ var Microformats; // jshint ignore:line
 				}
 			}
 			return out;
+		},
+
+
+		/**
+		 * set the current profile to W3C Note, RFC 3339, HTML5, or auto profile
+		 *
+		 * @param  {String} format
+		 */
+		setFormat: function( format ){
+			if(format){
+				this.format = format;
+			}
+			this.setFormatSep();
 		},
 
 
