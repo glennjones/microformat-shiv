@@ -1,7 +1,7 @@
 /*
    Modern
    microformat-shiv - v2.0.2
-   Built: 2016-05-27 05:05 - http://microformat-shiv.com
+   Built: 2016-10-26 10:10 - http://microformat-shiv.com
    Copyright (c) 2016 Glenn Jones
    Licensed MIT 
 */
@@ -1918,20 +1918,20 @@ var Microformats; // jshint ignore:line
 
 	// check parser module is loaded
 	if(modules.Parser){
-	
-		
+
+
 		/**
 		 * appends clones of include Nodes into the DOM structure
 		 *
 		 * @param  {DOM node} rootNode
-		 */	
+		 */
 		modules.Parser.prototype.addIncludes = function(rootNode) {
 			this.addAttributeIncludes(rootNode, 'itemref');
 			this.addAttributeIncludes(rootNode, 'headers');
 			this.addClassIncludes(rootNode);
 		};
-	
-		
+
+
 		/**
 		 * appends clones of include Nodes into the DOM structure for attribute based includes
 		 *
@@ -1945,7 +1945,7 @@ var Microformats; // jshint ignore:line
 				x,
 				z,
 				y;
-	
+
 			arr = modules.domUtils.getNodesByAttribute(rootNode, attributeName);
 			x = 0;
 			i = arr.length;
@@ -1962,8 +1962,8 @@ var Microformats; // jshint ignore:line
 				x++;
 			}
 		};
-	
-		
+
+
 		/**
 		 * appends clones of include Nodes into the DOM structure for class based includes
 		 *
@@ -1974,7 +1974,7 @@ var Microformats; // jshint ignore:line
 				arr,
 				x = 0,
 				i;
-	
+
 			arr = modules.domUtils.getNodesByAttributeValue(rootNode, 'class', 'include');
 			i = arr.length;
 			while(x < i) {
@@ -1986,8 +1986,8 @@ var Microformats; // jshint ignore:line
 				x++;
 			}
 		};
-	
-	
+
+
 		/**
 		 * appends a clone of an include into another Node using Id
 		 *
@@ -1997,27 +1997,29 @@ var Microformats; // jshint ignore:line
 		modules.Parser.prototype.apppendInclude = function(node, id){
 			var include,
 				clone;
-	
-			id = modules.utils.trim(id.replace('#', ''));
-			include = modules.domUtils.getElementById(this.document, id);
-			if(include) {
-				clone = modules.domUtils.clone(include);
-				this.markIncludeChildren(clone);
-				modules.domUtils.appendChild(node, clone);
+
+			if(id){
+				id = modules.utils.trim(id.replace('#', ''));
+				include = modules.domUtils.getElementById(this.document, id);
+				if(include) {
+					clone = modules.domUtils.clone(include);
+					this.markIncludeChildren(clone);
+					modules.domUtils.appendChild(node, clone);
+				}
 			}
 		};
-	
-		
+
+
 		/**
-		 * adds an attribute marker to all the child microformat roots 
+		 * adds an attribute marker to all the child microformat roots
 		 *
 		 * @param  {DOM node} rootNode
-		 */ 
+		 */
 		modules.Parser.prototype.markIncludeChildren = function(rootNode) {
 			var arr,
 				x,
 				i;
-	
+
 			// loop the array and add the attribute
 			arr = this.findRootNodes(rootNode);
 			x = 0;
@@ -2029,17 +2031,17 @@ var Microformats; // jshint ignore:line
 				x++;
 			}
 		};
-		
-		
+
+
 		/**
-		 * removes all appended include clones from DOM 
+		 * removes all appended include clones from DOM
 		 *
 		 * @param  {DOM node} rootNode
-		 */ 
+		 */
 		modules.Parser.prototype.removeIncludes = function(rootNode){
 			var arr,
 				i;
-	
+
 			// remove all the items that were added as includes
 			arr = modules.domUtils.getNodesByAttribute(rootNode, 'data-include');
 			i = arr.length;
@@ -2047,8 +2049,8 @@ var Microformats; // jshint ignore:line
 				modules.domUtils.removeChild(rootNode,arr[i]);
 			}
 		};
-	
-		
+
+
 	}
 
 
