@@ -6,7 +6,9 @@
 
 microformat-shiv
 ================
-A cross browser JavaScript microformats parser, which can also be used to build [browser extensions](https://github.com/glennjones/microformat-shiv/tree/master/examples).
+A cross browser JavaScript microformats parser, which can also be used to build
+[browser extensions](https://github.com/glennjones/microformat-shiv/tree/master/examples).
+This is library is built into the Firefox browser as an internal component
 
 Installation
 ------------
